@@ -1,0 +1,6 @@
+{
+  "name": "AC",
+  "description": "Trợ lý tương tác thông minh hỗ trợ khám phá, kiểm chứng ranh giới văn hóa và phối Việt phục đương đại (AI Arena Vietnam 2026).",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

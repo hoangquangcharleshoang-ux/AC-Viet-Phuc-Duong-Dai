@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <script>
+      (function() {
+        try {
+          if (typeof Window !== 'undefined' && Window.prototype) {
+            var protoDesc = Object.getOwnPropertyDescriptor(Window.prototype, 'fetch');
+            if (protoDesc && protoDesc.get && !protoDesc.set) {
+              Object.defineProperty(Window.prototype, 'fetch', {
+                get: protoDesc.get,
+                set: function(val) {
+                  Object.defineProperty(this, 'fetch', {
+                    value: val,
+                    writable: true,
+                    configurable: true,
+                    enumerable: true
+                  });
+                },
+                configurable: true,
+                enumerable: true
+              });
+            }
+          }
+          if (typeof window !== 'undefined') {
+            var currentFetch = window.fetch;
+            if (typeof currentFetch === 'function') {
+              Object.defineProperty(window, 'fetch', {
+                get: function() {
+                  return currentFetch;
+                },
+                set: function(newFetch) {
+                  currentFetch = newFetch;
+                },
+                configurable: true,
+                enumerable: true
+              });
+            }
+          }
+        } catch (_) {}
+      })();
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AC</title>
+    <meta name="description" content="Trợ lý tương tác thông minh hỗ trợ khám phá, kiểm chứng ranh giới văn hóa và phối Việt phục đương đại (AI Arena Vietnam 2026)." />
+    <meta property="og:title" content="AC" />
+    <meta property="og:description" content="Trợ lý tương tác thông minh hỗ trợ khám phá, kiểm chứng ranh giới văn hóa và phối Việt phục đương đại (AI Arena Vietnam 2026)." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+
