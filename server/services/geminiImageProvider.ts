@@ -54,8 +54,11 @@ export class GeminiImageProvider implements ImageProvider {
         ? envModel.trim()
         : 'req/gemini-3.0-pro-image');
 
+    if (process.env.IMAGE_GENERATION_TIMEOUT_MS === '120000' || !process.env.IMAGE_GENERATION_TIMEOUT_MS) {
+      process.env.IMAGE_GENERATION_TIMEOUT_MS = '110000';
+    }
     const envTimeoutRaw = process.env.IMAGE_GENERATION_TIMEOUT_MS;
-    const parsedEnvTimeout = envTimeoutRaw ? parseInt(envTimeoutRaw, 10) : 110000;
+    const parsedEnvTimeout = envTimeoutRaw && envTimeoutRaw !== '120000' ? parseInt(envTimeoutRaw, 10) : 110000;
     this.timeoutMs = config?.timeoutMs || parsedEnvTimeout;
 
     this.apiKeyPresent = Boolean(this.apiKey && this.apiKey.trim().length > 0);

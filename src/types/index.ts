@@ -4,7 +4,7 @@
  * Grounded in: MASTER FINAL & BUILD BRIEF FINAL
  */
 
-export type OccasionId = 'tet_temple' | 'cultural_wedding' | 'street_cafe';
+export type OccasionId = 'tet_temple' | 'cultural_wedding' | 'street_cafe' | 'ky_yeu';
 export type RemixIntent = 'traditional' | 'balanced' | 'expressive';
 export type GarmentId = 'ngu_than_chen' | 'ao_tac' | 'ao_tu_than';
 

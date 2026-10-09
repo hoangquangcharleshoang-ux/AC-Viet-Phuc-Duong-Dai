@@ -1484,7 +1484,7 @@ export default function App() {
                   className={`w-9 h-9 rounded-2xl flex items-center justify-center shrink-0 ${
                     apiError.code === 'GEMINI_QUOTA_EXHAUSTED'
                       ? 'bg-amber-50 text-amber-600 border border-amber-200/80'
-                      : 'bg-indigo-50 text-indigo-600 border border-indigo-200/80'
+                      : 'bg-amber-50 text-amber-700 border border-amber-200/80'
                   }`}
                 >
                   {apiError.code === 'GEMINI_QUOTA_EXHAUSTED' ? (
@@ -1499,7 +1499,7 @@ export default function App() {
                       className={`text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full border ${
                         apiError.code === 'GEMINI_QUOTA_EXHAUSTED'
                           ? 'bg-amber-100/60 text-amber-800 border-amber-300/80'
-                          : 'bg-indigo-100/60 text-indigo-800 border-indigo-300/80'
+                          : 'bg-amber-100/60 text-amber-900 border-amber-300/80'
                       }`}
                     >
                       {apiError.code === 'GEMINI_QUOTA_EXHAUSTED'
@@ -1524,7 +1524,7 @@ export default function App() {
               {apiError.retryable && apiError.retryAction && (
                 <button
                   onClick={apiError.retryAction}
-                  className="rounded-full px-5 py-2 text-xs font-medium text-indigo-700 bg-indigo-50 hover:bg-indigo-100/80 border border-indigo-200/80 shadow-2xs transition-all duration-200 flex items-center gap-2 shrink-0 cursor-pointer self-start sm:self-center"
+                  className="rounded-full px-5 py-2 text-xs font-medium text-amber-900 bg-amber-50 hover:bg-amber-100/80 border border-amber-300/80 shadow-2xs transition-all duration-200 flex items-center gap-2 shrink-0 cursor-pointer self-start sm:self-center"
                 >
                   <RefreshCw className="w-3.5 h-3.5" />
                   <span>Thử lại ngay</span>

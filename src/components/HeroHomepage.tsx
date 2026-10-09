@@ -1,12 +1,12 @@
 /**
  * AC — Hero Homepage
- * Indigo Aurora Omnibox & Multiline Input Specification
+ * Cam Vàng Hoàng Thổ Omnibox & Multiline Input Specification
  * 1. Eyebrow: TRỢ LÝ AI PHỐI VIỆT PHỤC + Unboxed Typography
  * 2. Hero Input Omnibox with Multiline Textarea (2-3 lines, ~78px height, resize-none)
  *    - Independent state rule: Selecting Dịp/Phong cách updates filters, NEVER injects text into textarea
  *    - Nút [ Khác ] focuses the textarea cursor directly
- *    - Lam Chàm Ái Tím (Indigo Aurora) pill styling: border-2 border-indigo-400/70, text-indigo-950
- *    - Bottom Row: Compact Slider (~45% width, slider-indigo) & CTA Button ("Để AC gợi ý →") on the SAME row
+ *    - Cam Vàng Hoàng Thổ (Warm Amber) pill styling: border-2 border-amber-400, text-amber-900
+ *    - Bottom Row: Compact Slider (~45% width, slider-amber) & CTA Button ("Gợi ý bản phối cho tôi →") on the SAME row
  * 3. 3 Base Garment Cards: True Glassmorphic Frosted Containers + 3:4 Clean Fashion Lookbook Photos
  */
 
@@ -79,7 +79,7 @@ export const HeroHomepage: React.FC<HeroHomepageProps> = ({
   const occasionList = [
     { id: 'tet', label: 'Tết', display: 'Tết sum vầy', occasionId: 'tet_temple' as OccasionId },
     { id: 'chup_anh', label: 'Chụp ảnh', display: 'Chụp ảnh kỷ niệm', occasionId: 'street_cafe' as OccasionId },
-    { id: 'ky_yeu', label: 'Kỷ yếu / tốt nghiệp', display: 'Kỷ yếu / tốt nghiệp', occasionId: 'tet_temple' as OccasionId },
+    { id: 'ky_yeu', label: 'Kỷ yếu / tốt nghiệp', display: 'Kỷ yếu / tốt nghiệp', occasionId: 'ky_yeu' as OccasionId },
     { id: 'le_hoi', label: 'Lễ hội / sự kiện văn hóa', display: 'Lễ hội văn hóa', occasionId: 'cultural_wedding' as OccasionId },
     { id: 'dam_cuoi', label: 'Đám cưới / lễ nghi', display: 'Đám cưới / lễ nghi', occasionId: 'cultural_wedding' as OccasionId },
     { id: 'khac', label: 'Khác', display: 'Tùy chọn khác', occasionId: 'street_cafe' as OccasionId }
@@ -208,7 +208,7 @@ export const HeroHomepage: React.FC<HeroHomepageProps> = ({
                 </span>
               </div>
 
-              {/* 6 Nút Pill Dịp — Indigo Aurora Tone */}
+              {/* 6 Nút Pill Dịp — Warm Amber Tone */}
               <div className="flex flex-wrap items-center gap-2">
                 {occasionList.map(item => {
                   const isSelected = selectedOccasionKey === item.id;
@@ -218,11 +218,11 @@ export const HeroHomepage: React.FC<HeroHomepageProps> = ({
                       onClick={() => handleSelectOccasionPill(item)}
                       className={`px-3.5 py-1.5 rounded-full text-xs transition-all cursor-pointer ${
                         isSelected
-                          ? 'font-medium text-indigo-950 bg-white/90 backdrop-blur-md border-2 border-indigo-400/70 shadow-sm shadow-indigo-100/50 flex items-center gap-1.5'
+                          ? 'font-medium text-amber-900 bg-amber-50 border-2 border-amber-400 shadow-sm shadow-amber-100/50 flex items-center gap-1.5'
                           : 'font-normal text-stone-600 bg-white/60 backdrop-blur-sm border border-stone-200/80 hover:bg-white/80 hover:text-stone-900 shadow-2xs'
                       }`}
                     >
-                      {isSelected && <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 shrink-0" />}
+                      {isSelected && <span className="w-1.5 h-1.5 rounded-full bg-amber-600 shrink-0" />}
                       <span>{item.label}</span>
                     </button>
                   );
@@ -238,7 +238,7 @@ export const HeroHomepage: React.FC<HeroHomepageProps> = ({
                 </span>
               </div>
 
-              {/* 5 Nút Pill Phong Cách — Indigo Aurora Tone */}
+              {/* 5 Nút Pill Phong Cách — Warm Amber Tone */}
               <div className="flex flex-wrap items-center gap-2">
                 {styleList.map(item => {
                   const isSelected = selectedStyleKey === item.id;
@@ -248,11 +248,11 @@ export const HeroHomepage: React.FC<HeroHomepageProps> = ({
                       onClick={() => handleSelectStylePill(item)}
                       className={`px-3.5 py-1.5 rounded-full text-xs transition-all cursor-pointer ${
                         isSelected
-                          ? 'font-medium text-indigo-950 bg-white/90 backdrop-blur-md border-2 border-indigo-400/70 shadow-sm shadow-indigo-100/50 flex items-center gap-1.5'
+                          ? 'font-medium text-amber-900 bg-amber-50 border-2 border-amber-400 shadow-sm shadow-amber-100/50 flex items-center gap-1.5'
                           : 'font-normal text-stone-600 bg-white/60 backdrop-blur-sm border border-stone-200/80 hover:bg-white/80 hover:text-stone-900 shadow-2xs'
                       }`}
                     >
-                      {isSelected && <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 shrink-0" />}
+                      {isSelected && <span className="w-1.5 h-1.5 rounded-full bg-amber-600 shrink-0" />}
                       <span>{item.label}</span>
                     </button>
                   );
@@ -268,7 +268,7 @@ export const HeroHomepage: React.FC<HeroHomepageProps> = ({
                 </span>
               </div>
 
-              {/* 3 Nút Pill Người Mặc */}
+              {/* 3 Nút Pill Người Mặc — Warm Amber Tone */}
               <div className="flex flex-wrap items-center gap-2">
                 {[
                   { id: 'nam', label: 'Nam' },
@@ -283,11 +283,11 @@ export const HeroHomepage: React.FC<HeroHomepageProps> = ({
                       onClick={() => onGenderChange?.(item.id as 'nam' | 'nu' | 'neutral')}
                       className={`px-3.5 py-1.5 rounded-full text-xs transition-all cursor-pointer ${
                         isSelected
-                          ? 'font-medium text-indigo-950 bg-white/90 backdrop-blur-md border-2 border-indigo-400/70 shadow-sm shadow-indigo-100/50 flex items-center gap-1.5'
+                          ? 'font-medium text-amber-900 bg-amber-50 border-2 border-amber-400 shadow-sm shadow-amber-100/50 flex items-center gap-1.5'
                           : 'font-normal text-stone-600 bg-white/60 backdrop-blur-sm border border-stone-200/80 hover:bg-white/80 hover:text-stone-900 shadow-2xs'
                       }`}
                     >
-                      {isSelected && <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 shrink-0" />}
+                      {isSelected && <span className="w-1.5 h-1.5 rounded-full bg-amber-600 shrink-0" />}
                       <span>{item.label}</span>
                     </button>
                   );
@@ -301,7 +301,7 @@ export const HeroHomepage: React.FC<HeroHomepageProps> = ({
               <div className="w-full sm:w-80 max-w-[320px] space-y-2">
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-[11px] font-bold text-stone-700 uppercase tracking-wider">Mức biến tấu</span>
-                  <span className="text-xs font-semibold text-indigo-950 bg-indigo-50/90 px-2.5 py-0.5 rounded-full border border-indigo-200/60 shadow-2xs">
+                  <span className="text-xs font-semibold text-amber-900 bg-amber-100 px-2.5 py-0.5 rounded-full border border-amber-300 shadow-2xs">
                     {getSliderLabel(sliderValue)}
                   </span>
                 </div>
@@ -328,7 +328,7 @@ export const HeroHomepage: React.FC<HeroHomepageProps> = ({
                         onSelectIntent('balanced');
                       }
                     }}
-                    className="w-full slider-indigo cursor-pointer"
+                    className="w-full slider-amber cursor-pointer"
                   />
                 </div>
 
@@ -338,7 +338,7 @@ export const HeroHomepage: React.FC<HeroHomepageProps> = ({
                 </div>
               </div>
 
-              {/* Bên phải: Nút CTA chính (Phương án B: Soft Aurora Pastel) */}
+              {/* Bên phải: Nút CTA chính (Màu Cam Đất Hoàng Cúc Solid) */}
               <div className="flex sm:justify-end shrink-0">
                 <button
                   disabled={isRecommending}
@@ -357,7 +357,7 @@ export const HeroHomepage: React.FC<HeroHomepageProps> = ({
                       document.getElementById('section-garments')?.scrollIntoView({ behavior: 'smooth' });
                     }
                   }}
-                  className="rounded-full px-6 py-2.5 bg-[#5457F5] hover:bg-[#474AE1] text-white font-medium text-sm tracking-wide shadow-sm shadow-[#5457F5]/25 hover:shadow-md active:scale-[0.98] transition-all duration-200 cursor-pointer flex items-center gap-2 disabled:opacity-60"
+                  className="rounded-full px-6 py-2.5 bg-[#C26715] hover:bg-[#A85507] text-white font-medium text-sm tracking-wide shadow-sm shadow-[#C26715]/25 hover:shadow-md active:scale-[0.98] transition-all duration-200 cursor-pointer flex items-center gap-2 disabled:opacity-60"
                 >
                   {isRecommending ? (
                     <>
@@ -366,7 +366,7 @@ export const HeroHomepage: React.FC<HeroHomepageProps> = ({
                     </>
                   ) : (
                     <>
-                      <span>{hasResult && isDirty ? 'Cập nhật gợi ý' : 'Để AC gợi ý'}</span>
+                      <span>{hasResult && isDirty ? 'Cập nhật gợi ý' : 'Gợi ý bản phối cho tôi'}</span>
                       <ArrowRight className="w-4 h-4 text-white" />
                     </>
                   )}

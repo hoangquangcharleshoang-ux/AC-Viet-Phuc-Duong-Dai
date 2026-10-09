@@ -87,6 +87,15 @@ export const OCCASIONS: Record<OccasionId, OccasionInfo> = {
     historical_context: 'Gắn liền với nghi lễ quan-hôn-tang-tế thời Nguyễn và phong tục tế tự đình làng dân tộc.',
     iconName: 'Building2'
   },
+  ky_yeu: {
+    id: 'ky_yeu',
+    name: 'Kỷ yếu / tốt nghiệp',
+    tagline: 'Lễ tốt nghiệp, chụp ảnh kỷ yếu, vinh danh tri thức trẻ',
+    solemnity: 'Trung bình - Cao',
+    description: 'Không gian tôn vinh tri thức, mốc son trưởng thành và sự giao hòa giữa truyền thống học thuật với tinh thần thế hệ trẻ.',
+    historical_context: 'Tiếp thu truyền thống khoa cử, y phục triều cống và lễ phục học đường Việt Nam qua các thời kỳ.',
+    iconName: 'GraduationCap'
+  },
   cultural_wedding: {
     id: 'cultural_wedding',
     name: 'Sự kiện văn hóa & Đám cưới',

@@ -212,7 +212,7 @@ export const Section2Blueprint: React.FC<Section2BlueprintProps> = ({
           style={{ backdropFilter: 'blur(20px)' }}
         >
           <div className="flex items-center gap-3">
-            <div className="w-5 h-5 rounded-full border-2 border-indigo-400 border-t-transparent animate-spin" />
+            <div className="w-5 h-5 rounded-full border-2 border-amber-500 border-t-transparent animate-spin" />
             <span className="text-sm font-medium text-stone-700">
               Đang điều phối bản phối thời trang đương đại cho {garment.canonical_name}...
             </span>
@@ -249,7 +249,7 @@ export const Section2Blueprint: React.FC<Section2BlueprintProps> = ({
           style={{ backdropFilter: 'blur(20px)' }}
         >
           <div className="flex items-center gap-3">
-            <div className="w-5 h-5 rounded-full border-2 border-indigo-400 border-t-transparent animate-spin" />
+            <div className="w-5 h-5 rounded-full border-2 border-amber-500 border-t-transparent animate-spin" />
             <span className="text-sm font-medium text-stone-700">
               Đang điều phối bản phối thời trang đương đại cho {garment.canonical_name}...
             </span>
@@ -319,21 +319,21 @@ export const Section2Blueprint: React.FC<Section2BlueprintProps> = ({
 
             {/* CỘT 2 — Gợi ý phối hiện đại (Requirement 1 & Requirement 2: Read-only Cohesive Palette) */}
             <div
-              className="rounded-3xl p-5 sm:p-6 bg-white/95 border border-indigo-200/80 shadow-sm flex flex-col justify-between space-y-5"
+              className="rounded-3xl p-5 sm:p-6 bg-white/95 border border-amber-200/80 shadow-sm flex flex-col justify-between space-y-5"
               style={{
                 backdropFilter: 'blur(24px)',
                 WebkitBackdropFilter: 'blur(24px)'
               }}
             >
               <div className="space-y-4">
-                <div className="flex items-center justify-between pb-2 border-b border-indigo-100/70">
+                <div className="flex items-center justify-between pb-2 border-b border-amber-100/80">
                   <div className="flex items-center gap-2">
-                    <Layers className="w-4 h-4 text-indigo-600" />
+                    <Layers className="w-4 h-4 text-amber-700" />
                     <h3 className="text-sm font-semibold text-stone-900 tracking-tight">
                       Biến tấu an toàn
                     </h3>
                   </div>
-                  <span className="text-[11px] font-medium text-indigo-800 bg-indigo-50 px-2 py-0.5 rounded-full border border-indigo-200/60">
+                  <span className="text-[11px] font-medium text-amber-800 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200/80">
                     Hiện đại
                   </span>
                 </div>
@@ -372,15 +372,15 @@ export const Section2Blueprint: React.FC<Section2BlueprintProps> = ({
                             </span>
                             <span className={`text-[10px] font-medium mt-1 px-1.5 py-0.5 rounded-full border ${
                               color.role === 'PRIMARY'
-                                ? 'bg-indigo-50 text-indigo-800 border-indigo-200/60'
+                                ? 'bg-amber-50 text-amber-900 border-amber-300'
                                 : color.role === 'SUPPORTING'
                                 ? 'bg-stone-50 text-stone-700 border-stone-200/60'
-                                : 'bg-amber-50 text-amber-800 border-amber-200/60'
+                                : 'bg-amber-50/70 text-amber-800 border-amber-200/60'
                             }`}>
                               {roleLabel}
                             </span>
                             {isUserReq && (
-                              <span className="text-[9px] text-indigo-600 font-medium mt-0.5">
+                              <span className="text-[9px] text-amber-700 font-medium mt-0.5">
                                 Bạn yêu cầu
                               </span>
                             )}
@@ -538,9 +538,9 @@ export const Section2Blueprint: React.FC<Section2BlueprintProps> = ({
             {/* Right: Action CTA & Subject Gender Badge */}
             <div className="relative flex flex-wrap items-center gap-3 shrink-0">
               {/* Gender/Subject Presentation Badge (Single Source of Truth from Section 1) */}
-              <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-200/80 shadow-2xs text-xs font-medium text-indigo-900">
-                <span className="text-indigo-600/80 font-normal">Người mặc:</span>
-                <span className="font-semibold text-indigo-950">
+              <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 border border-amber-200/80 shadow-2xs text-xs font-medium text-amber-900">
+                <span className="text-amber-800/80 font-normal">Người mặc:</span>
+                <span className="font-semibold text-amber-950">
                   {genderPresentation === 'nu' ? 'Nữ' : genderPresentation === 'neutral' ? 'Không ưu tiên' : 'Nam'}
                 </span>
               </div>
@@ -551,7 +551,7 @@ export const Section2Blueprint: React.FC<Section2BlueprintProps> = ({
                 className={`rounded-full px-6 py-2.5 font-medium text-sm tracking-wide transition-all duration-200 flex items-center gap-2 ${
                   isGeneratingLookbook || isLoading || isRecommending || !blueprint
                     ? 'bg-stone-200 text-stone-500 border border-stone-300 cursor-not-allowed opacity-70'
-                    : 'bg-[#5457F5] hover:bg-[#474AE1] text-white shadow-sm shadow-[#5457F5]/25 hover:shadow-md active:scale-[0.98] cursor-pointer'
+                    : 'bg-[#C26715] hover:bg-[#A85507] text-white shadow-sm shadow-[#C26715]/25 hover:shadow-md active:scale-[0.98] cursor-pointer'
                 }`}
               >
                 {isGeneratingLookbook ? (
@@ -561,7 +561,7 @@ export const Section2Blueprint: React.FC<Section2BlueprintProps> = ({
                   </>
                 ) : (
                   <>
-                    <span>Tạo ảnh minh họa thực tế ✦</span>
+                    <span>Tạo ảnh minh họa thực tế ✨</span>
                     <ArrowRight className="w-4 h-4 text-white" />
                   </>
                 )}

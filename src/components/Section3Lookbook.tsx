@@ -171,11 +171,11 @@ export const Section3Lookbook: React.FC<Section3LookbookProps> = ({
     <section id="section-lookbook" className="space-y-6 pt-4 scroll-mt-20">
       {/* Exploration Branch Banner */}
       {isExploringBranch && (
-        <div className="rounded-2xl p-4 bg-indigo-50/90 border border-indigo-200/90 shadow-2xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
+        <div className="rounded-2xl p-4 bg-amber-50/90 border border-amber-200/90 shadow-2xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
           <div className="flex items-center gap-2.5">
-            <Compass className="w-4 h-4 text-indigo-600 shrink-0" />
+            <Compass className="w-4 h-4 text-[#C26715] shrink-0" />
             <div>
-              <span className="font-bold text-indigo-950 block sm:inline mr-1">
+              <span className="font-bold text-amber-950 block sm:inline mr-1">
                 Đang xem nhánh khám phá: {explorationTitle || 'Biến tấu'}
               </span>
               <span className="text-stone-600 font-normal">
@@ -186,7 +186,7 @@ export const Section3Lookbook: React.FC<Section3LookbookProps> = ({
           <button
             type="button"
             onClick={onReturnToRoot}
-            className="rounded-full px-4 py-1.5 text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs transition-colors shrink-0 cursor-pointer self-start sm:self-auto"
+            className="rounded-full px-4 py-1.5 text-xs font-semibold bg-amber-800 hover:bg-amber-900 text-white shadow-xs transition-colors shrink-0 cursor-pointer self-start sm:self-auto"
           >
             Quay lại bản phối gốc
           </button>
@@ -195,8 +195,8 @@ export const Section3Lookbook: React.FC<Section3LookbookProps> = ({
 
       {/* Section Header */}
       <div className="space-y-1.5">
-        <div className="inline-flex items-center gap-2 px-3 py-0.5 rounded-full text-xs font-semibold tracking-wider text-indigo-700 bg-indigo-50 border border-indigo-200/60 uppercase shadow-2xs">
-          <Sparkles className="w-3.5 h-3.5 text-indigo-600 animate-pulse" />
+        <div className="inline-flex items-center gap-2 px-3 py-0.5 rounded-full text-xs font-semibold tracking-wider text-amber-900 bg-amber-100/80 border border-amber-300/80 uppercase shadow-2xs">
+          <Sparkles className="w-3.5 h-3.5 text-[#C26715] animate-pulse" />
           <span>Bước 3 · Hình Ảnh Minh Họa</span>
         </div>
         <h2 className="text-xl sm:text-2xl font-semibold text-stone-900 tracking-tight">
@@ -218,7 +218,7 @@ export const Section3Lookbook: React.FC<Section3LookbookProps> = ({
         {/* INTERRUPTED STATE */}
         {lookbookState.status === 'interrupted' && !displayImageUrl && (
           <div className="flex flex-col items-center justify-center py-12 sm:py-16 space-y-4 text-center">
-            <div className="w-12 h-12 rounded-2xl bg-indigo-50 border border-indigo-200/80 flex items-center justify-center text-indigo-600 shadow-2xs">
+            <div className="w-12 h-12 rounded-2xl bg-amber-50 border border-amber-200/80 flex items-center justify-center text-[#C26715] shadow-2xs">
               <Clock className="w-6 h-6" />
             </div>
             <div className="space-y-1.5 max-w-md">
@@ -232,7 +232,7 @@ export const Section3Lookbook: React.FC<Section3LookbookProps> = ({
             {onRegenerate && (
               <button
                 onClick={() => onRegenerate(false)}
-                className="mt-2 rounded-full px-6 py-2.5 text-xs font-medium bg-stone-900 text-white hover:bg-stone-800 transition-all shadow-sm flex items-center gap-2 cursor-pointer"
+                className="mt-2 rounded-full px-6 py-2.5 text-xs font-medium bg-[#C26715] hover:bg-[#A85507] text-white transition-all shadow-sm flex items-center gap-2 cursor-pointer"
               >
                 <Sparkles className="w-3.5 h-3.5" />
                 <span>Tạo ảnh minh họa thực tế</span>
@@ -258,7 +258,7 @@ export const Section3Lookbook: React.FC<Section3LookbookProps> = ({
             {onRegenerate && (
               <button
                 onClick={() => onRegenerate(false)}
-                className="mt-2 rounded-full px-6 py-2.5 text-xs font-medium bg-indigo-600 text-white hover:bg-indigo-700 transition-all shadow-sm flex items-center gap-2 cursor-pointer"
+                className="mt-2 rounded-full px-6 py-2.5 text-xs font-medium bg-[#C26715] text-white hover:bg-[#A85507] transition-all shadow-sm flex items-center gap-2 cursor-pointer"
               >
                 <RotateCw className="w-3.5 h-3.5" />
                 <span>Tạo phương án khác</span>
@@ -284,7 +284,7 @@ export const Section3Lookbook: React.FC<Section3LookbookProps> = ({
             {onRegenerate && (
               <button
                 onClick={() => onRegenerate(false)}
-                className="mt-2 rounded-full px-5 py-2 text-xs font-medium bg-white text-stone-800 border border-stone-200 hover:border-indigo-300 hover:text-indigo-700 transition-all shadow-2xs flex items-center gap-1.5 cursor-pointer"
+                className="mt-2 rounded-full px-5 py-2 text-xs font-medium bg-white text-stone-800 border border-stone-200 hover:border-amber-400 hover:text-amber-900 transition-all shadow-2xs flex items-center gap-1.5 cursor-pointer"
               >
                 <RotateCw className="w-3.5 h-3.5" />
                 <span>Thử tạo lại</span>
@@ -297,10 +297,10 @@ export const Section3Lookbook: React.FC<Section3LookbookProps> = ({
         {lookbookState.status === 'generating' && !displayImageUrl && (
           <div className="flex flex-col items-center justify-center py-16 sm:py-24 space-y-6 text-center">
             <div className="relative w-64 sm:w-80 aspect-[2/3] rounded-3xl bg-[#F8F6F0] border border-stone-200/80 overflow-hidden flex flex-col items-center justify-center shadow-inner">
-              <div className="absolute inset-0 bg-gradient-to-tr from-indigo-100/30 via-stone-100/50 to-amber-50/20 animate-pulse" />
+              <div className="absolute inset-0 bg-gradient-to-tr from-amber-100/30 via-stone-100/50 to-amber-50/20 animate-pulse" />
               <div className="relative z-10 flex flex-col items-center space-y-3 p-6">
-                <div className="w-10 h-10 rounded-2xl bg-white/95 border border-indigo-100 flex items-center justify-center shadow-xs">
-                  <div className="w-5 h-5 rounded-full border-2 border-indigo-500 border-t-transparent animate-spin" />
+                <div className="w-10 h-10 rounded-2xl bg-white/95 border border-amber-200 flex items-center justify-center shadow-xs">
+                  <div className="w-5 h-5 rounded-full border-2 border-[#C26715] border-t-transparent animate-spin" />
                 </div>
                 <span className="text-xs font-semibold text-stone-700 tracking-tight">
                   Đang dựng bản phối…
@@ -377,7 +377,7 @@ export const Section3Lookbook: React.FC<Section3LookbookProps> = ({
                       onClick={() => onSelectRevision && onSelectRevision(rev.revisionIndex)}
                       className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                         isSelected
-                          ? 'bg-indigo-600 text-white shadow-2xs'
+                          ? 'bg-[#C26715] text-white shadow-2xs'
                           : 'text-stone-600 hover:text-stone-900 hover:bg-stone-200/60 font-medium'
                       }`}
                     >
@@ -422,7 +422,7 @@ export const Section3Lookbook: React.FC<Section3LookbookProps> = ({
                   {isGenerating && (
                     <div className="absolute inset-0 bg-stone-900/20 backdrop-blur-[1.5px] flex flex-col items-center justify-center gap-3">
                       <div className="w-10 h-10 rounded-2xl bg-white/95 border border-stone-200 flex items-center justify-center shadow-md">
-                        <div className="w-5 h-5 rounded-full border-2 border-indigo-600 border-t-transparent animate-spin" />
+                        <div className="w-5 h-5 rounded-full border-2 border-[#C26715] border-t-transparent animate-spin" />
                       </div>
                       <span className="text-xs font-semibold text-white px-3 py-1 rounded-full bg-stone-900/70 backdrop-blur-md shadow-xs">
                         Đang dựng bản phối…
@@ -461,7 +461,7 @@ export const Section3Lookbook: React.FC<Section3LookbookProps> = ({
                     <button
                       onClick={() => onRegenerate(true)}
                       disabled={isGenerating}
-                      className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-medium text-indigo-700 bg-indigo-50 hover:bg-indigo-100/80 border border-indigo-200/80 shadow-2xs transition-all cursor-pointer disabled:opacity-50"
+                      className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-medium text-amber-900 bg-amber-50 hover:bg-amber-100/80 border border-amber-300/80 shadow-2xs transition-all cursor-pointer disabled:opacity-50"
                     >
                       <RotateCw className={`w-3.5 h-3.5 ${isGenerating ? 'animate-spin' : ''}`} />
                       <span>Tạo phương án khác</span>
@@ -515,7 +515,7 @@ export const Section3Lookbook: React.FC<Section3LookbookProps> = ({
                               : 'Điểm nhấn';
                           const roleBadgeClass =
                             item.role === 'PRIMARY'
-                              ? 'bg-indigo-50 text-indigo-700 border-indigo-200/60'
+                              ? 'bg-amber-50 text-amber-900 border-amber-200/60'
                               : item.role === 'SUPPORTING'
                               ? 'bg-stone-100 text-stone-700 border-stone-200/60'
                               : 'bg-amber-50 text-amber-800 border-amber-200/60';

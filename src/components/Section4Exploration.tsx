@@ -75,7 +75,7 @@ export const Section4Exploration: React.FC<Section4ExplorationProps> = ({
       icon: ShieldCheck,
       accentBg: 'bg-amber-50/80 hover:bg-amber-50',
       accentBorder: 'border-amber-200/80',
-      badgeColor: 'text-amber-800 bg-amber-100/70 border-amber-300/80',
+      badgeColor: 'text-amber-900 bg-amber-100/80 border-amber-300/80',
       level: 'Nhẹ'
     },
     {
@@ -83,9 +83,9 @@ export const Section4Exploration: React.FC<Section4ExplorationProps> = ({
       title: 'Biến tấu hơn',
       subtitle: 'Biến tấu đương đại mạnh mẽ ở bảng màu, chất liệu và phụ kiện.',
       icon: Sparkles,
-      accentBg: 'bg-indigo-50/80 hover:bg-indigo-50',
-      accentBorder: 'border-indigo-200/80',
-      badgeColor: 'text-indigo-800 bg-indigo-100/70 border-indigo-300/80',
+      accentBg: 'bg-orange-50/60 hover:bg-orange-50/80',
+      accentBorder: 'border-orange-200/70',
+      badgeColor: 'text-amber-950 bg-amber-100/90 border-amber-300/80',
       level: 'Mạnh'
     },
     {
@@ -93,9 +93,9 @@ export const Section4Exploration: React.FC<Section4ExplorationProps> = ({
       title: 'Phối khác cùng tinh thần',
       subtitle: 'Gợi ý phối đồ mới mẻ, bất ngờ nhưng vẫn tương thích văn hóa.',
       icon: Compass,
-      accentBg: 'bg-violet-50/80 hover:bg-violet-50',
-      accentBorder: 'border-violet-200/80',
-      badgeColor: 'text-violet-800 bg-violet-100/70 border-violet-300/80',
+      accentBg: 'bg-stone-50 hover:bg-stone-100/70',
+      accentBorder: 'border-stone-200/80',
+      badgeColor: 'text-stone-800 bg-stone-100 border-stone-300/80',
       level: 'Vừa'
     }
   ];
@@ -109,7 +109,7 @@ export const Section4Exploration: React.FC<Section4ExplorationProps> = ({
       {/* Header */}
       <div className="space-y-1">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-xl bg-indigo-50 border border-indigo-200/80 flex items-center justify-center text-indigo-700 shadow-2xs">
+          <div className="w-8 h-8 rounded-xl bg-amber-50 border border-amber-200/80 flex items-center justify-center text-[#C26715] shadow-2xs">
             <Compass className="w-4 h-4" />
           </div>
           <h3 className="text-base sm:text-lg font-bold text-stone-900 tracking-tight">
@@ -162,7 +162,7 @@ export const Section4Exploration: React.FC<Section4ExplorationProps> = ({
               }}
               className={`rounded-2xl p-5 border transition-all duration-200 cursor-pointer flex flex-col justify-between gap-4 ${
                 isSelected
-                  ? 'bg-white border-2 border-indigo-400 shadow-md shadow-indigo-100/60 ring-2 ring-indigo-400/20'
+                  ? 'bg-white border-2 border-[#C26715] shadow-md shadow-amber-100/60 ring-2 ring-[#C26715]/20'
                   : `${card.accentBg} ${card.accentBorder} shadow-2xs hover:shadow-md`
               }`}
             >
@@ -183,15 +183,15 @@ export const Section4Exploration: React.FC<Section4ExplorationProps> = ({
                 </p>
               </div>
 
-              <div className="pt-2 border-t border-stone-200/60 flex items-center justify-between text-xs font-semibold text-indigo-950">
+              <div className="pt-2 border-t border-stone-200/60 flex items-center justify-between text-xs font-semibold text-stone-900">
                 <span className="flex items-center gap-1.5">
-                  <IconComp className="w-3.5 h-3.5 text-indigo-600" />
+                  <IconComp className="w-3.5 h-3.5 text-[#C26715]" />
                   <span>{hasResult ? 'Xem kết quả' : 'Khám phá hướng này'}</span>
                 </span>
                 {loading ? (
-                  <div className="w-4 h-4 rounded-full border-2 border-indigo-600 border-t-transparent animate-spin" />
+                  <div className="w-4 h-4 rounded-full border-2 border-[#C26715] border-t-transparent animate-spin" />
                 ) : (
-                  <ChevronRight className={`w-4 h-4 transition-transform ${isSelected ? 'translate-x-0.5 text-indigo-600' : 'text-stone-400'}`} />
+                  <ChevronRight className={`w-4 h-4 transition-transform ${isSelected ? 'translate-x-0.5 text-[#C26715]' : 'text-stone-400'}`} />
                 )}
               </div>
             </div>
@@ -201,10 +201,10 @@ export const Section4Exploration: React.FC<Section4ExplorationProps> = ({
 
       {/* Active Exploration Structured Diff View */}
       {activeIntentTab && activeCard && (
-        <div className="rounded-2xl p-5 sm:p-6 bg-gradient-to-br from-indigo-50/60 via-stone-50 to-stone-50 border border-indigo-200/80 space-y-5 animate-in fade-in duration-300">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-indigo-100 pb-4">
+        <div className="rounded-2xl p-5 sm:p-6 bg-gradient-to-br from-amber-50/40 via-stone-50 to-stone-50 border border-amber-200/80 space-y-5 animate-in fade-in duration-300">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-amber-200/60 pb-4">
             <div className="space-y-1">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-indigo-700 bg-indigo-100/70 px-2.5 py-0.5 rounded-full border border-indigo-200">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-amber-900 bg-amber-100/80 px-2.5 py-0.5 rounded-full border border-amber-300/70">
                 PHƯƠNG ÁN KHÁM PHÁ: {activeCard.title}
               </span>
               <h4 className="text-sm font-semibold text-stone-900">
@@ -219,17 +219,17 @@ export const Section4Exploration: React.FC<Section4ExplorationProps> = ({
                   onTriggerExploration(activeIntentTab);
                 }
               }}
-              className="rounded-full px-4 py-1.5 text-xs font-medium text-indigo-700 bg-white hover:bg-indigo-50 border border-indigo-200 shadow-2xs transition-colors flex items-center gap-1.5 shrink-0 cursor-pointer self-start sm:self-center"
+              className="rounded-full px-4 py-1.5 text-xs font-medium text-amber-900 bg-white hover:bg-amber-50/80 border border-amber-300/80 shadow-2xs transition-colors flex items-center gap-1.5 shrink-0 cursor-pointer self-start sm:self-center"
             >
-              <RefreshCw className={`w-3.5 h-3.5 ${isLoadingActive ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`w-3.5 h-3.5 text-[#C26715] ${isLoadingActive ? 'animate-spin' : ''}`} />
               <span>Tạo phương án khác cùng hướng</span>
             </button>
           </div>
 
           {isLoadingActive ? (
             <div className="py-12 flex flex-col items-center justify-center gap-3">
-              <div className="w-8 h-8 rounded-xl bg-indigo-50 border border-indigo-200 flex items-center justify-center shadow-sm">
-                <div className="w-4 h-4 rounded-full border-2 border-indigo-600 border-t-transparent animate-spin" />
+              <div className="w-8 h-8 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-center shadow-sm">
+                <div className="w-4 h-4 rounded-full border-2 border-[#C26715] border-t-transparent animate-spin" />
               </div>
               <span className="text-xs font-medium text-stone-600">
                 Đang tổng hợp phương án khám phá văn hóa...
@@ -239,7 +239,7 @@ export const Section4Exploration: React.FC<Section4ExplorationProps> = ({
             <div className="space-y-4">
               {/* Structured Diff Grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-                {/* GIỮ NGUYÊN */}
+                {/* GIỮ NGUYÊN (Heritage Green) */}
                 <div className="rounded-xl p-4 bg-white/90 border border-emerald-200/80 shadow-2xs space-y-2">
                   <div className="flex items-center gap-1.5 text-emerald-800 font-bold">
                     <span className="w-2 h-2 rounded-full bg-emerald-600" />
@@ -252,10 +252,10 @@ export const Section4Exploration: React.FC<Section4ExplorationProps> = ({
                   </ul>
                 </div>
 
-                {/* THAY ĐỔI */}
-                <div className="rounded-xl p-4 bg-white/90 border border-indigo-200/80 shadow-2xs space-y-2">
-                  <div className="flex items-center gap-1.5 text-indigo-800 font-bold">
-                    <span className="w-2 h-2 rounded-full bg-indigo-600" />
+                {/* THAY ĐỔI (Warm Amber / Gold) */}
+                <div className="rounded-xl p-4 bg-white/90 border border-amber-200/80 shadow-2xs space-y-2">
+                  <div className="flex items-center gap-1.5 text-amber-900 font-bold">
+                    <span className="w-2 h-2 rounded-full bg-amber-600" />
                     <span>THAY ĐỔI</span>
                   </div>
                   <div className="space-y-1.5 text-stone-700">
@@ -285,7 +285,7 @@ export const Section4Exploration: React.FC<Section4ExplorationProps> = ({
 
               {/* VÌ SAO & MỨC THAY ĐỔI */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
-                <div className="sm:col-span-2 rounded-xl p-4 bg-white/90 border border-indigo-100 shadow-2xs space-y-1.5">
+                <div className="sm:col-span-2 rounded-xl p-4 bg-white/90 border border-stone-200/80 shadow-2xs space-y-1.5">
                   <span className="font-bold text-stone-900 block">VÌ SAO (Lý giải phong cách):</span>
                   <p className="text-stone-600 leading-relaxed font-normal">
                     {activeExploration.stylingRationale}
@@ -295,10 +295,10 @@ export const Section4Exploration: React.FC<Section4ExplorationProps> = ({
                   </p>
                 </div>
 
-                <div className="rounded-xl p-4 bg-white/90 border border-indigo-100 shadow-2xs flex flex-col justify-between space-y-2">
+                <div className="rounded-xl p-4 bg-white/90 border border-stone-200/80 shadow-2xs flex flex-col justify-between space-y-2">
                   <div className="space-y-1">
                     <span className="font-bold text-stone-900 block">MỨC THAY ĐỔI:</span>
-                    <span className="inline-block px-2.5 py-1 rounded-full text-xs font-semibold bg-indigo-100 text-indigo-800 border border-indigo-200">
+                    <span className="inline-block px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-900 border border-amber-300">
                       {activeCard.level}
                     </span>
                   </div>
@@ -314,7 +314,7 @@ export const Section4Exploration: React.FC<Section4ExplorationProps> = ({
                   type="button"
                   onClick={() => onVisualizeExploration(activeExploration)}
                   disabled={isGeneratingLookbook}
-                  className="rounded-full px-6 py-2.5 bg-gradient-to-r from-indigo-600 via-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white text-xs font-semibold shadow-md shadow-indigo-200/50 flex items-center gap-2 cursor-pointer transition-all disabled:opacity-50"
+                  className="rounded-full px-6 py-2.5 bg-[#C26715] hover:bg-[#A85507] text-white text-xs font-semibold shadow-md shadow-[#C26715]/25 flex items-center gap-2 cursor-pointer transition-all disabled:opacity-50"
                 >
                   {isGeneratingLookbook ? (
                     <>

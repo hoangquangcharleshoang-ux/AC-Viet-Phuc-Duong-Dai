@@ -119,8 +119,8 @@ export const CANONICAL_GARMENT_TRAITS: Record<GarmentId, GarmentTraitSpec[]> = {
       claim_type: 'silhouette_geometry',
       evidence_status: 'VERIFIED',
       source_refs: ['SRC-03', 'SRC-05'],
-      descriptionVi: 'Thân áo buông suông thẳng đứng, tà xòe nhẹ tự nhiên không nhấn eo hay bóp hông kiểu âu phục.',
-      canonicalGuidance: 'Phom áo suông thẳng tự nhiên theo trục dọc, tuyệt đối không chích ben hay chiết eo bó sát phong cách áo dài tân thời.'
+      descriptionVi: 'Thân áo buông suông thẳng đứng (natural uncinched straight five-panel drape falling below the knees), tà xòe nhẹ tự nhiên không nhấn eo hay bóp hông kiểu âu phục.',
+      canonicalGuidance: 'Phom áo suông thẳng tự nhiên theo trục dọc (natural uncinched straight five-panel drape falling below the knees), tuyệt đối không chích ben hay chiết eo bó sát phong cách áo dài tân thời.'
     },
     {
       traitId: 'back_center_seam',
@@ -769,7 +769,7 @@ export function buildGroundedCorrectionPlan(
     }
   }
   if (activeAccessoryIds.length > 0) {
-    preservationConstraints.push(`Bảo toàn các phụ kiện đã phê duyệt trong bản phối: ${activeAccessoryIds.map(getAccessoryLabel).join(', ')}`);
+    preservationConstraints.push(`Bảo toàn các phụ kiện đã phê duyệt trong bản phối: ${activeAccessoryIds.map((id: string) => `${getAccessoryLabel(id)} (${id})`).join(', ')}`);
   }
   if (contextProps.length > 0) {
     const propDescs = contextProps.map((p: any) => p.description).join(', ');

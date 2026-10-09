@@ -141,9 +141,9 @@ export const CulturalQACard: React.FC<CulturalQACardProps> = ({
         };
       case 'CONTEXT_SENSITIVE':
         return {
-          badge: 'bg-indigo-50 text-indigo-800 border-indigo-200/80',
-          icon: <Sparkles className="w-4 h-4 text-indigo-600" />,
-          dot: 'bg-indigo-500',
+          badge: 'bg-amber-50 text-amber-900 border-amber-300/80',
+          icon: <Sparkles className="w-4 h-4 text-[#C26715]" />,
+          dot: 'bg-amber-500',
           desc: 'Trang phục giữ vững cốt lõi nhận diện, kết hợp hài hòa với các biến tấu thời trang đương đại.'
         };
       case 'WEAKENS_RECOGNIZABILITY':
@@ -210,7 +210,7 @@ export const CulturalQACard: React.FC<CulturalQACardProps> = ({
       case 'essential':
         return { label: 'Yếu tố cốt lõi', color: 'text-amber-800 bg-amber-50 border-amber-200/80' };
       case 'strongly_characteristic':
-        return { label: 'Đặc trưng nổi bật', color: 'text-indigo-800 bg-indigo-50 border-indigo-200/80' };
+        return { label: 'Đặc trưng nổi bật', color: 'text-amber-900 bg-amber-100/70 border-amber-300/80' };
       case 'supporting':
         return { label: 'Đặc trưng bổ trợ', color: 'text-stone-700 bg-stone-100 border-stone-200' };
       case 'variable':
@@ -278,15 +278,15 @@ export const CulturalQACard: React.FC<CulturalQACardProps> = ({
       {/* ------------------------------------------------------------------- */}
       {(qaState.status === 'loading' || qaState.status === 'idle') && (
         <div className="flex items-center gap-4 py-3">
-          <div className="w-10 h-10 rounded-2xl bg-indigo-50 border border-indigo-200/80 flex items-center justify-center shrink-0 shadow-2xs">
-            <div className="w-5 h-5 rounded-full border-2 border-indigo-600 border-t-transparent animate-spin" />
+          <div className="w-10 h-10 rounded-2xl bg-amber-50 border border-amber-200/80 flex items-center justify-center shrink-0 shadow-2xs">
+            <div className="w-5 h-5 rounded-full border-2 border-[#C26715] border-t-transparent animate-spin" />
           </div>
           <div className="space-y-1 min-w-0">
             <div className="flex items-center gap-2">
               <span className="text-xs font-semibold text-stone-900">
                 Đang đánh giá bản phối...
               </span>
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-indigo-50 text-indigo-700 border border-indigo-200 animate-pulse">
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-amber-50 text-amber-900 border border-amber-200 animate-pulse">
                 Gemini Vision
               </span>
             </div>
@@ -351,13 +351,13 @@ export const CulturalQACard: React.FC<CulturalQACardProps> = ({
               <>
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-stone-100">
                   <div className="flex items-start gap-3.5">
-                    <div className="w-10 h-10 rounded-2xl bg-indigo-50 border border-indigo-200/80 flex items-center justify-center shrink-0 shadow-2xs text-indigo-600">
-                      <Sparkles className="w-5 h-5 text-indigo-600" />
+                    <div className="w-10 h-10 rounded-2xl bg-amber-50 border border-amber-200/80 flex items-center justify-center shrink-0 shadow-2xs text-[#C26715]">
+                      <Sparkles className="w-5 h-5 text-[#C26715]" />
                     </div>
                     <div className="space-y-1">
                       <div className="flex flex-wrap items-center gap-2">
                         <span className="text-xs font-bold text-stone-900 tracking-tight">
-                          AC kiểm tra nhận diện văn hóa
+                          AC STYLIST ĐÁNH GIÁ · Kiểm tra nhận diện văn hóa
                         </span>
                         <span className="text-stone-300">•</span>
                         <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-stone-100 text-stone-700 border border-stone-200/80">
@@ -569,9 +569,9 @@ export const CulturalQACard: React.FC<CulturalQACardProps> = ({
                     type="button"
                     onClick={onTriggerRevision}
                     disabled={isGeneratingLookbook}
-                    className="rounded-full px-5 py-2 text-xs font-semibold bg-[#5457F5] hover:bg-[#474AE1] text-white shadow-sm shadow-[#5457F5]/25 hover:shadow-md flex items-center gap-2 shrink-0 cursor-pointer self-start sm:self-center transition-all disabled:opacity-50"
+                    className="rounded-full px-5 py-2 text-xs font-semibold bg-[#C26715] hover:bg-[#A85507] text-white shadow-sm shadow-[#C26715]/25 hover:shadow-md flex items-center gap-2 shrink-0 cursor-pointer self-start sm:self-center transition-all disabled:opacity-50"
                   >
-                    <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+                    <Sparkles className="w-3.5 h-3.5 text-amber-200" />
                     <span>Tinh chỉnh theo đánh giá</span>
                     <span className="text-[10px] text-white/80 font-normal">
                       (Lần {revisionIndex + 1}/2)
@@ -681,7 +681,7 @@ export const CulturalQACard: React.FC<CulturalQACardProps> = ({
                   <button
                     type="button"
                     onClick={() => setIsRefinementOpen(true)}
-                    className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-medium text-indigo-700 bg-indigo-50 hover:bg-indigo-100/80 border border-indigo-200/80 transition-colors cursor-pointer self-start sm:self-center"
+                    className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-medium text-amber-900 bg-amber-50/60 hover:bg-amber-100/70 border border-amber-300 transition-colors cursor-pointer self-start sm:self-center"
                   >
                     <span>Tự mô tả điều bạn muốn thay đổi ↓</span>
                   </button>
@@ -694,22 +694,22 @@ export const CulturalQACard: React.FC<CulturalQACardProps> = ({
             </div>
           ) : (
             /* Expanded Refinement Container */
-            <div className="p-4 sm:p-5 rounded-2xl bg-white border border-indigo-200/80 space-y-3.5 shadow-2xs animate-in fade-in duration-200">
+            <div className="p-4 sm:p-5 rounded-2xl bg-white border border-amber-200/80 space-y-3.5 shadow-2xs animate-in fade-in duration-200">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <div className="w-7 h-7 rounded-xl bg-indigo-50 text-indigo-700 flex items-center justify-center">
-                    <Sparkles className="w-4 h-4 text-indigo-600" />
+                  <div className="w-7 h-7 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center">
+                    <Sparkles className="w-4 h-4 text-amber-600" />
                   </div>
                   <div>
-                    <h4 className="text-xs font-bold text-stone-900">Tự mô tả điều bạn muốn thay đổi</h4>
+                    <h4 className="text-xs font-bold text-stone-900">Tinh chỉnh theo ý tôi</h4>
                     <p className="text-[11px] text-stone-500 font-normal">
-                      Thay đổi ánh sáng, bố cục, độ rủ vải hoặc dáng đứng (V0 → V1 → V2).
+                      Tự mô tả điều bạn muốn thay đổi: ánh sáng, bố cục, độ rủ vải hoặc dáng đứng (V0 → V1 → V2).
                     </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-indigo-50 text-indigo-800 border border-indigo-200/60">
-                    Lượt {revisionIndex}/2
+                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-amber-50 text-amber-800 border border-amber-200/60">
+                    Đã dùng {revisionIndex}/2 lượt tinh chỉnh
                   </span>
                   <button
                     type="button"
@@ -725,9 +725,9 @@ export const CulturalQACard: React.FC<CulturalQACardProps> = ({
                 <div className="space-y-3">
                   {refinementPreviewState === 'ready' && previewAnalysis ? (
                     /* STAGE 2: PREVIEW & CONFIRMATION / BLOCKING */
-                    <div className="p-3.5 rounded-xl bg-white border border-indigo-200 space-y-3 text-xs shadow-2xs animate-in fade-in duration-200">
-                      <div className="flex items-center justify-between border-b border-indigo-100 pb-2">
-                        <span className="font-semibold text-indigo-950">{previewAnalysis.title}</span>
+                    <div className="p-3.5 rounded-xl bg-white border border-amber-200/80 space-y-3 text-xs shadow-2xs animate-in fade-in duration-200">
+                      <div className="flex items-center justify-between border-b border-amber-100 pb-2">
+                        <span className="font-semibold text-amber-950">{previewAnalysis.title}</span>
                         <span
                           className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${
                             previewAnalysis.allowed
@@ -802,7 +802,7 @@ export const CulturalQACard: React.FC<CulturalQACardProps> = ({
                         )}
                       </div>
 
-                      <div className="flex items-center justify-between pt-2 border-t border-indigo-100 gap-2 flex-wrap sm:flex-nowrap">
+                      <div className="flex items-center justify-between pt-2 border-t border-amber-100 gap-2 flex-wrap sm:flex-nowrap">
                         <button
                           type="button"
                           onClick={() => {
@@ -823,7 +823,7 @@ export const CulturalQACard: React.FC<CulturalQACardProps> = ({
                               }
                             }}
                             disabled={isGeneratingLookbook}
-                            className="rounded-full px-5 py-2 text-xs font-semibold bg-[#5457F5] hover:bg-[#474AE1] text-white shadow-sm flex items-center gap-1.5 cursor-pointer disabled:opacity-50 transition-all"
+                            className="rounded-full px-5 py-2 text-xs font-semibold bg-[#C26715] hover:bg-[#A85507] text-white shadow-sm flex items-center gap-1.5 cursor-pointer disabled:opacity-50 transition-all"
                           >
                             {isGeneratingLookbook ? (
                               <>
@@ -845,9 +845,9 @@ export const CulturalQACard: React.FC<CulturalQACardProps> = ({
                                 document.getElementById('section-2-blueprint')?.scrollIntoView({ behavior: 'smooth' });
                                 if (onReturnToSandbox) onReturnToSandbox();
                               }}
-                              className="rounded-full px-3.5 py-1.5 text-xs font-semibold bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 flex items-center gap-1 cursor-pointer transition-all"
+                              className="rounded-full px-3.5 py-1.5 text-xs font-semibold bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 flex items-center gap-1 cursor-pointer transition-all"
                             >
-                              <ArrowRight className="w-3.5 h-3.5 text-indigo-600" />
+                              <ArrowRight className="w-3.5 h-3.5 text-[#C26715]" />
                               <span>Quay lại Bàn thiết kế (Step 3)</span>
                             </button>
                             <button
@@ -881,7 +881,7 @@ export const CulturalQACard: React.FC<CulturalQACardProps> = ({
                         }}
                         placeholder="VD: Tôi muốn ảnh sáng hơn, tà áo rủ tự nhiên hơn và dáng đứng thanh lịch hơn, nhưng vẫn giữ nguyên cấu trúc cổ và tay áo."
                         rows={2}
-                        className="w-full p-3 rounded-xl bg-stone-50/50 border border-stone-200 text-xs text-stone-800 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 resize-none shadow-2xs"
+                        className="w-full p-3 rounded-xl bg-stone-50/50 border border-stone-200 text-xs text-stone-800 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500 resize-none shadow-2xs"
                       />
 
                       {refinementError && (
@@ -903,8 +903,8 @@ export const CulturalQACard: React.FC<CulturalQACardProps> = ({
 
                         {isPolicyOpen && (
                           <div className="mt-2 p-3 rounded-xl bg-stone-50/70 border border-stone-200/70 text-[11px] space-y-1.5 text-stone-600 animate-in fade-in duration-150">
-                            <div className="flex items-center gap-1.5 text-indigo-900 font-semibold">
-                              <ShieldCheck className="w-3.5 h-3.5 text-indigo-600" />
+                            <div className="flex items-center gap-1.5 text-amber-950 font-semibold">
+                              <ShieldCheck className="w-3.5 h-3.5 text-[#C26715]" />
                               <span>Phạm vi điều chỉnh hình ảnh và giữ nguyên bản phối</span>
                             </div>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 text-[10px]">
@@ -942,7 +942,7 @@ export const CulturalQACard: React.FC<CulturalQACardProps> = ({
                             }, 300);
                           }}
                           disabled={!userRefinementInput.trim() || refinementPreviewState === 'analyzing'}
-                          className="rounded-full px-5 py-2 text-xs font-semibold bg-[#5457F5] hover:bg-[#474AE1] text-white shadow-sm flex items-center gap-1.5 cursor-pointer disabled:opacity-50 transition-all"
+                          className="rounded-full px-5 py-2 text-xs font-semibold bg-[#C26715] hover:bg-[#A85507] text-white shadow-sm flex items-center gap-1.5 cursor-pointer disabled:opacity-50 transition-all"
                         >
                           {refinementPreviewState === 'analyzing' ? (
                             <>
@@ -1025,7 +1025,7 @@ export const CulturalQACard: React.FC<CulturalQACardProps> = ({
                   onClick={() => setActiveTab('IDENTITY')}
                   className={`px-3.5 py-1.5 rounded-full text-xs transition-all cursor-pointer ${
                     activeTab === 'IDENTITY'
-                      ? 'bg-indigo-600 text-white font-semibold shadow-2xs'
+                      ? 'bg-[#C26715] text-white font-semibold shadow-2xs'
                       : 'text-stone-600 hover:text-stone-900 hover:bg-stone-100 font-medium'
                   }`}
                 >
@@ -1036,7 +1036,7 @@ export const CulturalQACard: React.FC<CulturalQACardProps> = ({
                   onClick={() => setActiveTab('FIDELITY')}
                   className={`px-3.5 py-1.5 rounded-full text-xs transition-all cursor-pointer ${
                     activeTab === 'FIDELITY'
-                      ? 'bg-indigo-600 text-white font-semibold shadow-2xs'
+                      ? 'bg-[#C26715] text-white font-semibold shadow-2xs'
                       : 'text-stone-600 hover:text-stone-900 hover:bg-stone-100 font-medium'
                   }`}
                 >
@@ -1048,7 +1048,7 @@ export const CulturalQACard: React.FC<CulturalQACardProps> = ({
                     onClick={() => setActiveTab('TRANSITIONS')}
                     className={`px-3.5 py-1.5 rounded-full text-xs transition-all cursor-pointer ${
                       activeTab === 'TRANSITIONS'
-                        ? 'bg-indigo-600 text-white font-semibold shadow-2xs'
+                        ? 'bg-[#C26715] text-white font-semibold shadow-2xs'
                         : 'text-stone-600 hover:text-stone-900 hover:bg-stone-100 font-medium'
                     }`}
                   >

@@ -109,8 +109,8 @@ export const TraitTransitionsView: React.FC<TraitTransitionsViewProps> = ({
         );
       case 'MAINTAINED_PASS':
         return (
-          <span className="inline-flex items-center gap-1 text-[11px] font-medium text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-full border border-indigo-200/60">
-            <ShieldCheck className="w-3 h-3 text-indigo-600" />
+          <span className="inline-flex items-center gap-1 text-[11px] font-medium text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/60">
+            <ShieldCheck className="w-3 h-3 text-emerald-600" />
             <span>Bảo toàn đạt chuẩn</span>
           </span>
         );
@@ -142,7 +142,7 @@ export const TraitTransitionsView: React.FC<TraitTransitionsViewProps> = ({
     <div className="p-4 rounded-2xl bg-stone-50/90 border border-stone-200/80 space-y-3 text-xs">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <TrendingUp className="w-4 h-4 text-indigo-600" />
+          <TrendingUp className="w-4 h-4 text-[#C26715]" />
           <span className="font-semibold text-stone-900">
             Chuyển dịch nhận diện giữa các phiên bản (v{previousRev.revisionIndex} → v{currentRev.revisionIndex})
           </span>

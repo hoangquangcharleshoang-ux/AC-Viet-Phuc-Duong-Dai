@@ -109,8 +109,8 @@ export async function verifyLookbookImage(
           bodySnippet: bodyText.slice(0, 150).replace(/\s+/g, ' ')
         });
 
-        const code = res.status === 504 ? 'QA_TIMEOUT' : 'QA_NON_JSON_RESPONSE';
-        const message = 'AC chưa thể hoàn tất đánh giá bản phối lúc này. Ảnh của bạn đã được tạo an toàn.';
+        const code = res.status === 504 ? 'QA_TIMEOUT' : 'NON_JSON_RESPONSE';
+        const message = 'AC chưa hoàn tất được phần đánh giá này. Ảnh của bạn đã được tạo an toàn.';
         throw new VisualQAError(code, message, res.status, true);
       }
 
