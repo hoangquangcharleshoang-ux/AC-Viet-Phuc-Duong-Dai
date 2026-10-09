@@ -3,8 +3,8 @@
  * Idle Session Timeout & Safe In-Flight Deferral Manager
  *
  * Requirements:
- * - 2m30s (150,000ms): Show warning "Phiên này sẽ bắt đầu lại sau 30 giây vì không có hoạt động."
- * - 3m00s (180,000ms): Invoke canonical Session Reset barrier.
+ * - 14m30s (870,000ms): Show warning "Phiên này sẽ bắt đầu lại sau 30 giây vì không có hoạt động."
+ * - 15m00s (900,000ms): Invoke canonical Session Reset barrier.
  * - User interactions reset idle clock (mousemove, mousedown, keydown, touchstart, scroll, click).
  * - React renders, state updates, network/websocket activity, QA/image completion DO NOT reset idle clock.
  * - In-flight work (Call A, Call B, Exploration, image generation, Visual QA) defers destructive reset until settled.
@@ -34,8 +34,8 @@ export class IdleSessionManager {
     onTriggerReset: () => void;
     isWorkInFlight: () => boolean;
   }) {
-    this.warningThresholdMs = options.warningThresholdMs ?? 150000;
-    this.resetThresholdMs = options.resetThresholdMs ?? 180000;
+    this.warningThresholdMs = options.warningThresholdMs ?? 870000;
+    this.resetThresholdMs = options.resetThresholdMs ?? 900000;
     this.checkIntervalMs = options.checkIntervalMs ?? 1000;
     this.onShowWarning = options.onShowWarning;
     this.onDismissWarning = options.onDismissWarning;

@@ -1375,8 +1375,8 @@ export default function App() {
     };
 
     const manager = new IdleSessionManager({
-      warningThresholdMs: 150000,
-      resetThresholdMs: 180000,
+      warningThresholdMs: 870000,
+      resetThresholdMs: 900000,
       checkIntervalMs: 1000,
       onShowWarning: () => {
         setIsIdleWarningOpen(true);
@@ -1385,7 +1385,7 @@ export default function App() {
         setIsIdleWarningOpen(false);
       },
       onTriggerReset: () => {
-        console.log('[IdleSessionManager] Triggering canonical session reset due to 3m inactivity');
+        console.log('[IdleSessionManager] Triggering canonical session reset due to 15m inactivity');
         handleConfirmReset();
       },
       isWorkInFlight
