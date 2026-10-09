@@ -43,6 +43,15 @@ export interface RouteTaskOptions<T> {
   candidateTimeoutCapMs?: number;
 }
 
+function sanitizeErrorMessage(msg: string): string {
+  if (!msg) return '';
+  return msg
+    .replace(/sk-[a-zA-Z0-9_\-]{10,}/g, 'sk-[REDACTED]')
+    .replace(/AIza[a-zA-Z0-9_\-]{30,}/g, 'AIza[REDACTED]')
+    .replace(/Bearer\s+[a-zA-Z0-9_\-\.]+/gi, 'Bearer [REDACTED]')
+    .replace(/apiKey\s*[:=]\s*["']?[^"'\s,]+/gi, 'apiKey:[REDACTED]');
+}
+
 export class ModelRouterError extends Error {
   status: number;
   code: string;
@@ -272,6 +281,16 @@ export async function routeGeminiTask<T>(options: RouteTaskOptions<T>): Promise<
         );
         candidateSuccess = true;
       } catch (firstErr: any) {
+        // Safe upstream diagnostic logging
+        console.error(`[ModelRouter] Upstream Inference Error (${candidateModel}):`, {
+          task,
+          requestId,
+          candidateModel,
+          status: firstErr?.status || firstErr?.statusCode || firstErr?.response?.status,
+          errorCode: firstErr?.code || firstErr?.error?.code,
+          errorType: firstErr?.type || firstErr?.error?.type,
+          messageSanitized: sanitizeErrorMessage(firstErr?.message || String(firstErr))
+        });
         // A. HARD INVARIANT 1: Client / Business Cancellation (NEVER penalize model health!)
         if (
           isCancelled() ||

@@ -26,9 +26,7 @@ app.use('/api', (req, res, next) => {
 app.use(express.static(path.resolve(__dirname, 'public')));
 
 // Initialize GoogleGenAI client (user-agent 'aistudio-build' is mandatory)
-const apiKey = process.env.GEMINI_API_KEY || '';
 const ai = new GoogleGenAI({
-  apiKey,
   httpOptions: {
     headers: {
       'User-Agent': 'aistudio-build'
@@ -54,17 +52,6 @@ app.use('/api', (req, res, next) => {
 app.post('/api/disambiguation-rationale', async (req, res) => {
   try {
     const { occasion, remix_intent, garments } = req.body;
-
-    if (!apiKey) {
-      return res.status(200).json({
-        rationale:
-          'Trong bối cảnh ' +
-          (occasion?.name || 'đã chọn') +
-          ' với định hướng ' +
-          (remix_intent || 'cân bằng') +
-          ', Áo tấc mang lại tính tôn nghiêm mực thước trong nghi lễ, trong khi Áo ngũ thân tay chẽn tối ưu cho sự năng động và linh hoạt di chuyển. Cả hai đều chia sẻ cấu trúc 5 thân cổ đứng chuẩn mực của triều Nguyễn.'
-      });
-    }
 
     const prompt = `Bạn là chuyên gia thẩm định và phân tích Việt phục của hệ thống AC (AI Arena Vietnam 2026).
 Dựa trên tài liệu gốc "AC — Research & Cultural Knowledge Master v1.0 FINAL":
@@ -122,15 +109,6 @@ app.post('/api/evaluate-linter', async (req, res) => {
   } = req.body;
 
   try {
-    if (!apiKey) {
-      // Deterministic fallback if API key is unconfigured
-      return res.status(200).json({
-        request_id,
-        state_version,
-        evaluation: getFallbackLinterResult(garment_base, interaction_event, context)
-      });
-    }
-
     const systemInstruction = `Bạn là Cultural Linter của hệ thống AC — Context-Aware Cultural Remix Co-pilot (AI Arena Vietnam 2026).
 Nhiệm vụ: Thẩm định văn hóa cho một thay đổi cấu kiện (slot interaction) trong trang phục Việt phục.
 
@@ -300,12 +278,6 @@ app.post('/api/synthesize-dossier', async (req, res) => {
   const { final_outfit_state, active_evaluations, context, evidence_anchors } = req.body;
 
   try {
-    if (!apiKey) {
-      return res.status(200).json({
-        dossier: getFallbackDossier(final_outfit_state, active_evaluations, context, evidence_anchors)
-      });
-    }
-
     const prompt = `Bạn là động cơ tổng hợp hồ sơ phục trang (Cultural Styling Dossier) của hệ thống AC.
 BẢN CHẤT: SYNTHESIS ONLY.
 Bạn CHỈ ĐƯỢC TỔNG HỢP từ dữ liệu thực tế sau đây, tuyệt đối không bịa đặt thêm phụ kiện hay chất liệu mà người dùng chưa chọn, không dùng thán từ sáo rỗng ("hoàn hảo tuyệt đối", "chuẩn mực nhất").
@@ -552,6 +524,7 @@ import {
 import { routeGeminiTask } from './server/services/modelRouter';
 import { TASK_A_MODEL_POOL, TASK_B_MODEL_POOL, TASK_C_MODEL_POOL } from './server/services/modelRegistry';
 import { compileVisualPrompt } from './server/services/visualPromptCompiler';
+import { GeminiImageProvider } from './server/services/geminiImageProvider';
 import { OpenAIImageProvider } from './server/services/openAIImageProvider';
 import { ephemeralImageStore } from './server/services/ephemeralImageStore';
 import { computeOutfitFingerprint } from './src/shared/fingerprint';
@@ -584,7 +557,9 @@ import type { ACChatRequestPayload, ACChatResponse, ACChatMutatePayload } from '
 // ==========================================
 // PHASE 2B & 2C CACHES & PROVIDER SETUP
 // ==========================================
-const imageProvider: ImageProvider = new OpenAIImageProvider();
+const providerType = (process.env.IMAGE_PROVIDER || 'gemini').toLowerCase();
+const imageProvider: ImageProvider =
+  providerType === 'openai' ? new OpenAIImageProvider() : new GeminiImageProvider();
 const generationInFlightByFingerprint = new Map<string, Promise<GenerateLookbookResponse>>();
 const serverVisualQACache = new Map<string, CulturalVisualQAOutput>();
 
@@ -675,15 +650,6 @@ app.post('/api/recommend-garment', async (req, res) => {
   // 1. Server Cache Check
   if (serverRecommendationCache.has(cacheKey)) {
     return res.status(200).json(serverRecommendationCache.get(cacheKey));
-  }
-
-  if (!apiKey) {
-    return res.status(500).json({
-      status: 500,
-      code: 'GEMINI_INFERENCE_ERROR',
-      message: 'GEMINI_API_KEY chưa được cấu hình trong môi trường server.',
-      retryable: false
-    });
   }
 
   try {
@@ -814,15 +780,6 @@ app.post('/api/generate-blueprint', async (req, res) => {
   const cached = serverBlueprintCache.get(cacheKey);
   if (cached && cached.garmentId === selectedGarmentId && cached.requestKey === cacheKey) {
     return res.status(200).json(cached.blueprint);
-  }
-
-  if (!apiKey) {
-    return res.status(500).json({
-      status: 500,
-      code: 'GEMINI_INFERENCE_ERROR',
-      message: 'GEMINI_API_KEY chưa được cấu hình trong môi trường server.',
-      retryable: false
-    });
   }
 
   try {
@@ -1038,15 +995,6 @@ app.post('/api/generate-exploration', async (req, res) => {
   const { selectedGarmentId, parentBlueprint, explorationIntent, context } = req.body;
   if (!selectedGarmentId || !parentBlueprint || !explorationIntent) {
     return res.status(400).json({ code: 'INVALID_EXPLORATION_REQUEST', message: 'Thiếu thông tin yêu cầu khám phá.' });
-  }
-
-  if (!apiKey) {
-    return res.status(500).json({
-      status: 500,
-      code: 'GEMINI_INFERENCE_ERROR',
-      message: 'GEMINI_API_KEY chưa được cấu hình trong môi trường server.',
-      retryable: false
-    });
   }
 
   try {
@@ -1715,48 +1663,6 @@ Trả về JSON cấu trúc đúng schema.`;
         requestId,
         isStillCurrent: () => !clientDisconnected && isTaskCurrent(),
         executeWithModel: async (modelId, isCanary, signal) => {
-          if (!apiKey) {
-            // Deterministic default mock evaluation when no API key is provided
-            const mockRawTraits: RawTraitEvidence[] = traitsToObserve.map(t => {
-              if (t.traitId === 'five_panels_inner_flap' || t.traitId === 'back_center_seam') {
-                return {
-                  traitId: t.traitId,
-                  verdict: 'NOT_ASSESSABLE',
-                  visualEvidence: 'Chi tiết nằm ở lớp bên trong/mặt sau, không thể quan sát từ góc chụp chính diện.'
-                };
-              }
-              return {
-                traitId: t.traitId,
-                verdict: 'PASS',
-                visualEvidence: `Quan sát thấy đặc trưng ${t.traitNameVi} thể hiện rõ ràng trên ảnh phục trang.`
-              };
-            });
-
-            const mockFidelity: RawOutfitFidelityEvidence = {
-              palette: {
-                primaryMatch: 'PASS',
-                supportingMatch: 'PASS',
-                accentMatch: 'PASS',
-                notes: 'Bảng màu hòa sắc chuẩn xác theo bản phối.'
-              },
-              fabricMatch: 'PASS',
-              lowerGarmentMatch: 'PASS',
-              footwearMatch: 'PASS',
-              expectedAccessories: (snapshot.remixProposal?.accessoryIds || []).map((id: string) => ({
-                accessoryId: id,
-                verdict: 'PASS',
-                notes: 'Phụ kiện thể hiện tương xứng.'
-              })),
-              unexpectedAccessories: []
-            };
-
-            const mockContextProps = snapshot.remixProposal?.contextProps || snapshot.contextProps || [];
-            const agg = aggregateCulturalVisualQA(garmentId, mockRawTraits, mockFidelity, generationId, boundFingerprint, mockContextProps);
-            const plan = buildGroundedCorrectionPlan(garmentId, agg, snapshot);
-            agg.groundedCorrectionPlan = plan;
-            return agg;
-          }
-
           const sdkStartTime = Date.now();
           const sdkPromise = ai.models.generateContent({
             model: modelId,
@@ -2419,28 +2325,6 @@ app.post('/api/ac-chat', async (req, res) => {
 
   const currentGarment = payload.contextState?.garmentId || 'ngu_than_chen';
   const requestId = `chat_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
-
-  // 2. Offline / No API Key Fallback
-  if (!apiKey) {
-    const fallbackResponse = getOfflineACChatResponse(message, payload.contextState);
-    if (fallbackResponse.action && payload.contextState?.blueprint && payload.chatSessionId) {
-      const reg = globalActionRegistry.registerAction({
-        chatSessionId: payload.chatSessionId,
-        sourceBlueprint: payload.contextState.blueprint,
-        action: fallbackResponse.action,
-        context: {
-          occasion: payload.contextState.occasion,
-          style: payload.contextState.style,
-          traditionalRatio: payload.contextState.traditionalRatio,
-          genderPresentation: payload.contextState.genderPresentation,
-          promptText: payload.contextState.promptText
-        }
-      });
-      fallbackResponse.action.actionId = reg.actionId;
-    }
-    console.log(`[AC Chat] Handled offline: requestId=${requestId}, chars=${message.length}, mode=${fallbackResponse.answerMode}`);
-    return res.status(200).json(fallbackResponse);
-  }
 
   try {
     let clientDisconnected = false;
