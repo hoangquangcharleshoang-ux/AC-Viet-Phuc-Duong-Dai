@@ -414,9 +414,16 @@ export const HeroHomepage: React.FC<HeroHomepageProps> = ({
               </div>
 
               {/* 2. Tên dáng áo */}
-              <h3 className="text-lg font-semibold text-stone-900 mt-4 mb-1.5 tracking-tight">
-                {garment.name}
-              </h3>
+              <div className="flex items-center justify-between mt-4 mb-1.5">
+                <h3 className="text-lg font-semibold text-stone-900 tracking-tight">
+                  {garment.name}
+                </h3>
+                {garment.id === 'ao_tu_than' && genderPresentation === 'nam' && (
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-amber-50 text-amber-800 border border-amber-200/80">
+                    Hồ sơ: Nữ
+                  </span>
+                )}
+              </div>
 
               {/* 3. Mô tả ngắn */}
               <p className="text-sm text-stone-500 leading-relaxed font-normal">

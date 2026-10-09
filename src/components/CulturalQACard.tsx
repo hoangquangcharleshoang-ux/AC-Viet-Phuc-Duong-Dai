@@ -1040,7 +1040,7 @@ export const CulturalQACard: React.FC<CulturalQACardProps> = ({
                       : 'text-stone-600 hover:text-stone-900 hover:bg-stone-100 font-medium'
                   }`}
                 >
-                  Độ tương khớp bản phối (Fidelity)
+                  Độ khớp với bản phối
                 </button>
                 {revisions.length > 1 && (
                   <button

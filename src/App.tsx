@@ -21,6 +21,7 @@ import {
   ACChatMessage,
   ACChatAction
 } from './types';
+import { isWearerGarmentEligible } from './shared/wearerGarmentPolicy';
 import { PALETTES } from './data/canonicalCatalog';
 import { Navbar } from './components/Navbar';
 import { HeroHomepage } from './components/HeroHomepage';
@@ -614,6 +615,23 @@ export default function App() {
 
   const handleExploreClick = () => {
     document.getElementById('section-garments')?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const handleGenderPresentationChange = (gender: GenderPresentation) => {
+    setDraftContext(p => ({ ...p, genderPresentation: gender }));
+    setActiveParams(p => ({ ...p, genderPresentation: gender }));
+    if (!isWearerGarmentEligible(selectedGarmentId, gender)) {
+      setSelectedGarmentId('ngu_than_chen');
+      setBlueprint(null);
+      setLookbookState({ status: 'idle' });
+      setVisualQAState({ status: 'idle' });
+      setExplorationResults({
+        MORE_TRADITIONAL: null,
+        MORE_REMIXED: null,
+        ALTERNATIVE: null
+      });
+      setRecommendation(null);
+    }
   };
 
   // Compute effective accessories for the current garment & committed context
@@ -1462,9 +1480,7 @@ export default function App() {
           sliderValue={draftContext.sliderValue}
           onSliderValueChange={val => setDraftContext(p => ({ ...p, sliderValue: val }))}
           genderPresentation={draftContext.genderPresentation || 'nam'}
-          onGenderChange={gender => {
-            setDraftContext(p => ({ ...p, genderPresentation: gender }));
-          }}
+          onGenderChange={handleGenderPresentationChange}
           onExploreClick={handleExploreClick}
           onSubmitOmnibox={handleOmniboxSubmit}
           isRecommending={isRecommending}
@@ -1554,10 +1570,7 @@ export default function App() {
             traditionalRatio={activeParams.traditionalRatio}
             promptText={activeParams.promptText}
             genderPresentation={draftContext.genderPresentation || activeParams.genderPresentation || 'nam'}
-            onGenderPresentationChange={gender => {
-              setDraftContext(p => ({ ...p, genderPresentation: gender }));
-              setActiveParams(p => ({ ...p, genderPresentation: gender }));
-            }}
+            onGenderPresentationChange={handleGenderPresentationChange}
             isLoading={isLoadingBlueprint}
             error={apiError?.failedStep === 'CALL_B' ? apiError : null}
             isRecommending={isRecommending}

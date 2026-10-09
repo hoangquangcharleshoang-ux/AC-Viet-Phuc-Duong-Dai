@@ -168,60 +168,45 @@ export function validateAndEnforceRecommendationPolicy(
   let primary = { ...result.primary };
   let alternative = result.alternative ? { ...result.alternative } : null;
 
-  // RULE 1: Explicit Male Wearer + Áo tứ thân check
+  // RULE 1: Explicit Male Wearer + Áo tứ thân check (BLOCKED in grounded MVP corpus)
   if (wearer === 'nam') {
-    const hasExplicitRemix = isMaleTuThanExplicitRemix(context.promptText);
-
     if (primary.garmentId === 'ao_tu_than') {
-      if (hasExplicitRemix) {
-        // Explicit contemporary reinterpretation allowed, but rationale must label it clearly
-        const labelPrefix = '[Tiếp biến đương đại] ';
-        const rationaleText = primary.rationale.includes('đương đại') || primary.rationale.includes('cách tân')
-          ? primary.rationale
-          : `${labelPrefix}Phương án áo tứ thân cách tân cho nam giới theo định hướng tiếp biến sáng tạo. Lưu ý: Trong tư liệu lịch sử Bắc Bộ hiện tại, áo tứ thân chưa xác lập quy chế mặc mặc định cho nam giới; đây là thiết kế thử nghiệm đương đại.`;
-        primary.rationale = rationaleText.startsWith(labelPrefix) ? rationaleText : labelPrefix + rationaleText;
+      if (alternative && (alternative.garmentId === 'ngu_than_chen' || alternative.garmentId === 'ao_tac')) {
+        primary = {
+          garmentId: alternative.garmentId,
+          rationale: alternative.rationale || (
+            alternative.garmentId === 'ao_tac'
+              ? 'Áo tấc (Ngũ thân tay thụng) là lễ phục truyền thống mực thước, trang trọng và có chứng cứ lịch sử xác thực cho nam giới.'
+              : 'Áo ngũ thân tay chẽn là cấu hình tiện phục mực thước, di chuyển linh hoạt và có chứng cứ lịch sử xác thực cho nam giới.'
+          )
+        };
+        alternative = null;
       } else {
-        // NOT explicit: Must NOT auto-recommend ao_tu_than as historical male dress
-        // Fall back to alternative if valid, otherwise choose best policy-valid garment
-        if (alternative && (alternative.garmentId === 'ngu_than_chen' || alternative.garmentId === 'ao_tac')) {
+        const isCeremonial = occasion === 'tet_temple' || occasion === 'cultural_wedding' || occasion === 'tet';
+        if (isCeremonial) {
           primary = {
-            garmentId: alternative.garmentId,
-            rationale: alternative.rationale || (
-              alternative.garmentId === 'ao_tac'
-                ? 'Áo tấc (Ngũ thân tay thụng) là lễ phục truyền thống mực thước, trang trọng và có chứng cứ lịch sử xác thực cho nam giới.'
-                : 'Áo ngũ thân tay chẽn là cấu hình tiện phục mực thước, di chuyển linh hoạt và có chứng cứ lịch sử xác thực cho nam giới.'
-            )
+            garmentId: 'ao_tac',
+            rationale: 'Áo tấc (Ngũ thân tay thụng) là lễ phục truyền thống mực thước, trang trọng và có chứng cứ lịch sử xác thực cho nam giới trong các dịp lễ nghi.'
           };
-          alternative = null;
+          alternative = {
+            garmentId: 'ngu_than_chen',
+            rationale: 'Áo ngũ thân tay chẽn là phương án thường phục gọn gàng, năng động và giàu bản sắc cho nam giới.'
+          };
         } else {
-          // No valid alternative: determine best based on occasion solemnity
-          const isCeremonial = occasion === 'tet_temple' || occasion === 'cultural_wedding' || occasion === 'tet';
-          if (isCeremonial) {
-            primary = {
-              garmentId: 'ao_tac',
-              rationale: 'Áo tấc (Ngũ thân tay thụng) là lễ phục truyền thống mực thước, trang trọng và có chứng cứ lịch sử xác thực cho nam giới trong các dịp lễ nghi.'
-            };
-            alternative = {
-              garmentId: 'ngu_than_chen',
-              rationale: 'Áo ngũ thân tay chẽn là phương án thường phục gọn gàng, năng động và giàu bản sắc cho nam giới.'
-            };
-          } else {
-            primary = {
-              garmentId: 'ngu_than_chen',
-              rationale: 'Áo ngũ thân tay chẽn là cấu hình tiện phục mực thước, di chuyển linh hoạt và có chứng cứ lịch sử xác thực cho nam giới.'
-            };
-            alternative = {
-              garmentId: 'ao_tac',
-              rationale: 'Áo tấc là lựa chọn bổ trợ nếu bạn muốn tăng thêm tính trang nghiêm cho buổi gặp gỡ.'
-            };
-          }
+          primary = {
+            garmentId: 'ngu_than_chen',
+            rationale: 'Áo ngũ thân tay chẽn là cấu hình tiện phục mực thước, di chuyển linh hoạt và có chứng cứ lịch sử xác thực cho nam giới.'
+          };
+          alternative = {
+            garmentId: 'ao_tac',
+            rationale: 'Áo tấc là lựa chọn bổ trợ nếu bạn muốn tăng thêm tính trang nghiêm cho buổi gặp gỡ.'
+          };
         }
       }
     }
 
-    // Sanitize alternative for male wearer
-    if (alternative && alternative.garmentId === 'ao_tu_than' && !hasExplicitRemix) {
-      // Do not offer male tứ thân as alternative without explicit remix
+    // Sanitize alternative for male wearer if it is ao_tu_than
+    if (alternative && alternative.garmentId === 'ao_tu_than') {
       alternative = primary.garmentId === 'ao_tac'
         ? {
             garmentId: 'ngu_than_chen',

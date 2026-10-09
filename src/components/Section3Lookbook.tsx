@@ -406,11 +406,6 @@ export const Section3Lookbook: React.FC<Section3LookbookProps> = ({
                     loading="eager"
                   />
 
-                  {/* Dimension / Orientation Subtle Tag */}
-                  <div className="absolute top-3.5 left-3.5 px-2.5 py-1 rounded-full text-[10px] font-medium bg-stone-900/60 text-white/90 backdrop-blur-md border border-white/10 shadow-xs pointer-events-none">
-                    Tỷ lệ 3:4
-                  </div>
-
                   {/* Stale Overlay Badge */}
                   {isDisplayStale && !isGenerating && (
                     <div className="absolute bottom-3.5 left-3.5 px-3 py-1 rounded-full text-[11px] font-medium bg-amber-500/90 text-white backdrop-blur-md shadow-xs pointer-events-none">
@@ -472,13 +467,10 @@ export const Section3Lookbook: React.FC<Section3LookbookProps> = ({
 
               {/* RIGHT: DETAILS PANEL — EDITORIAL “OUTFIT RECIPE” */}
               <div className="lg:col-span-6 rounded-3xl p-6 sm:p-7 bg-white border border-[#E8E3DC] shadow-2xs space-y-4">
-                <div className="flex items-center justify-between border-b border-[#E8E3DC] pb-3">
+                <div className="border-b border-[#E8E3DC] pb-3">
                   <h3 className="text-base font-bold text-stone-900 tracking-tight">
                     Bản phối của bạn
                   </h3>
-                  <span className="text-[11px] font-medium text-stone-500">
-                    Bản phối được dựng
-                  </span>
                 </div>
 
                 {displaySnapshot ? (

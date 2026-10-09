@@ -71,7 +71,7 @@ export const Section4Exploration: React.FC<Section4ExplorationProps> = ({
     {
       intent: 'MORE_TRADITIONAL',
       title: 'Gần truyền thống hơn',
-      subtitle: 'Tăng cường chuẩn mực canonical và tôn trọng chất liệu nguyên bản.',
+      subtitle: 'Đưa tổng thể về gần phom dáng và chất liệu truyền thống hơn.',
       icon: ShieldCheck,
       accentBg: 'bg-amber-50/80 hover:bg-amber-50',
       accentBorder: 'border-amber-200/80',

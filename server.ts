@@ -8,6 +8,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import 'dotenv/config';
 import { GoogleGenAI, Type } from '@google/genai';
+import { isWearerGarmentEligible, getWearerIncompatibilityMessage } from './src/shared/wearerGarmentPolicy.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -765,6 +766,14 @@ app.post('/api/generate-blueprint', async (req, res) => {
   const effectiveGender: GenderPresentation = genderPresentation || 'nam';
   const effectiveRatio = typeof traditionalRatio === 'number' ? traditionalRatio : 50;
 
+  if (!isWearerGarmentEligible(selectedGarmentId, effectiveGender)) {
+    return res.status(422).json({
+      code: 'WEARER_GARMENT_INCOMPATIBLE',
+      message: getWearerIncompatibilityMessage(selectedGarmentId, effectiveGender),
+      fallbackGarmentId: 'ngu_than_chen'
+    });
+  }
+
   const cacheKey = [
     selectedGarmentId,
     (promptText || '').trim().toLowerCase(),
@@ -996,6 +1005,15 @@ app.post('/api/generate-exploration', async (req, res) => {
     return res.status(400).json({ code: 'INVALID_EXPLORATION_REQUEST', message: 'Thiếu thông tin yêu cầu khám phá.' });
   }
 
+  const effectiveExpGender: GenderPresentation = context?.genderPresentation || parentBlueprint?.wearerGender || 'nam';
+  if (!isWearerGarmentEligible(selectedGarmentId, effectiveExpGender)) {
+    return res.status(422).json({
+      code: 'WEARER_GARMENT_INCOMPATIBLE',
+      message: getWearerIncompatibilityMessage(selectedGarmentId, effectiveExpGender),
+      fallbackGarmentId: 'ngu_than_chen'
+    });
+  }
+
   try {
     const result = await routeGeminiTask({
       task: 'EXPLORATION',
@@ -1184,6 +1202,13 @@ app.post('/api/generate-lookbook', async (req, res) => {
   } = req.body || {};
 
   const effectiveGender = genderPresentation || context?.genderPresentation || 'nam';
+  if (!isWearerGarmentEligible(garmentId, effectiveGender)) {
+    return res.status(422).json({
+      code: 'WEARER_GARMENT_INCOMPATIBLE',
+      message: getWearerIncompatibilityMessage(garmentId, effectiveGender),
+      fallbackGarmentId: 'ngu_than_chen'
+    });
+  }
   const isRevision = typeof revisionIndex === 'number' && revisionIndex > 0;
   if (typeof revisionIndex === 'number' && revisionIndex > 2) {
     return res.status(400).json({
