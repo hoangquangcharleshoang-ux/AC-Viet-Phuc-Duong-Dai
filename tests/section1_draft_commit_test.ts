@@ -1,6 +1,6 @@
 /**
  * AC — Section 1 Draft/Commit Flow & Repeated CTA Hang Behavioral Test Suite
- * MOCK MODE: ZERO LIVE GEMINI OR OPENAI CALLS
+ * MOCK MODE: ZERO LIVE EXTERNAL AI CALLS
  *
  * Verifies:
  * 1. Changing gender mutates draftContext only and performs 0 API calls.

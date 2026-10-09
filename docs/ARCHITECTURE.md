@@ -66,7 +66,7 @@ Key services include:
 - `server/services/quotaQuarantine.ts`
 - `server/services/culturalPolicyService.ts`
 - `server/services/visualPromptCompiler.ts`
-- `server/services/openAIImageProvider.ts`
+- `server/services/geminiImageProvider.ts`
 - `server/services/ephemeralImageStore.ts`
 - `server/services/visualQAAggregator.ts`
 - `server/services/acChatService.ts`
@@ -88,7 +88,7 @@ Recommendation, Blueprint, Exploration Blueprint, and AC Chat currently use `gem
 ### Gemini Visual QA
 Separate perception workload with independently benchmarked routing.
 
-### OpenAI image provider
+### Gemini image provider
 Renders visual output from an explicit brief.
 
 The image provider is not cultural authority.

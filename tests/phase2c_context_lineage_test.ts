@@ -2,7 +2,7 @@
  * AC — Context-Aware Cultural Remix Co-pilot
  * Phase 2C Context Stabilization & Visualization Lineage Test Suite
  *
- * MOCK MODE: ZERO LIVE GEMINI OR OPENAI CALLS
+ * MOCK MODE: ZERO LIVE EXTERNAL AI CALLS
  *
  * Verifies:
  * 1. Gender-first Context Invalidation & Fingerprint Versioning

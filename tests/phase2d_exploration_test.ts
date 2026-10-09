@@ -1,6 +1,6 @@
 /**
  * AC — Phase 2D Guided Exploration Test Suite
- * MOCK MODE: ZERO LIVE GEMINI OR OPENAI CALLS
+ * MOCK MODE: ZERO LIVE EXTERNAL AI CALLS
  *
  * Verifies:
  * 1. Exploration runs only after explicit user action.

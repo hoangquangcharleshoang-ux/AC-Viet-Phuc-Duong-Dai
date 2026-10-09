@@ -7,7 +7,7 @@
  * - Guided Exploration Accessory Policy
  * - Visual Prompt Compiler Guardrails
  *
- * MOCK MODE: Zero live Gemini or OpenAI calls
+ * MOCK MODE: Zero live external AI calls
  */
 
 import {
@@ -30,7 +30,7 @@ function assert(condition: boolean, message: string) {
 async function runTestSuite() {
   console.log('========================================================');
   console.log('RUNNING G2 CULTURAL PRODUCT RULES v1.1 RUNTIME TEST SUITE');
-  console.log('MOCK MODE: ZERO LIVE GEMINI OR OPENAI CALLS');
+  console.log('MOCK MODE: ZERO LIVE EXTERNAL AI CALLS');
   console.log('========================================================\n');
 
   // -------------------------------------------------------------------------

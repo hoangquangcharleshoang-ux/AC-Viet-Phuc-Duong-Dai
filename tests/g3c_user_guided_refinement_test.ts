@@ -2,7 +2,7 @@
  * AC — Context-Aware Cultural Remix Co-pilot
  * Phase 3C: G3C User-Guided Refinement & V0/V1/V2 Fix Test Suite
  *
- * MOCK ONLY: ZERO LIVE GEMINI OR OPENAI CALLS.
+ * MOCK ONLY: ZERO LIVE EXTERNAL AI CALLS.
  * Validates:
  * 1. Root V0 successfully unlocks user-guided V1.
  * 2. Successful V1 successfully unlocks user-guided V2.
@@ -40,7 +40,7 @@ function record(code: string, name: string, pass: boolean, evidence: string) {
 async function runTestSuite() {
   console.log('================================================================');
   console.log('RUNNING G3C USER-GUIDED REFINEMENT & V0/V1/V2 TEST SUITE');
-  console.log('MOCK MODE: ZERO LIVE GEMINI OR OPENAI CALLS');
+  console.log('MOCK MODE: ZERO LIVE EXTERNAL AI CALLS');
   console.log('================================================================\n');
 
   const appTs = fs.readFileSync(path.resolve(__dirname, '../src/App.tsx'), 'utf8');

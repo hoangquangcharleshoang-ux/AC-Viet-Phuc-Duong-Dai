@@ -525,7 +525,6 @@ import { routeGeminiTask } from './server/services/modelRouter';
 import { TASK_A_MODEL_POOL, TASK_B_MODEL_POOL, TASK_C_MODEL_POOL } from './server/services/modelRegistry';
 import { compileVisualPrompt } from './server/services/visualPromptCompiler';
 import { GeminiImageProvider } from './server/services/geminiImageProvider';
-import { OpenAIImageProvider } from './server/services/openAIImageProvider';
 import { ephemeralImageStore } from './server/services/ephemeralImageStore';
 import { computeOutfitFingerprint } from './src/shared/fingerprint';
 import { ImageProviderError, ImageProvider } from './server/services/imageProvider';
@@ -557,9 +556,7 @@ import type { ACChatRequestPayload, ACChatResponse, ACChatMutatePayload } from '
 // ==========================================
 // PHASE 2B & 2C CACHES & PROVIDER SETUP
 // ==========================================
-const providerType = (process.env.IMAGE_PROVIDER || 'gemini').toLowerCase();
-const imageProvider: ImageProvider =
-  providerType === 'openai' ? new OpenAIImageProvider() : new GeminiImageProvider();
+const imageProvider: ImageProvider = new GeminiImageProvider();
 const generationInFlightByFingerprint = new Map<string, Promise<GenerateLookbookResponse>>();
 const serverVisualQACache = new Map<string, CulturalVisualQAOutput>();
 
@@ -1169,7 +1166,7 @@ Trả về JSON theo schema yêu cầu gồm:
  * Pipeline:
  * Validated Effective Blueprint -> Recompute Fingerprint (409 if stale)
  * -> Ephemeral Cache Check -> In-Flight Dedup -> VisualPromptCompiler
- * -> ImageProvider (OpenAI) -> EphemeralImageStore -> Response
+ * -> ImageProvider (Gemini) -> EphemeralImageStore -> Response
  */
 app.post('/api/generate-lookbook', async (req, res) => {
   const {

@@ -2,7 +2,7 @@
  * AC — Context-Aware Cultural Remix Co-pilot
  * Phase 2C: Cultural Visual QA Acceptance Test Suite
  *
- * MOCK ONLY: ZERO LIVE GEMINI OR OPENAI CALLS.
+ * MOCK ONLY: ZERO LIVE EXTERNAL AI CALLS.
  */
 
 import {
@@ -43,7 +43,7 @@ function record(num: number, name: string, pass: boolean, evidence: string) {
 async function runTestSuite() {
   console.log('========================================================');
   console.log('RUNNING PHASE 2C CULTURAL VISUAL QA TEST SUITE');
-  console.log('MOCK MODE: ZERO LIVE GEMINI OR OPENAI CALLS');
+  console.log('MOCK MODE: ZERO LIVE EXTERNAL AI CALLS');
   console.log('========================================================\n');
 
   const serverTs = fs.readFileSync(path.resolve(__dirname, '../server.ts'), 'utf8');
@@ -412,7 +412,7 @@ async function runTestSuite() {
   // Automated Structural Parity & Server Ceiling Test:
   // 1. Verifies 100% of trait IDs, categories, and evidence statuses across canonical sources
   // 2. Verifies PASS, PARTIAL, FAIL, NOT_ASSESSABLE observation criteria and blind spot rules
-  // 3. Verifies server independently rejects revisionIndex > 2 with HTTP 400 REVISION_LIMIT_EXCEEDED (0 OpenAI calls)
+  // 3. Verifies server independently rejects revisionIndex > 2 with HTTP 400 REVISION_LIMIT_EXCEEDED (0 provider calls)
   const visualQAStandardMd = fs.readFileSync(path.resolve(__dirname, '../AC — Visual QA Standard v1.0.md'), 'utf8');
   const allGarmentIds: GarmentId[] = ['ngu_than_chen', 'ao_tac', 'ao_tu_than'];
   let totalTraitCount = 0;
@@ -513,7 +513,7 @@ async function runTestSuite() {
     20,
     'HYDRATION_RECOVERY_EXPIRED_IMAGE_410_INVARIANT',
     t20Pass,
-    'Hydrate expired image (HTTP 410) -> Client sets error state, 0 provider calls, 0 OpenAI calls'
+    'Hydrate expired image (HTTP 410) -> Client sets error state, 0 provider calls, 0 provider calls'
   );
 
   // ----------------------------------------------------

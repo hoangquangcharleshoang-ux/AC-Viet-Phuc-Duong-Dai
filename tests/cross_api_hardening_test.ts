@@ -1,7 +1,7 @@
 /**
  * AC — Context-Aware Cultural Remix Co-pilot
  * Cross-API Client Hardening & Recommendation Retry Lifecycle Regression Test Suite
- * MOCK ONLY: ZERO LIVE GEMINI OR OPENAI CALLS.
+ * MOCK ONLY: ZERO LIVE EXTERNAL AI CALLS.
  */
 
 import { recommendGarment, generateBlueprint, generateExplorationBlueprint, resetClientQuotaCooldown, ApiError } from '../src/services/geminiService';
@@ -10,7 +10,7 @@ import { verifyLookbookImage } from '../src/services/visualQAService';
 async function runTests() {
   console.log('========================================================');
   console.log('RUNNING CROSS-API HARDENING & RETRY LIFECYCLE TEST SUITE');
-  console.log('MOCK MODE: ZERO LIVE GEMINI OR OPENAI CALLS');
+  console.log('MOCK MODE: ZERO LIVE EXTERNAL AI CALLS');
   console.log('========================================================');
 
   const tests: Array<{ name: string; test: () => Promise<void> }> = [

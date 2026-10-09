@@ -1,7 +1,7 @@
 /**
  * AC — Context-Aware Cultural Remix Co-pilot
  * Phase 2C Semantic Consistency Test Suite (Cultural QA × Outfit Fidelity × Grounded Correction)
- * MOCK ONLY: ZERO LIVE GEMINI OR OPENAI CALLS.
+ * MOCK ONLY: ZERO LIVE EXTERNAL AI CALLS.
  */
 
 import { aggregateCulturalVisualQA, buildGroundedCorrectionPlan } from '../server/services/visualQAAggregator';
@@ -28,7 +28,7 @@ function record(num: number, name: string, pass: boolean, evidence: string) {
 async function runSemanticTests() {
   console.log('========================================================');
   console.log('RUNNING PHASE 2C SEMANTIC CONSISTENCY TEST SUITE');
-  console.log('MOCK MODE: ZERO LIVE GEMINI OR OPENAI CALLS');
+  console.log('MOCK MODE: ZERO LIVE EXTERNAL AI CALLS');
   console.log('========================================================\n');
 
   const garmentId: GarmentId = 'ao_tac';

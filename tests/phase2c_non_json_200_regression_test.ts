@@ -1,7 +1,7 @@
 /**
  * AC — Context-Aware Cultural Remix Co-pilot
  * Phase 2C Non-JSON 200 Regression & Routing Test
- * MOCK ONLY: ZERO LIVE GEMINI OR OPENAI CALLS.
+ * MOCK ONLY: ZERO LIVE EXTERNAL AI CALLS.
  */
 
 import fs from 'fs';
@@ -14,7 +14,7 @@ const __dirname = path.dirname(__filename);
 async function runRegressionTest() {
   console.log('========================================================');
   console.log('RUNNING PHASE 2C NON-JSON 200 & API ROUTING REGRESSION TEST');
-  console.log('MOCK MODE: ZERO LIVE GEMINI OR OPENAI CALLS');
+  console.log('MOCK MODE: ZERO LIVE EXTERNAL AI CALLS');
   console.log('========================================================\n');
 
   const serverTs = fs.readFileSync(path.resolve(__dirname, '../server.ts'), 'utf8');

@@ -2,7 +2,7 @@
  * AC — Context-Aware Cultural Remix Co-pilot
  * Phase 2B.1 Strict Acceptance Test Suite
  *
- * MOCK ONLY: Strictly ZERO live calls to Gemini or OpenAI.
+ * MOCK ONLY: Strictly ZERO live external AI calls.
  */
 
 import { computeOutfitFingerprint } from '../src/shared/fingerprint';
@@ -65,7 +65,7 @@ function record(num: number, name: string, pass: boolean, evidence: string) {
 async function runTestSuite() {
   console.log('========================================================');
   console.log('RUNNING PHASE 2B.1 COMPREHENSIVE ACCEPTANCE TEST SUITE');
-  console.log('MOCK MODE: ZERO LIVE GEMINI OR OPENAI CALLS');
+  console.log('MOCK MODE: ZERO LIVE EXTERNAL AI CALLS');
   console.log('========================================================\n');
 
   // Sample data
@@ -339,14 +339,12 @@ async function runTestSuite() {
   // ----------------------------------------------------
   // TEST 18: PORTRAIT_PROVIDER_PARAMS
   // ----------------------------------------------------
-  const providerTs = fs.readFileSync(path.resolve(__dirname, '../server/services/openAIImageProvider.ts'), 'utf8');
+  const providerTs = fs.readFileSync(path.resolve(__dirname, '../server/services/geminiImageProvider.ts'), 'utf8');
   const t18Pass =
-    providerTs.includes("size: '1024x1536'") &&
-    providerTs.includes("quality: 'low'") &&
-    providerTs.includes("output_format: 'jpeg'") &&
-    !providerTs.includes("response_format: 'b64_json'") &&
-    !providerTs.includes("response_format: 'url'");
-  record(18, 'PORTRAIT_PROVIDER_PARAMS', t18Pass, `Provider configured with portrait 1024x1536, low quality, jpeg output, 0 response_format`);
+    providerTs.includes('GeminiImageProvider') &&
+    providerTs.includes('IMAGE_API_KEY') &&
+    providerTs.includes('transformToTrue3x4');
+  record(18, 'PORTRAIT_PROVIDER_PARAMS', t18Pass, `Provider configured with GeminiImageProvider and transformToTrue3x4`);
 
   // ----------------------------------------------------
   // TEST 19: EDITORIAL_DESKTOP_LAYOUT
@@ -452,7 +450,7 @@ async function runTestSuite() {
   const t30Pass =
     !storedJson.includes('sk-') &&
     !storedJson.includes('GEMINI_API_KEY') &&
-    !storedJson.includes('OPENAI_API_KEY') &&
+    !storedJson.includes('IMAGE_API_KEY') &&
     !storedJson.includes('data:image') &&
     !storedJson.includes('"bytes":');
   record(30, 'STORAGE_SECURITY', t30Pass, `Serialized session inspected: 0 API keys, 0 Authorization tokens, 0 base64, 0 Buffers`);

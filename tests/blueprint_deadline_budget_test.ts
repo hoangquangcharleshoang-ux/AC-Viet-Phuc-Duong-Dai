@@ -1,7 +1,7 @@
 /**
  * AC — Context-Aware Cultural Remix Co-pilot
  * Blueprint Deadline, Budget & Loading Determinism Test Suite
- * MOCK ONLY: ZERO LIVE GEMINI OR OPENAI CALLS.
+ * MOCK ONLY: ZERO LIVE EXTERNAL AI CALLS.
  */
 
 import { ROUTER_CONFIG } from '../server/services/geminiErrorClassifier';
@@ -30,7 +30,7 @@ function record(num: number, name: string, pass: boolean, evidence: string) {
 async function runTests() {
   console.log('========================================================');
   console.log('RUNNING BLUEPRINT DEADLINE, BUDGET & LOADING TEST SUITE');
-  console.log('MOCK MODE: ZERO LIVE GEMINI OR OPENAI CALLS');
+  console.log('MOCK MODE: ZERO LIVE EXTERNAL AI CALLS');
   console.log('========================================================\n');
 
   // 1. Test Call B Deadline Config (Must be <= 16s to avoid outer 20s proxy collision)

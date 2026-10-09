@@ -2,7 +2,7 @@
  * AC — Context-Aware Cultural Remix Co-pilot
  * Phase 2A.5R: Gemini Router Runtime Optimization Acceptance Test Suite
  *
- * Strictly Mock-Only: ZERO live Gemini or OpenAI calls.
+ * Strictly Mock-Only: ZERO live external AI calls.
  */
 
 import { routeGeminiTask, ModelRouterError } from '../server/services/modelRouter';
@@ -39,7 +39,7 @@ async function runTestSuite() {
   clearQuotaBlocks();
   console.log('========================================================');
   console.log('RUNNING PHASE 2A.5R ROUTER OPTIMIZATION TEST SUITE');
-  console.log('MOCK MODE: ZERO LIVE GEMINI OR OPENAI CALLS');
+  console.log('MOCK MODE: ZERO LIVE EXTERNAL AI CALLS');
   console.log('========================================================\n');
 
   // ----------------------------------------------------
@@ -557,12 +557,12 @@ async function runTestSuite() {
   // ----------------------------------------------------
   // TEST 28: PHASE_2B_REGRESSION
   // ----------------------------------------------------
-  const openAITs = fs.readFileSync(path.resolve(__dirname, '../server/services/openAIImageProvider.ts'), 'utf8');
+  const geminiProviderTs = fs.readFileSync(path.resolve(__dirname, '../server/services/geminiImageProvider.ts'), 'utf8');
   const t28Pass =
-    openAITs.includes("size: '1024x1536'") &&
-    openAITs.includes("output_format: 'jpeg'") &&
-    !openAITs.includes("response_format:");
-  record(28, 'PHASE_2B_REGRESSION', t28Pass, 'Phase 2B image provider architecture and portrait 1024x1536 config untouched');
+    geminiProviderTs.includes('GeminiImageProvider') &&
+    geminiProviderTs.includes('IMAGE_API_KEY') &&
+    geminiProviderTs.includes('transformToTrue3x4');
+  record(28, 'PHASE_2B_REGRESSION', t28Pass, 'Phase 2B image provider architecture and Gemini provider config untouched');
 
   // ----------------------------------------------------
   // TEST 29: PHASE_2B1_REGRESSION
@@ -1124,13 +1124,13 @@ async function runTestSuite() {
   );
 
   // ----------------------------------------------------
-  // TEST 54: RESET_MAKES_ZERO_OPENAI_CALLS
+  // TEST 54: RESET_MAKES_ZERO_PROVIDER_CALLS
   // ----------------------------------------------------
   record(
     54,
-    'RESET_MAKES_ZERO_OPENAI_CALLS',
+    'RESET_MAKES_ZERO_PROVIDER_CALLS',
     true,
-    'Session reset makes 0 calls to OpenAI or image generation endpoints'
+    'Session reset makes 0 calls to external provider or image generation endpoints'
   );
 
   // ----------------------------------------------------

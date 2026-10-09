@@ -1,6 +1,6 @@
 /**
  * AC — Phase 2D v2 Lineage, Gender Preservation & UX Regression Test Suite
- * MOCK MODE: ZERO LIVE GEMINI OR OPENAI CALLS
+ * MOCK MODE: ZERO LIVE EXTERNAL AI CALLS
  */
 
 import {
@@ -104,7 +104,7 @@ function createSnapshotFromExploration(
 async function runTests() {
   console.log('========================================================');
   console.log('RUNNING PHASE 2D v2 LINEAGE & GENDER PRESERVATION TESTS');
-  console.log('MOCK MODE: ZERO LIVE GEMINI OR OPENAI CALLS');
+  console.log('MOCK MODE: ZERO LIVE EXTERNAL AI CALLS');
   console.log('========================================================');
 
   // 1. female root → MORE_TRADITIONAL → branch snapshot female

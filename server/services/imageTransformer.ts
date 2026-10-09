@@ -2,7 +2,7 @@
  * AC — Context-Aware Cultural Remix Co-pilot
  * Image Aspect Ratio Transformation Utility
  *
- * Converts source portrait images (1024x1536 from OpenAI API)
+ * Converts source portrait images (1024x1536 from image generation gateway)
  * into true 3:4 aspect ratio Lookbook assets (1152x1536).
  *
  * Subject Safety Rules:

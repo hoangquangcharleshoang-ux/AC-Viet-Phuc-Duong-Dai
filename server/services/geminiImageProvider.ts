@@ -1,9 +1,9 @@
 /**
  * AC — Context-Aware Cultural Remix Co-pilot
- * Configurable OpenAI-Compatible Image Generation Provider
+ * Configurable Image Generation Provider
  *
  * Configured Image API Transport:
- * - Uses neutral OpenAI-compatible HTTP request transport (POST /v1/images/generations)
+ * - Uses neutral HTTP request transport (POST /v1/images/generations)
  * - Server-side only (IMAGE_API_KEY never exposed to frontend)
  * - Configured model: process.env.IMAGE_PROVIDER_MODEL ?? 'req/gemini-3.0-pro-image'
  * - Native 3:4 aspect ratio support
@@ -249,7 +249,7 @@ export class GeminiImageProvider implements ImageProvider {
         const sanitizedErrMsg = sanitizeErrorMessage(rawErrMsg);
 
         console.error('[GeminiImageProvider] Generation Error:', {
-          stage: 'openai_compatible_images_api',
+          stage: 'image_gateway_api',
           endpoint,
           model: this.model,
           httpStatus: status,

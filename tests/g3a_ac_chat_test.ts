@@ -2,7 +2,7 @@
  * AC — Context-Aware Cultural Remix Co-pilot
  * Phase 3A: AC Chat Assistant Test Suite
  *
- * MOCK ONLY: ZERO LIVE GEMINI OR OPENAI CALLS.
+ * MOCK ONLY: ZERO LIVE EXTERNAL AI CALLS.
  */
 
 import fs from 'fs';
@@ -42,7 +42,7 @@ function record(code: string, name: string, pass: boolean, evidence: string) {
 async function runTestSuite() {
   console.log('================================================================');
   console.log('RUNNING G3A AC CHAT ASSISTANT TEST SUITE');
-  console.log('MOCK MODE: ZERO LIVE GEMINI OR OPENAI CALLS');
+  console.log('MOCK MODE: ZERO LIVE EXTERNAL AI CALLS');
   console.log('================================================================\n');
 
   const serverTs = fs.readFileSync(path.resolve(__dirname, '../server.ts'), 'utf8');

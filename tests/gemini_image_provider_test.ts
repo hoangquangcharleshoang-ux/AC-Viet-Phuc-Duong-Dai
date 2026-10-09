@@ -66,16 +66,14 @@ async function runTests() {
     results.push({ name: 'TEST_02_MISSING_BASE_URL_GUARD', passed: false, message: err.message });
   }
 
-  // Test 3: No fallback to GEMINI_API_KEY or OPENAI_API_KEY when IMAGE_API_KEY is absent
+  // Test 3: No fallback to GEMINI_API_KEY when IMAGE_API_KEY is absent
   try {
     const oldGeminiKey = process.env.GEMINI_API_KEY;
     const oldCustomKey = process.env.CUSTOM_GEMINI_API_KEY;
-    const oldOpenAIKey = process.env.OPENAI_API_KEY;
     const oldImageKey = process.env.IMAGE_API_KEY;
 
     process.env.GEMINI_API_KEY = 'fake-gemini-key';
     process.env.CUSTOM_GEMINI_API_KEY = 'fake-custom-key';
-    process.env.OPENAI_API_KEY = 'fake-openai-key';
     delete process.env.IMAGE_API_KEY;
 
     const provider = new GeminiImageProvider({ baseUrl: 'https://example.com' });
@@ -87,14 +85,13 @@ async function runTests() {
       threw = true;
       assert(err.code === 'IMAGE_PROVIDER_NOT_CONFIGURED', 'Must fail fast when IMAGE_API_KEY is missing');
     }
-    assert(threw, 'Must not fallback to GEMINI_API_KEY or OPENAI_API_KEY');
+    assert(threw, 'Must not fallback to GEMINI_API_KEY');
 
     if (oldGeminiKey) process.env.GEMINI_API_KEY = oldGeminiKey; else delete process.env.GEMINI_API_KEY;
     if (oldCustomKey) process.env.CUSTOM_GEMINI_API_KEY = oldCustomKey; else delete process.env.CUSTOM_GEMINI_API_KEY;
-    if (oldOpenAIKey) process.env.OPENAI_API_KEY = oldOpenAIKey; else delete process.env.OPENAI_API_KEY;
     if (oldImageKey) process.env.IMAGE_API_KEY = oldImageKey; else delete process.env.IMAGE_API_KEY;
 
-    results.push({ name: 'TEST_03_NO_FALLBACK_TO_OTHER_KEYS', passed: true, message: 'Strictly rejects fallbacks to GEMINI_API_KEY, CUSTOM_GEMINI_API_KEY, or OPENAI_API_KEY' });
+    results.push({ name: 'TEST_03_NO_FALLBACK_TO_OTHER_KEYS', passed: true, message: 'Strictly rejects fallbacks to GEMINI_API_KEY or CUSTOM_GEMINI_API_KEY' });
   } catch (err: any) {
     results.push({ name: 'TEST_03_NO_FALLBACK_TO_OTHER_KEYS', passed: false, message: err.message });
   }

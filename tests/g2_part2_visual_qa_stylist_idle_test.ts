@@ -9,7 +9,7 @@
  * - Visual QA Technical Unavailable State
  * - Idle Session 2m30s Warning / 3m00s Reset & In-Flight Safe Deferral
  *
- * MOCK ONLY: ZERO LIVE GEMINI OR OPENAI CALLS.
+ * MOCK ONLY: ZERO LIVE EXTERNAL AI CALLS.
  */
 
 import {
@@ -57,7 +57,7 @@ function record(code: string, name: string, pass: boolean, detail: string) {
 async function runG2Part2Suite() {
   console.log('================================================================');
   console.log('RUNNING G2 PART 2 TEST SUITE (VISUAL QA + STYLIST + IDLE SESSION)');
-  console.log('MOCK MODE: ZERO LIVE GEMINI OR OPENAI CALLS');
+  console.log('MOCK MODE: ZERO LIVE EXTERNAL AI CALLS');
   console.log('================================================================\n');
 
   const serverTs = fs.readFileSync(path.resolve(__dirname, '../server.ts'), 'utf8');

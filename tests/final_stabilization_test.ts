@@ -1,7 +1,7 @@
 /**
  * AC — Context-Aware Cultural Remix Co-pilot
  * Final Runtime Stabilization & Quota/QA/API Isolation Test Suite
- * MOCK ONLY: ZERO LIVE GEMINI OR OPENAI CALLS.
+ * MOCK ONLY: ZERO LIVE EXTERNAL AI CALLS.
  */
 
 import fs from 'fs';
@@ -35,7 +35,7 @@ function record(num: number, name: string, pass: boolean, evidence: string) {
 async function runStabilizationTests() {
   console.log('========================================================');
   console.log('RUNNING FINAL RUNTIME STABILIZATION TEST SUITE');
-  console.log('MOCK MODE: ZERO LIVE GEMINI OR OPENAI CALLS');
+  console.log('MOCK MODE: ZERO LIVE EXTERNAL AI CALLS');
   console.log('========================================================\n');
 
   // 1. Test Persistent Quota Block & Metadata Extraction

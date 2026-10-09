@@ -49,7 +49,7 @@ Historical facts, interpretations, and contemporary styling recommendations must
 flowchart TD
     A[User Context] --> B[Call A: Garment Recommendation]
     B --> C[Call B: Structured Blueprint]
-    C --> D[OpenAI Image Rendering]
+    C --> D[Gemini Image Rendering]
     D --> E[Visual QA]
     E --> F[AC Stylist]
     F --> G{Next action}
@@ -64,7 +64,7 @@ flowchart TD
 - **Blueprint / Call B:** `gemini-3.5-flash-lite` only
 - **Guided Exploration Blueprint:** `gemini-3.5-flash-lite` only
 - **Visual QA:** separate task-specific Gemini pool; benchmarked independently
-- **Image generation:** OpenAI image provider configured through environment variables
+- **Image generation:** Gemini image provider configured through environment variables
 
 Image models are rendering/editing services only. They are never cultural authorities.
 
@@ -99,7 +99,6 @@ These files exist to prevent repeated regressions and accidental changes to lock
 - Vite
 - Express
 - `@google/genai`
-- OpenAI API
 - Sharp
 - Tailwind CSS
 
@@ -120,10 +119,8 @@ Current variables include:
 ```env
 GEMINI_API_KEY=
 APP_URL=
-OPENAI_API_KEY=
-IMAGE_PROVIDER=openai
-IMAGE_PROVIDER_MODEL=gpt-image-2.5-flare
-IMAGE_GENERATION_TIMEOUT_MS=120000
+IMAGE_PROVIDER=gemini
+IMAGE_GENERATION_TIMEOUT_MS=110000
 IMAGE_EPHEMERAL_TTL_MS=900000
 ```
 

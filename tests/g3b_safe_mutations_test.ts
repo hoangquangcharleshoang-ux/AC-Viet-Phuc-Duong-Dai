@@ -2,7 +2,7 @@
  * AC — Context-Aware Cultural Remix Co-pilot
  * Phase 3B: G3B Safe Mutations Test Suite
  *
- * MOCK ONLY: ZERO LIVE GEMINI OR OPENAI CALLS.
+ * MOCK ONLY: ZERO LIVE EXTERNAL AI CALLS.
  * Validates:
  * 1. Action Registry existence, fields & ephemeral state
  * 2. Immutable sourceBlueprint normalization
@@ -59,7 +59,7 @@ function record(code: string, name: string, pass: boolean, evidence: string) {
 async function runTestSuite() {
   console.log('================================================================');
   console.log('RUNNING G3B SAFE MUTATIONS (ACTIONABLE DELTA) TEST SUITE');
-  console.log('MOCK MODE: ZERO LIVE GEMINI OR OPENAI CALLS');
+  console.log('MOCK MODE: ZERO LIVE EXTERNAL AI CALLS');
   console.log('================================================================\n');
 
   const serverTs = fs.readFileSync(path.resolve(__dirname, '../server.ts'), 'utf8');

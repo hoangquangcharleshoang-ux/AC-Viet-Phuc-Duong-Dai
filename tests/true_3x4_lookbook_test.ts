@@ -1,6 +1,6 @@
 /**
  * AC — True 3:4 Lookbook Output & Framing Verification Test Suite
- * MOCK MODE: ZERO LIVE GEMINI OR OPENAI CALLS
+ * MOCK MODE: ZERO LIVE EXTERNAL AI CALLS
  *
  * Verifies:
  * 1. Final Lookbook asset has true 3:4 dimensions (1152x1536, ratio = 0.75).
@@ -44,7 +44,7 @@ async function runTests() {
   // TEST 1: Final Lookbook asset has true 3:4 dimensions
   // -----------------------------------------------------------------------------
   try {
-    // Simulate raw 1024x1536 JPEG source buffer from OpenAI API
+    // Simulate raw 1024x1536 JPEG source buffer from image gateway API
     const rawSourceBuffer = await sharp({
       create: {
         width: 1024,
@@ -204,7 +204,7 @@ async function runTests() {
   try {
     // Assert sharp-based image processing runs entirely in-memory without external HTTP calls
     const mockProviderCalls = 0;
-    assert(mockProviderCalls === 0, 'Zero live OpenAI or Gemini provider calls executed');
+    assert(mockProviderCalls === 0, 'Zero live provider calls executed');
 
     results.push({
       id: 'TEST_06_ZERO_LIVE_CALLS',
