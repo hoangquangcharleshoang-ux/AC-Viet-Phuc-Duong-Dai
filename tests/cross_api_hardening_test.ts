@@ -177,6 +177,7 @@ async function runTests() {
           await generateExplorationBlueprint({
             selectedGarmentId: 'ao_tac',
             parentBlueprint: {} as any,
+            parentOutfitFingerprint: 'test_parent_fp',
             explorationIntent: 'MORE_TRADITIONAL',
             context: {
               promptText: 'test',

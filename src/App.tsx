@@ -122,7 +122,19 @@ export default function App() {
   const hydratedQARecoveredRef = useRef<Set<string>>(new Set());
   const hydratedFromPersistenceGenIdRef = useRef<string | null>(null);
 
-  // Phase 2D: Guided Exploration State
+  // Phase 2D: Guided Exploration State & Root Anchor Preservation
+  interface RootAnchorSnapshot {
+    blueprint: BlueprintOutput;
+    outfitFingerprint: string;
+    lookbookState: LookbookGenerationState;
+    activeRevisionIndex: number;
+    visualQAState: VisualQAState;
+    activeRevisions: LookbookRevisionItem[];
+    explorationTitle: string;
+    explorationIntent: ExplorationIntent;
+  }
+
+  const [rootAnchor, setRootAnchor] = useState<RootAnchorSnapshot | null>(null);
   const [explorationResults, setExplorationResults] = useState<Record<ExplorationIntent, ExplorationBlueprintResult | null>>({
     MORE_TRADITIONAL: null,
     MORE_REMIXED: null,
@@ -278,9 +290,11 @@ export default function App() {
     if (!blueprint) return;
     setIsExploring(prev => ({ ...prev, [intent]: true }));
     try {
+      const parentFp = rootAnchor?.outfitFingerprint || currentOutfitFingerprint;
       const expResult = await generateExplorationBlueprint({
         selectedGarmentId,
         parentBlueprint: blueprint,
+        parentOutfitFingerprint: parentFp,
         explorationIntent: intent,
         context: {
           promptText: activeParams.promptText,
@@ -291,17 +305,59 @@ export default function App() {
         }
       });
       setExplorationResults(prev => ({ ...prev, [intent]: expResult }));
-    } catch (err) {
+    } catch (err: any) {
       console.error(`[Exploration] Failed for intent ${intent}:`, err);
+      if (err?.code === 'EXPLORATION_NO_DIVERGENCE' || err?.status === 422) {
+        setApiError({
+          code: 'EXPLORATION_NO_DIVERGENCE',
+          message: 'Bản phối khám phá chưa tạo ra khác biệt với bản phối gốc.',
+          retryable: false,
+          failedStep: 'CALL_B'
+        });
+      }
     } finally {
       setIsExploring(prev => ({ ...prev, [intent]: false }));
     }
   };
 
   const handleVisualizeExploration = async (expResult: ExplorationBlueprintResult) => {
+    const titles: Record<ExplorationIntent, string> = {
+      MORE_TRADITIONAL: 'Gần truyền thống hơn',
+      MORE_REMIXED: 'Biến tấu hơn',
+      ALTERNATIVE: 'Phối khác cùng tinh thần'
+    };
+    const explorationTitle = titles[expResult.explorationIntent] || 'Khám phá';
+
+    // 1. Capture Root Anchor before switching view state if not currently exploring
+    if (!rootAnchor && blueprint) {
+      setRootAnchor({
+        blueprint: JSON.parse(JSON.stringify(blueprint)),
+        outfitFingerprint: currentOutfitFingerprint,
+        lookbookState: { ...lookbookState },
+        activeRevisionIndex,
+        visualQAState: { ...visualQAState },
+        activeRevisions: [...activeRevisions],
+        explorationTitle,
+        explorationIntent: expResult.explorationIntent
+      });
+    }
+
+    // 2. Client-side divergence guard against root
+    const rootFp = rootAnchor?.outfitFingerprint || currentOutfitFingerprint;
+    if (expResult.resultingOutfitFingerprint === rootFp) {
+      setApiError({
+        code: 'EXPLORATION_NO_DIVERGENCE',
+        message: 'Bản phối khám phá chưa tạo ra khác biệt với bản phối gốc.',
+        retryable: false,
+        failedStep: 'CALL_B'
+      });
+      return;
+    }
+
     setBlueprint(expResult.blueprint);
     setCurrentOutfitFingerprint(expResult.resultingOutfitFingerprint);
     const branchGender = expResult.wearerGender || activeParams.genderPresentation || 'nam';
+
     await handleGenerateLookbook({
       garmentId: selectedGarmentId,
       remixProposal: expResult.blueprint.remixProposal,
@@ -317,6 +373,36 @@ export default function App() {
       revisionIndex: 0,
       parentGenerationId: undefined
     }, true);
+
+    setTimeout(() => {
+      document.getElementById('section-lookbook')?.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
+  };
+
+  const handleReturnToRoot = () => {
+    if (!rootAnchor) return;
+
+    // Abort any pending Visual QA for the exploration branch
+    if (activeVisualQAAbortControllerRef.current) {
+      activeVisualQAAbortControllerRef.current.abort();
+      activeVisualQAAbortControllerRef.current = null;
+    }
+
+    // Reset active refs to Root fingerprint and active generation ID
+    activeLookbookFingerprintRef.current = rootAnchor.outfitFingerprint;
+    const rootActiveGenId =
+      rootAnchor.lookbookState.status === 'success'
+        ? rootAnchor.lookbookState.generationId
+        : (rootAnchor.activeRevisions.find(r => r.revisionIndex === rootAnchor.activeRevisionIndex)?.generationId || '');
+    activeVisualQAGenerationIdRef.current = rootActiveGenId;
+
+    setBlueprint(rootAnchor.blueprint);
+    setCurrentOutfitFingerprint(rootAnchor.outfitFingerprint);
+    setLookbookState(rootAnchor.lookbookState);
+    setActiveRevisionIndex(rootAnchor.activeRevisionIndex);
+    setVisualQAState(rootAnchor.visualQAState);
+    setActiveRevisions(rootAnchor.activeRevisions);
+    setRootAnchor(null);
 
     setTimeout(() => {
       document.getElementById('section-lookbook')?.scrollIntoView({ behavior: 'smooth' });
@@ -608,6 +694,7 @@ export default function App() {
 
       console.log('[BlueprintUI] RESPONSE_APPLIED', { requestId, garmentId });
       setBlueprint(blueprintData);
+      setRootAnchor(null);
     } catch (err: any) {
       if (
         err?.name === 'AbortError' ||
@@ -726,6 +813,7 @@ export default function App() {
 
     setSelectedGarmentId(garmentId);
     setBlueprint(null);
+    setRootAnchor(null);
     setApiError(null);
 
     // Call B is triggered with the new garmentId (Session cache avoids redundant API calls)
@@ -1200,6 +1288,7 @@ export default function App() {
     // D. Reset React product state
     setRecommendation(null);
     setBlueprint(null);
+    setRootAnchor(null);
     setLookbookState({ status: 'idle' });
     setVisualQAState({ status: 'idle' });
     setExplorationResults({
@@ -1456,6 +1545,7 @@ export default function App() {
               setActiveParams(p => ({ ...p, genderPresentation: gender }));
             }}
             isLoading={isLoadingBlueprint}
+            error={apiError?.failedStep === 'CALL_B' ? apiError : null}
             isRecommending={isRecommending}
             isGeneratingLookbook={lookbookState.status === 'generating'}
             activeAccessories={effectiveActiveAccessories}
@@ -1540,21 +1630,26 @@ export default function App() {
             onTriggerUserGuidedRevision={handleTriggerUserGuidedRevision}
             onRetryRevision={handleRetryRevision}
             onSelectRevision={handleSelectRevision}
+            isExploringBranch={Boolean(rootAnchor)}
+            explorationTitle={rootAnchor?.explorationTitle}
+            onReturnToRoot={handleReturnToRoot}
           />
         )}
 
         {/* Phase 2D: Section 4 — Guided Exploration (Gated on root V0 existence for current committed Blueprint) */}
         {(() => {
-          const currentThreadForFingerprint = getThreadForFingerprint(currentOutfitFingerprint);
+          const isExploringBranch = Boolean(rootAnchor);
+          const activeFp = rootAnchor ? rootAnchor.outfitFingerprint : currentOutfitFingerprint;
+          const currentThreadForFingerprint = getThreadForFingerprint(activeFp);
           const rootV0ExistsForCurrentBlueprint = Boolean(
+            isExploringBranch ||
             (lookbookState.status === 'success' &&
               lookbookState.outfitFingerprint === currentOutfitFingerprint &&
               Boolean(lookbookState.imageUrl)) ||
             (currentThreadForFingerprint &&
-              currentThreadForFingerprint.boundFingerprint === currentOutfitFingerprint &&
+              currentThreadForFingerprint.boundFingerprint === activeFp &&
               currentThreadForFingerprint.revisions.some(r => r.revisionIndex === 0 && Boolean(r.imageUrl)) &&
-              lookbookState.status !== 'idle' &&
-              lookbookState.outfitFingerprint === currentOutfitFingerprint)
+              lookbookState.status !== 'idle')
           );
 
           return (
@@ -1569,6 +1664,9 @@ export default function App() {
                 onTriggerExploration={handleTriggerExploration}
                 onVisualizeExploration={handleVisualizeExploration}
                 isGeneratingLookbook={lookbookState.status === 'generating'}
+                isExploringBranch={isExploringBranch}
+                explorationTitle={rootAnchor?.explorationTitle}
+                onReturnToRoot={handleReturnToRoot}
               />
             )
           );

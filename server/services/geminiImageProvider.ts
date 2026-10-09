@@ -57,9 +57,9 @@ export class GeminiImageProvider implements ImageProvider {
       (envModel && envModel.trim().length > 0 && !envModel.toLowerCase().includes('gpt')
         ? envModel.trim()
         : 'req/gemini-3.0-pro-image');
-    this.timeoutMs =
-      config?.timeoutMs ||
-      parseInt(process.env.IMAGE_GENERATION_TIMEOUT_MS || '120000', 10);
+    const envTimeoutRaw = process.env.IMAGE_GENERATION_TIMEOUT_MS;
+    const parsedEnvTimeout = envTimeoutRaw ? parseInt(envTimeoutRaw, 10) : 110000;
+    this.timeoutMs = config?.timeoutMs || (parsedEnvTimeout > 110000 ? 110000 : parsedEnvTimeout);
 
     this.apiKeyPresent = Boolean(this.apiKey && this.apiKey.trim().length > 0);
     this.baseUrlPresent = Boolean(this.baseUrl && this.baseUrl.trim().length > 0);
@@ -99,6 +99,8 @@ export class GeminiImageProvider implements ImageProvider {
     const { prompt } = input;
     let attempt = 0;
     const maxAttempts = 2; // initial + max 1 transient retry
+    const totalDeadlineMs = parseInt(process.env.IMAGE_SERVER_TOTAL_DEADLINE_MS || '115000', 10);
+    const startTime = Date.now();
 
     const cleanBase = this.baseUrl.trim().replace(/\/+$/, '');
     let endpoint = cleanBase;
@@ -119,6 +121,18 @@ export class GeminiImageProvider implements ImageProvider {
 
     while (attempt < maxAttempts) {
       attempt++;
+      const elapsed = Date.now() - startTime;
+      const remainingTotal = totalDeadlineMs - elapsed;
+      if (remainingTotal <= 1000) {
+        throw new ImageProviderError(
+          504,
+          'IMAGE_GENERATION_TIMEOUT',
+          'Quá trình tạo ảnh mất nhiều thời gian hơn dự kiến. Bạn có thể thử lại.',
+          true
+        );
+      }
+
+      const currentAttemptTimeout = Math.min(this.timeoutMs, remainingTotal);
       let timeoutTimer: NodeJS.Timeout | undefined;
 
       try {
@@ -134,7 +148,7 @@ export class GeminiImageProvider implements ImageProvider {
                 true
               )
             );
-          }, this.timeoutMs);
+          }, currentAttemptTimeout);
         });
 
         const requestPayload = {
@@ -224,12 +238,8 @@ export class GeminiImageProvider implements ImageProvider {
         if (timeoutTimer) clearTimeout(timeoutTimer);
 
         if (err instanceof ImageProviderError) {
-          if (err.code === 'IMAGE_GENERATION_TIMEOUT' && attempt < maxAttempts) {
-            console.warn(
-              `[GeminiImageProvider] Timeout error (attempt ${attempt}/${maxAttempts}), retrying once...`
-            );
-            await new Promise((r) => setTimeout(r, 1000));
-            continue;
+          if (err.code === 'IMAGE_GENERATION_TIMEOUT') {
+            throw err;
           }
           throw err;
         }
@@ -276,13 +286,23 @@ export class GeminiImageProvider implements ImageProvider {
           );
         }
 
-        // 2. Rate limit / Quota (429) -> Fail fast, 0 retry
+        // 2. Rate limit / Quota (429) -> Fail fast or retry if budget >= 60s
         if (
           status === 429 ||
           errMsgLower.includes('rate limit') ||
           errMsgLower.includes('quota') ||
           errMsgLower.includes('resource_exhausted')
         ) {
+          if (attempt < maxAttempts) {
+            const remaining = totalDeadlineMs - (Date.now() - startTime);
+            if (remaining >= 60000) {
+              console.warn(
+                `[GeminiImageProvider] Rate limit / Quota error (remaining budget ${Math.round(remaining / 1000)}s >= 60s), retrying once...`
+              );
+              await new Promise((r) => setTimeout(r, 1000));
+              continue;
+            }
+          }
           throw new ImageProviderError(
             429,
             'IMAGE_PROVIDER_RATE_LIMITED',
@@ -291,20 +311,13 @@ export class GeminiImageProvider implements ImageProvider {
           );
         }
 
-        // 3. Timeout error
+        // 3. Timeout error -> ABSOLUTELY NO RETRY. Fail fast immediately!
         if (
           errMsgLower.includes('timeout') ||
           errMsgLower.includes('timed out') ||
           err?.code === 'ETIMEDOUT' ||
           err?.name === 'AbortError'
         ) {
-          if (attempt < maxAttempts) {
-            console.warn(
-              `[GeminiImageProvider] Timeout error (attempt ${attempt}/${maxAttempts}), retrying once...`
-            );
-            await new Promise((r) => setTimeout(r, 1000));
-            continue;
-          }
           throw new ImageProviderError(
             504,
             'IMAGE_GENERATION_TIMEOUT',
@@ -313,21 +326,30 @@ export class GeminiImageProvider implements ImageProvider {
           );
         }
 
-        // 4. Transient 5xx or Network error -> Bounded retry once
+        // 4. Transient 5xx or Network error -> Retry once ONLY IF remainingBudget >= 60000ms
         const isTransient =
           status >= 500 ||
           errMsgLower.includes('econnreset') ||
           errMsgLower.includes('socket hang up') ||
           errMsgLower.includes('service_unavailable') ||
-          errMsgLower.includes('503');
+          errMsgLower.includes('503') ||
+          errMsgLower.includes('network') ||
+          errMsgLower.includes('fetch');
 
         if (isTransient && attempt < maxAttempts) {
-          console.warn(
-            `[GeminiImageProvider] Transient error (attempt ${attempt}/${maxAttempts}), retrying once...`,
-            sanitizedErrMsg
-          );
-          await new Promise((r) => setTimeout(r, 1000));
-          continue;
+          const remaining = totalDeadlineMs - (Date.now() - startTime);
+          if (remaining >= 60000) {
+            console.warn(
+              `[GeminiImageProvider] Transient error (status ${status}, remaining budget ${Math.round(remaining / 1000)}s >= 60s), retrying once...`,
+              sanitizedErrMsg
+            );
+            await new Promise((r) => setTimeout(r, 1000));
+            continue;
+          } else {
+            console.warn(
+              `[GeminiImageProvider] Transient error (status ${status}), but remaining budget ${Math.round(remaining / 1000)}s < 60s. Failing fast.`
+            );
+          }
         }
 
         // 5. Non-transient errors

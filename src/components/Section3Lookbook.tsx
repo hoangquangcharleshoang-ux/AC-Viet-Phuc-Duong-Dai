@@ -28,7 +28,8 @@ import {
   Clock,
   Layers,
   Palette,
-  CheckCircle2
+  CheckCircle2,
+  Compass
 } from 'lucide-react';
 import {
   LookbookGenerationState,
@@ -64,6 +65,9 @@ interface Section3LookbookProps {
   onTriggerUserGuidedRevision?: (refinementText: string) => void;
   onRetryRevision?: (revisionIndex: number, newRefinementText?: string) => void;
   onSelectRevision?: (revisionIndex: number) => void;
+  isExploringBranch?: boolean;
+  explorationTitle?: string;
+  onReturnToRoot?: () => void;
 }
 
 export const Section3Lookbook: React.FC<Section3LookbookProps> = ({
@@ -82,7 +86,10 @@ export const Section3Lookbook: React.FC<Section3LookbookProps> = ({
   onTriggerRevision,
   onTriggerUserGuidedRevision,
   onRetryRevision,
-  onSelectRevision
+  onSelectRevision,
+  isExploringBranch = false,
+  explorationTitle,
+  onReturnToRoot
 }) => {
   const [isLightboxOpen, setIsLightboxOpen] = useState<boolean>(false);
 
@@ -162,6 +169,30 @@ export const Section3Lookbook: React.FC<Section3LookbookProps> = ({
 
   return (
     <section id="section-lookbook" className="space-y-6 pt-4 scroll-mt-20">
+      {/* Exploration Branch Banner */}
+      {isExploringBranch && (
+        <div className="rounded-2xl p-4 bg-indigo-50/90 border border-indigo-200/90 shadow-2xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
+          <div className="flex items-center gap-2.5">
+            <Compass className="w-4 h-4 text-indigo-600 shrink-0" />
+            <div>
+              <span className="font-bold text-indigo-950 block sm:inline mr-1">
+                Đang xem nhánh khám phá: {explorationTitle || 'Biến tấu'}
+              </span>
+              <span className="text-stone-600 font-normal">
+                — Bản phối gốc và V0/V1/V2 vẫn được bảo toàn.
+              </span>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={onReturnToRoot}
+            className="rounded-full px-4 py-1.5 text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs transition-colors shrink-0 cursor-pointer self-start sm:self-auto"
+          >
+            Quay lại bản phối gốc
+          </button>
+        </div>
+      )}
+
       {/* Section Header */}
       <div className="space-y-1.5">
         <div className="inline-flex items-center gap-2 px-3 py-0.5 rounded-full text-xs font-semibold tracking-wider text-indigo-700 bg-indigo-50 border border-indigo-200/60 uppercase shadow-2xs">

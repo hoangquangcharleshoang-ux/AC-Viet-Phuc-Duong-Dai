@@ -35,6 +35,9 @@ interface Section4ExplorationProps {
   onTriggerExploration: (intent: ExplorationIntent) => void;
   onVisualizeExploration: (expResult: ExplorationBlueprintResult) => void;
   isGeneratingLookbook?: boolean;
+  isExploringBranch?: boolean;
+  explorationTitle?: string;
+  onReturnToRoot?: () => void;
 }
 
 export const Section4Exploration: React.FC<Section4ExplorationProps> = ({
@@ -44,7 +47,10 @@ export const Section4Exploration: React.FC<Section4ExplorationProps> = ({
   isExploring,
   onTriggerExploration,
   onVisualizeExploration,
-  isGeneratingLookbook = false
+  isGeneratingLookbook = false,
+  isExploringBranch = false,
+  explorationTitle,
+  onReturnToRoot
 }) => {
   const [activeIntentTab, setActiveIntentTab] = useState<ExplorationIntent | null>(null);
 
@@ -115,8 +121,29 @@ export const Section4Exploration: React.FC<Section4ExplorationProps> = ({
         </p>
       </div>
 
+      {/* Branch-of-Branch Block Guard Banner */}
+      {isExploringBranch && (
+        <div className="p-4 rounded-2xl bg-amber-50/90 border border-amber-200/90 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs text-amber-900 shadow-2xs">
+          <div className="space-y-0.5">
+            <span className="font-bold block">
+              Bạn đang ở nhánh khám phá ({explorationTitle || 'Biến tấu'})
+            </span>
+            <span className="text-[11px] text-amber-800 font-normal">
+              Vui lòng bấm &ldquo;Quay lại bản phối gốc&rdquo; trước khi chọn thử hướng khám phá khác.
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={onReturnToRoot}
+            className="rounded-full px-4 py-1.5 text-xs font-semibold bg-amber-800 hover:bg-amber-900 text-white shadow-xs transition-colors shrink-0 cursor-pointer self-start sm:self-auto"
+          >
+            Quay lại bản phối gốc
+          </button>
+        </div>
+      )}
+
       {/* 3 Exploration Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className={`grid grid-cols-1 md:grid-cols-3 gap-4 ${isExploringBranch ? 'opacity-60 pointer-events-none' : ''}`}>
         {cards.map(card => {
           const IconComp = card.icon;
           const isSelected = activeIntentTab === card.intent;
@@ -127,6 +154,7 @@ export const Section4Exploration: React.FC<Section4ExplorationProps> = ({
             <div
               key={card.intent}
               onClick={() => {
+                if (isExploringBranch) return;
                 setActiveIntentTab(card.intent);
                 if (!explorationResults[card.intent] && !loading) {
                   onTriggerExploration(card.intent);

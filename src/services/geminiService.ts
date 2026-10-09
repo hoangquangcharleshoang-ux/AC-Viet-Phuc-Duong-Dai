@@ -714,6 +714,7 @@ const sessionExplorationCache = new Map<string, ExplorationBlueprintResult>();
 export async function generateExplorationBlueprint(input: {
   selectedGarmentId: GarmentId;
   parentBlueprint: BlueprintOutput;
+  parentOutfitFingerprint: string;
   explorationIntent: ExplorationIntent;
   context: {
     promptText: string;
@@ -727,6 +728,7 @@ export async function generateExplorationBlueprint(input: {
   const cacheKey = [
     input.selectedGarmentId,
     input.explorationIntent,
+    input.parentOutfitFingerprint,
     JSON.stringify(input.parentBlueprint),
     input.context.promptText.trim().toLowerCase(),
     input.context.selectedOccasion,
@@ -742,7 +744,13 @@ export async function generateExplorationBlueprint(input: {
   const data = await fetchJsonApi<ExplorationBlueprintResult>('/api/generate-exploration', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(input),
+    body: JSON.stringify({
+      selectedGarmentId: input.selectedGarmentId,
+      parentBlueprint: input.parentBlueprint,
+      parentOutfitFingerprint: input.parentOutfitFingerprint,
+      explorationIntent: input.explorationIntent,
+      context: input.context
+    }),
     signal: input.signal
   }, 'Không thể tạo hướng phối khám phá lúc này.');
   sessionExplorationCache.set(cacheKey, data);

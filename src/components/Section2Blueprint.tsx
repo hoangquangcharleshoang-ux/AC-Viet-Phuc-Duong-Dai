@@ -38,6 +38,7 @@ interface Section2BlueprintProps {
   genderPresentation?: GenderPresentation;
   onGenderPresentationChange?: (gender: GenderPresentation) => void;
   isLoading: boolean;
+  error?: { code: string; message: string; retryable?: boolean; retryAction?: () => void } | null;
   isRecommending?: boolean;
   isGeneratingLookbook?: boolean;
   activeAccessories?: string[];
@@ -56,6 +57,7 @@ export const Section2Blueprint: React.FC<Section2BlueprintProps> = ({
   genderPresentation = 'nam',
   onGenderPresentationChange,
   isLoading,
+  error,
   isRecommending = false,
   isGeneratingLookbook = false,
   activeAccessories: controlledActiveAccessories,
@@ -201,8 +203,45 @@ export const Section2Blueprint: React.FC<Section2BlueprintProps> = ({
         </p>
       </div>
 
-      {/* Loading Skeleton if Call B is processing or waiting for matching blueprint */}
-      {isLoading || !isBlueprintMatching ? (
+      {/* Loading Skeleton or Error State */}
+      {isLoading ? (
+        <div
+          className="rounded-3xl p-8 border border-stone-200/80 bg-white/70 animate-pulse space-y-6"
+          style={{ backdropFilter: 'blur(20px)' }}
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-5 h-5 rounded-full border-2 border-indigo-400 border-t-transparent animate-spin" />
+            <span className="text-sm font-medium text-stone-700">
+              Đang điều phối bản phối thời trang đương đại cho {garment.canonical_name}...
+            </span>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            <div className="h-52 rounded-3xl bg-stone-100" />
+            <div className="h-52 rounded-3xl bg-stone-100" />
+            <div className="h-52 rounded-3xl bg-stone-100" />
+          </div>
+        </div>
+      ) : error ? (
+        <div
+          className="rounded-3xl p-8 border border-rose-200 bg-rose-50/80 space-y-4"
+          style={{ backdropFilter: 'blur(20px)' }}
+        >
+          <div className="flex items-start justify-between gap-4">
+            <div className="space-y-1">
+              <h3 className="text-base font-semibold text-rose-900">Không thể tải bản phối</h3>
+              <p className="text-sm text-rose-700">{error.message}</p>
+            </div>
+            {error.retryable && error.retryAction && (
+              <button
+                onClick={error.retryAction}
+                className="px-4 py-2 rounded-full bg-rose-600 hover:bg-rose-700 text-white text-sm font-medium shadow-sm transition-colors shrink-0 cursor-pointer"
+              >
+                Thử lại
+              </button>
+            )}
+          </div>
+        </div>
+      ) : !isBlueprintMatching ? (
         <div
           className="rounded-3xl p-8 border border-stone-200/80 bg-white/70 animate-pulse space-y-6"
           style={{ backdropFilter: 'blur(20px)' }}

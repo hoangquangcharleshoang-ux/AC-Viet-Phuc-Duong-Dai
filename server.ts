@@ -992,8 +992,8 @@ BẮT BUỘC trả về JSON theo schema.`;
  * Endpoint: POST /api/generate-exploration
  */
 app.post('/api/generate-exploration', async (req, res) => {
-  const { selectedGarmentId, parentBlueprint, explorationIntent, context } = req.body;
-  if (!selectedGarmentId || !parentBlueprint || !explorationIntent) {
+  const { selectedGarmentId, parentBlueprint, parentOutfitFingerprint, explorationIntent, context } = req.body;
+  if (!selectedGarmentId || !parentBlueprint || !parentOutfitFingerprint || !explorationIntent) {
     return res.status(400).json({ code: 'INVALID_EXPLORATION_REQUEST', message: 'Thiếu thông tin yêu cầu khám phá.' });
   }
 
@@ -1135,7 +1135,7 @@ Trả về JSON theo schema yêu cầu gồm:
         return {
           explorationId: `exp_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
           explorationIntent,
-          parentBlueprintFingerprint: parentBlueprint.outfitFingerprint || 'parent_fp',
+          parentBlueprintFingerprint: parentOutfitFingerprint,
           resultingOutfitFingerprint: resultingFingerprint,
           blueprint: sanitizedBp,
           stylingRationale: parsed.stylingRationale || 'Gợi ý phối đồ theo hướng khám phá mới.',
@@ -1144,6 +1144,13 @@ Trả về JSON theo schema yêu cầu gồm:
         };
       }
     });
+
+    if (result.result.resultingOutfitFingerprint === parentOutfitFingerprint) {
+      return res.status(422).json({
+        code: 'EXPLORATION_NO_DIVERGENCE',
+        message: 'Bản phối khám phá chưa tạo ra khác biệt với bản phối gốc.'
+      });
+    }
 
     return res.status(200).json(result.result);
   } catch (err: any) {
