@@ -243,21 +243,21 @@ export const GARMENTS: Record<GarmentId, GarmentKnowledge> = {
       essential: [
         'Cấu trúc 4 thân vải (2 thân sau may liền sống lưng, 2 thân trước tách rời)',
         'Thân trước mở vạt, không có hàng khuy cài ngực',
-        'Vạt trước buông thả song song hoặc buộc vạt trước bụng'
+        'Mặc phối cùng áo yếm bên trong che ngực'
       ],
       strongly_characteristic: [
-        'Mối quan hệ phân tầng với lớp nội phục (áo yếm) che ngực'
+        'Hai vạt trước buông thả song song hoặc buộc vạt trước bụng',
+        'Dải thắt lưng / ruột tượng cố định ngang eo'
       ],
       supporting: [
         'Lớp áo cánh mỏng trung gian',
-        'Nón thúng quai thao to bản',
-        'Khăn mỏ quạ chít nếp nhọn trán'
+        'Khăn mỏ quạ chít nếp nhọn trán',
+        'Nón thúng quai thao to bản'
       ],
       variable: [
-        'Dải thắt lưng, ruột tượng giữ cạp',
         'Hạ phục (váy đụp đen nguyên bản hoặc quần lụa đen tiếp biến cuối TK19)',
-        'Số lượng lớp mặc (từ 2 lớp mộc mạc đến mớ ba mớ bảy hội hè)',
-        'Màu sắc thân áo và lớp yếm'
+        'Màu sắc thân áo và lớp yếm',
+        'Số lượng lớp mặc (từ 2 lớp mộc mạc đến mớ ba mớ bảy hội hè)'
       ]
     },
     sources: ['SRC-06', 'SRC-07'],

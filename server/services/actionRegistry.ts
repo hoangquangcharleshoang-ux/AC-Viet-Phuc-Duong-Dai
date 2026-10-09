@@ -25,7 +25,8 @@ import { computeOutfitFingerprint } from '../../src/shared/fingerprint';
 import { FOOTWEAR, FABRICS, ACCESSORIES, PALETTES } from '../../src/data/canonicalCatalog';
 import {
   isFanRequestedExplicitly,
-  isPearlRequestedExplicitly
+  isPearlRequestedExplicitly,
+  TRADITIONAL_HEADWEAR_IDS
 } from './culturalPolicyService';
 
 export interface ActionRegistryRecord {
@@ -253,6 +254,27 @@ export class EphemeralActionRegistry {
       }
 
       const currentAccs = nextBlueprint.remixProposal.accessoryIds || [];
+
+      // Headwear conflict check: Trâm cài tóc cannot be combined with traditional headwear
+      if (validAcc.id === 'tram_cai_toc_toi_gian') {
+        const hasHeadwear = currentAccs.some(id => TRADITIONAL_HEADWEAR_IDS.includes(id as any));
+        if (hasHeadwear) {
+          return {
+            status: 422,
+            code: 'HEADWEAR_CONFLICT',
+            message: 'Không thể phối trâm cài tóc cùng khăn hoặc nón truyền thống. Vui lòng bỏ phụ kiện đội đầu hiện tại trước khi thêm trâm.'
+          };
+        }
+      } else if (TRADITIONAL_HEADWEAR_IDS.includes(validAcc.id as any)) {
+        if (currentAccs.includes('tram_cai_toc_toi_gian')) {
+          return {
+            status: 422,
+            code: 'HEADWEAR_CONFLICT',
+            message: 'Bản phối đang có trâm cài tóc. Vui lòng bỏ trâm trước khi thêm phụ kiện đội đầu truyền thống.'
+          };
+        }
+      }
+
       if (!currentAccs.includes(validAcc.id)) {
         // Enforce maximum 2 accessories (consistent with Call B rules)
         const updatedAccs = [...currentAccs, validAcc.id].slice(-2);

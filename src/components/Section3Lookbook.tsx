@@ -470,42 +470,40 @@ export const Section3Lookbook: React.FC<Section3LookbookProps> = ({
                 </div>
               </div>
 
-              {/* RIGHT: DETAILS PANEL — “BẢN PHỐI ĐƯỢC DÙNG” */}
-              <div className="lg:col-span-6 rounded-3xl p-5 sm:p-6 bg-white/80 border border-stone-200/80 shadow-2xs space-y-5">
-                <div className="space-y-1 border-b border-stone-100 pb-3">
-                  <div className="flex items-center gap-2">
-                    <span className="text-[11px] font-bold text-stone-400 uppercase tracking-wider">
-                      THÔNG SỐ THỰC TẾ
-                    </span>
-                    <span className="text-stone-300">•</span>
-                    <span className="text-xs font-semibold text-stone-900">
-                      Bản phối được dùng
-                    </span>
-                  </div>
-                  <p className="text-xs text-stone-500 font-normal">
-                    Các thông số hình thái và màu sắc cấu thành ảnh minh họa hiện tại.
-                  </p>
+              {/* RIGHT: DETAILS PANEL — EDITORIAL “OUTFIT RECIPE” */}
+              <div className="lg:col-span-6 rounded-3xl p-6 sm:p-7 bg-white border border-[#E8E3DC] shadow-2xs space-y-4">
+                <div className="flex items-center justify-between border-b border-[#E8E3DC] pb-3">
+                  <h3 className="text-base font-bold text-stone-900 tracking-tight">
+                    Bản phối của bạn
+                  </h3>
+                  <span className="text-[11px] font-medium text-stone-500">
+                    Bản phối được dựng
+                  </span>
                 </div>
 
                 {displaySnapshot ? (
-                  <div className="space-y-4 text-xs">
+                  <div className="space-y-3.5 text-xs">
                     {/* 1. Dáng áo */}
-                    <div className="space-y-1">
-                      <span className="text-[11px] font-medium text-stone-400 uppercase tracking-wider">
+                    <div className="space-y-0.5">
+                      <span className="text-[10px] font-bold text-stone-400 uppercase tracking-wider block">
                         Dáng áo
                       </span>
-                      <div className="p-2.5 rounded-xl bg-stone-50 border border-stone-200/60 font-medium text-stone-900 flex items-center justify-between">
-                        <span>{garment.canonical_name}</span>
-                        <span className="text-[10px] text-stone-500 font-normal">
-                          {garment.historical_function ? garment.historical_function.split(';')[0] : 'Trang phục truyền thống'}
-                        </span>
+                      <div className="text-sm font-semibold text-stone-900">
+                        {garment.canonical_name}
                       </div>
+                      {garment.historical_function && (
+                        <div className="text-[11px] text-stone-500 font-normal">
+                          {garment.historical_function.split(';')[0]}
+                        </div>
+                      )}
                     </div>
 
-                    {/* 2. Bảng màu 3 sắc thái */}
-                    <div className="space-y-1.5">
-                      <span className="text-[11px] font-medium text-stone-400 uppercase tracking-wider">
-                        Bảng màu hòa sắc
+                    <div className="border-b border-[#E8E3DC]" />
+
+                    {/* 2. Bảng màu */}
+                    <div className="space-y-2">
+                      <span className="text-[10px] font-bold text-stone-400 uppercase tracking-wider block">
+                        Bảng màu
                       </span>
                       <div className="space-y-1.5">
                         {displaySnapshot.palette.map((item, idx) => {
@@ -515,21 +513,28 @@ export const Section3Lookbook: React.FC<Section3LookbookProps> = ({
                               : item.role === 'SUPPORTING'
                               ? 'Phối cùng'
                               : 'Điểm nhấn';
+                          const roleBadgeClass =
+                            item.role === 'PRIMARY'
+                              ? 'bg-indigo-50 text-indigo-700 border-indigo-200/60'
+                              : item.role === 'SUPPORTING'
+                              ? 'bg-stone-100 text-stone-700 border-stone-200/60'
+                              : 'bg-amber-50 text-amber-800 border-amber-200/60';
+
                           return (
                             <div
                               key={item.id || idx}
-                              className="flex items-center justify-between p-2 rounded-xl bg-stone-50/80 border border-stone-200/60"
+                              className="flex items-center justify-between py-1"
                             >
                               <div className="flex items-center gap-2.5 min-w-0">
                                 <span
-                                  className="w-4 h-4 rounded-full border border-stone-300/80 shrink-0 shadow-2xs"
+                                  className="w-4.5 h-4.5 rounded-full border border-black/10 shrink-0 shadow-2xs"
                                   style={{ backgroundColor: item.hex || '#E5E5E5' }}
                                 />
-                                <span className="font-medium text-stone-800 truncate">
+                                <span className="font-medium text-stone-800 text-xs truncate">
                                   {item.name || item.id}
                                 </span>
                               </div>
-                              <span className="text-[10px] font-semibold text-stone-500 bg-stone-200/60 px-2 py-0.5 rounded-md shrink-0">
+                              <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full border ${roleBadgeClass}`}>
                                 {roleLabel}
                               </span>
                             </div>
@@ -538,53 +543,58 @@ export const Section3Lookbook: React.FC<Section3LookbookProps> = ({
                       </div>
                     </div>
 
-                    {/* 3. Chất liệu vải */}
-                    <div className="space-y-1">
-                      <span className="text-[11px] font-medium text-stone-400 uppercase tracking-wider">
+                    <div className="border-b border-[#E8E3DC]" />
+
+                    {/* 3. Chất liệu */}
+                    <div className="flex items-center justify-between py-0.5">
+                      <span className="text-[10px] font-bold text-stone-400 uppercase tracking-wider">
                         Chất liệu
                       </span>
-                      <div className="p-2.5 rounded-xl bg-stone-50 border border-stone-200/60 text-stone-800">
+                      <span className="text-xs font-medium text-stone-800 text-right">
                         {getFabricLabel(displaySnapshot.fabricId)}
-                      </div>
+                      </span>
                     </div>
+
+                    <div className="border-b border-[#E8E3DC]" />
 
                     {/* 4. Hạ phục */}
-                    <div className="space-y-1">
-                      <span className="text-[11px] font-medium text-stone-400 uppercase tracking-wider">
+                    <div className="flex items-center justify-between py-0.5">
+                      <span className="text-[10px] font-bold text-stone-400 uppercase tracking-wider">
                         Hạ phục
                       </span>
-                      <div className="p-2.5 rounded-xl bg-stone-50 border border-stone-200/60 text-stone-800">
+                      <span className="text-xs font-medium text-stone-800 text-right">
                         {getLowerGarmentLabel(displaySnapshot.lowerGarmentId)}
-                      </div>
+                      </span>
                     </div>
+
+                    <div className="border-b border-[#E8E3DC]" />
 
                     {/* 5. Giày dép */}
-                    <div className="space-y-1">
-                      <span className="text-[11px] font-medium text-stone-400 uppercase tracking-wider">
-                        Giày dép
+                    <div className="flex items-center justify-between py-0.5">
+                      <span className="text-[10px] font-bold text-stone-400 uppercase tracking-wider">
+                        Giày
                       </span>
-                      <div className="p-2.5 rounded-xl bg-stone-50 border border-stone-200/60 text-stone-800">
+                      <span className="text-xs font-medium text-stone-800 text-right">
                         {getFootwearLabel(displaySnapshot.footwearId)}
-                      </div>
+                      </span>
                     </div>
 
+                    <div className="border-b border-[#E8E3DC]" />
+
                     {/* 6. Phụ kiện */}
-                    <div className="space-y-1">
-                      <span className="text-[11px] font-medium text-stone-400 uppercase tracking-wider">
-                        Phụ kiện đi kèm
+                    <div className="flex items-start justify-between py-0.5 gap-3">
+                      <span className="text-[10px] font-bold text-stone-400 uppercase tracking-wider shrink-0 mt-0.5">
+                        Phụ kiện
                       </span>
-                      <div className="p-2.5 rounded-xl bg-stone-50 border border-stone-200/60 text-stone-800">
+                      <div className="text-xs font-medium text-stone-800 text-right">
                         {displaySnapshot.activeAccessoryIds.length > 0 ? (
-                          <div className="space-y-1">
-                            {displaySnapshot.activeAccessoryIds.map(accId => (
-                              <div key={accId} className="flex items-center gap-1.5">
-                                <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 shrink-0" />
-                                <span>{getAccessoryLabel(accId)}</span>
-                              </div>
-                            ))}
-                          </div>
+                          <span>
+                            {displaySnapshot.activeAccessoryIds
+                              .map(accId => getAccessoryLabel(accId))
+                              .join(' · ')}
+                          </span>
                         ) : (
-                          <span className="text-stone-400 italic">
+                          <span className="text-stone-400 italic font-normal">
                             Không sử dụng phụ kiện
                           </span>
                         )}
@@ -592,7 +602,7 @@ export const Section3Lookbook: React.FC<Section3LookbookProps> = ({
                     </div>
                   </div>
                 ) : (
-                  <div className="py-8 text-center text-xs text-stone-400">
+                  <div className="py-8 text-center text-xs text-stone-400 font-normal">
                     Chưa có thông số chi tiết của bản phối.
                   </div>
                 )}

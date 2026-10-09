@@ -30,6 +30,11 @@ import {
   ACChatAction
 } from '../types/index';
 import { GARMENTS, OCCASIONS } from '../data/culturalKnowledgePack';
+import {
+  getFabricLabel,
+  getLowerGarmentLabel,
+  getAccessoryLabel
+} from '../data/canonicalCatalog';
 import { sendACChatMessage, ACChatServiceError } from '../services/acChatService';
 
 interface ACChatDrawerProps {
@@ -111,9 +116,9 @@ export const ACChatDrawer: React.FC<ACChatDrawerProps> = ({
       bpSummary = {
         primaryColorName: primaryColor?.name,
         primaryColorHex: primaryColor?.hex,
-        fabricName: p.fabricId,
-        lowerGarmentName: p.lowerGarmentId,
-        accessoryNames: p.accessoryIds,
+        fabricName: p.fabricId ? getFabricLabel(p.fabricId) : undefined,
+        lowerGarmentName: p.lowerGarmentId ? getLowerGarmentLabel(p.lowerGarmentId) : undefined,
+        accessoryNames: (p.accessoryIds || []).map(getAccessoryLabel),
         culturalReasoning: blueprint.contextCautions?.join(' ')
       };
     }
@@ -354,10 +359,10 @@ export const ACChatDrawer: React.FC<ACChatDrawerProps> = ({
                     {visualQAState?.status === 'success' && (
                       <button
                         type="button"
-                        onClick={() => handleQuickPrompt('Giải thích đánh giá của AC Stylist và kết quả Visual QA cho bản phối hiện tại.')}
+                        onClick={() => handleQuickPrompt('Giải thích đánh giá của AC và kết quả Visual QA cho bản phối hiện tại.')}
                         className="w-full text-left text-xs p-2.5 rounded-lg bg-white border border-amber-200/80 hover:border-amber-400 hover:bg-amber-50/50 text-amber-900 font-medium transition-all cursor-pointer shadow-2xs"
                       >
-                        ✨ Giải thích đánh giá của AC Stylist cho ảnh hiện tại
+                        ✨ Giải thích đánh giá của AC cho ảnh hiện tại
                       </button>
                     )}
                   </div>

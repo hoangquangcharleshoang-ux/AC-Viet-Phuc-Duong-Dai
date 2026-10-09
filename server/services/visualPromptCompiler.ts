@@ -68,7 +68,8 @@ const ACCESSORY_VISUAL_MAP: Record<string, string> = {
   quat_giay_tram_huong: 'a traditional folded bamboo-ribbed paper hand fan held lightly in hand',
   chuoi_ngoc_trai_co: 'a single understated strand of natural freshwater pearls resting elegantly near the collar',
   kinh_ram_gong_tron: 'contemporary slim round-frame dark sunglasses adding a modern urban touch',
-  vong_bac_cham_hoa: 'a traditional solid silver engraved collar torque (kieng bac) worn cleanly around the neck'
+  vong_bac_cham_hoa: 'a traditional solid silver engraved collar torque (kieng bac) worn cleanly around the neck',
+  tram_cai_toc_toi_gian: 'a single minimalist understated hairpin (tram cai toc toi gian) tucked neatly into hair, restrained geometry with small subtle botanical detail, no hanging tassels, no elaborate phoenix crown styling, no oversized jade chains'
 };
 
 /**
@@ -92,10 +93,10 @@ function compilePaletteProse(palette: PaletteItem[]): string {
 function compileGarmentStructuralGuard(garmentId: GarmentId): string {
   switch (garmentId) {
     case 'ngu_than_chen':
-      return 'The primary garment is an authentic Áo ngũ thân tay chẽn (five-panel fitted-sleeve Vietnamese gown). It strictly features a crisp upright standing mandarin collar (lap linh, 3 to 4 cm high) hugging the base of the neck, an asymmetrical closure fastening gracefully from the collar base down toward the right underarm with traditional buttons, a natural uncinched five-panel straight silhouette that drapes naturally without waist darts, and narrow fitted sleeves (trach tu) that taper neatly along the arms down to the wrists. It must distinctly embody the five-panel heritage construction, not a modern Westernized bodycon áo dài.';
+      return 'The primary garment is an authentic Áo ngũ thân tay chẽn (five-panel fitted-sleeve Vietnamese gown). It strictly features an upright Vietnamese lập lĩnh standing collar of historically plausible moderate height, neatly structured and not exaggerated, hugging the base of the neck, an asymmetrical closure fastening gracefully from the collar base down toward the right underarm with traditional buttons, a natural uncinched five-panel straight silhouette that drapes naturally without waist darts, and narrow fitted sleeves (trach tu) that taper neatly along the arms down to the wrists. It must distinctly embody the five-panel heritage construction, not a modern Westernized bodycon áo dài.';
 
     case 'ao_tac':
-      return 'The primary garment is an authentic Áo tấc (Ngũ thân tay thụng ceremonial five-panel gown). It strictly features a dignified upright standing collar (lap linh) closely fitted at the neck, an asymmetrical traditional fastening to the right underarm, and a spacious five-panel straight silhouette falling well below the knees. The sleeves are distinctly cut into broad, generous rectangular sleeves (khoan tu) that remain completely loose, ungathered, and untapered at the wrists with wide open straight cuffs. The construction is formal, spacious, and ceremonial, avoiding any fitted modern áo dài lines, narrowed wrists, cinched waist, or blazer-like cuts.';
+      return 'The primary garment is an authentic Áo tấc (Ngũ thân tay thụng ceremonial five-panel gown). It strictly features a dignified upright Vietnamese lập lĩnh standing collar closely fitted at the neck, an asymmetrical traditional fastening to the right underarm, and a spacious five-panel silhouette with a generally longer, fuller ceremonial drape. The sleeves are distinctly cut into broad, generous rectangular sleeves (khoan tu) that remain completely loose, ungathered, and untapered at the wrists with wide open straight cuffs. The construction is formal, spacious, and ceremonial, avoiding any fitted modern áo dài lines, narrowed wrists, cinched waist, or blazer-like cuts.';
 
     case 'ao_tu_than':
       return 'The primary garment is an authentic Áo tứ thân (traditional four-panel northern Vietnamese ensemble). The outer coat is built from four distinct fabric panels with the center-back seam joined and the two front panels remaining completely OPEN, hanging gracefully or loosely tied at the waist without any center buttons, zippers, or high-neck closure. Underneath the open front panels, a separate traditional halter-style inner bodice (áo yếm) is tastefully layered over the chest, preserving the historic layered structure of northern folk dress. The front must not be closed into a generic high-collared dress.';

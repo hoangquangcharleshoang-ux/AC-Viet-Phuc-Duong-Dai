@@ -40,6 +40,12 @@ import {
   GroundedCorrectionPlan,
   LookbookRevisionItem
 } from '../types/index';
+import {
+  getAccessoryLabel,
+  getFabricLabel,
+  getLowerGarmentLabel,
+  getFootwearLabel
+} from '../data/canonicalCatalog';
 import { TraitTransitionsView } from './TraitTransitionsView';
 import {
   classifyRefinementInput,
@@ -83,6 +89,8 @@ export const CulturalQACard: React.FC<CulturalQACardProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState<'IDENTITY' | 'FIDELITY' | 'TRANSITIONS'>('IDENTITY');
   const [isDetailsExpanded, setIsDetailsExpanded] = useState<boolean>(false);
+  const [isRefinementOpen, setIsRefinementOpen] = useState<boolean>(false);
+  const [isPolicyOpen, setIsPolicyOpen] = useState<boolean>(false);
   const [userRefinementInput, setUserRefinementInput] = useState<string>('');
   const [refinementPreviewState, setRefinementPreviewState] = useState<'idle' | 'analyzing' | 'ready'>('idle');
   const [refinementError, setRefinementError] = useState<string | null>(null);
@@ -129,7 +137,7 @@ export const CulturalQACard: React.FC<CulturalQACardProps> = ({
           badge: 'bg-emerald-50 text-emerald-800 border-emerald-200/80',
           icon: <ShieldCheck className="w-4 h-4 text-emerald-600" />,
           dot: 'bg-emerald-500',
-          desc: 'Hình thái trang phục bảo toàn chuẩn mực các đặc trưng cốt lõi theo quy chế cổ truyền.'
+          desc: 'Các đặc trưng quan sát được trong ảnh phù hợp với những đặc trưng cốt lõi AC đang đối chiếu.'
         };
       case 'CONTEXT_SENSITIVE':
         return {
@@ -169,7 +177,7 @@ export const CulturalQACard: React.FC<CulturalQACardProps> = ({
         return (
           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/60">
             <CheckCircle2 className="w-3 h-3 text-emerald-600" />
-            <span>Phù hợp</span>
+            <span>Đặc trưng rõ</span>
           </span>
         );
       case 'PARTIAL':
@@ -183,7 +191,7 @@ export const CulturalQACard: React.FC<CulturalQACardProps> = ({
         return (
           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-rose-50 text-rose-700 border border-rose-200/60">
             <XCircle className="w-3 h-3 text-rose-600" />
-            <span>Cần chỉnh</span>
+            <span>Cần tinh chỉnh</span>
           </span>
         );
       case 'NOT_ASSESSABLE':
@@ -191,7 +199,7 @@ export const CulturalQACard: React.FC<CulturalQACardProps> = ({
         return (
           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-stone-100 text-stone-600 border border-stone-200/80">
             <Eye className="w-3 h-3 text-stone-400" />
-            <span>Chưa thể xác nhận từ ảnh này</span>
+            <span>Chưa thể xác nhận từ ảnh</span>
           </span>
         );
     }
@@ -219,13 +227,22 @@ export const CulturalQACard: React.FC<CulturalQACardProps> = ({
       guidance: c.canonicalGuidance,
       deviation: c.observedDeviation
     })),
-    ...(correctionPlan?.fidelityDeltas || []).map(f => ({
-      type: 'fidelity' as const,
-      id: f.element,
-      name: f.element,
-      guidance: f.expectedValue,
-      deviation: f.description
-    }))
+    ...(correctionPlan?.fidelityDeltas || []).map(f => {
+      const elementLabelMap: Record<string, string> = {
+        palette: 'Bảng màu',
+        fabric: 'Chất liệu vải',
+        lowerGarment: 'Hạ phục',
+        footwear: 'Giày dép',
+        accessories: 'Phụ kiện'
+      };
+      return {
+        type: 'fidelity' as const,
+        id: f.element,
+        name: elementLabelMap[f.element] || f.element,
+        guidance: f.expectedValue,
+        deviation: f.description
+      };
+    })
   ];
   const actionableCount = actionableDeltas.length;
   const hasCorrectionTargets = actionableCount > 0;
@@ -235,6 +252,7 @@ export const CulturalQACard: React.FC<CulturalQACardProps> = ({
       ? qaState.result.culturalIdentity.traits || []
       : [];
   const passedCount = traitsList.filter(t => t.verdict === 'PASS').length;
+  const unconfirmedCount = traitsList.filter(t => t.verdict === 'NOT_ASSESSABLE').length;
   const culturalActionableIds = new Set((correctionPlan?.culturalDeltas || []).map(d => d.traitId));
   const attentionCount = traitsList.filter(
     t => (t.verdict === 'FAIL' || t.verdict === 'PARTIAL') && !culturalActionableIds.has(t.traitId)
@@ -338,12 +356,20 @@ export const CulturalQACard: React.FC<CulturalQACardProps> = ({
                     </div>
                     <div className="space-y-1">
                       <div className="flex flex-wrap items-center gap-2">
-                        <span className="text-[11px] font-bold uppercase tracking-wider text-stone-500">
-                          AC STYLIST ĐÁNH GIÁ (v{revisionIndex})
+                        <span className="text-xs font-bold text-stone-900 tracking-tight">
+                          AC kiểm tra nhận diện văn hóa
+                        </span>
+                        <span className="text-stone-300">•</span>
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-stone-100 text-stone-700 border border-stone-200/80">
+                          {revisionIndex === 0
+                            ? 'Bản gốc · V0'
+                            : revisionIndex === 1
+                            ? 'Tinh chỉnh 1 · V1'
+                            : `Tinh chỉnh ${revisionIndex} · V${revisionIndex}`}
                         </span>
                         <span className="text-stone-300">•</span>
                         <span
-                          className={`inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-xs font-semibold border ${statusStyle.badge}`}
+                          className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold border ${statusStyle.badge}`}
                         >
                           <span className={`w-1.5 h-1.5 rounded-full ${statusStyle.dot}`} />
                           <span>{qaState.result.culturalIdentity.statusLabelVi}</span>
@@ -352,18 +378,34 @@ export const CulturalQACard: React.FC<CulturalQACardProps> = ({
                       <p className="text-xs text-stone-600 font-normal leading-relaxed">
                         {statusStyle.desc}
                       </p>
+                      {/* Compact metrics row */}
+                      <div className="flex flex-wrap items-center gap-2 pt-1 text-[11px]">
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full font-medium bg-emerald-50 text-emerald-800 border border-emerald-200/60">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
+                          <span>{passedCount} đặc trưng rõ</span>
+                        </span>
+                        {unconfirmedCount > 0 && (
+                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full font-medium bg-stone-100 text-stone-700 border border-stone-200/70">
+                            <span className="w-1.5 h-1.5 rounded-full bg-stone-400" />
+                            <span>{unconfirmedCount} chưa thể xác nhận từ ảnh</span>
+                          </span>
+                        )}
+                        {actionableCount > 0 && (
+                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full font-medium bg-amber-50 text-amber-800 border border-amber-200/70">
+                            <span className="w-1.5 h-1.5 rounded-full bg-amber-600" />
+                            <span>{actionableCount} cần tinh chỉnh</span>
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
 
-                  {/* Metric Pill & Expand Toggle */}
+                  {/* Expand Toggle */}
                   <div className="flex items-center gap-2 shrink-0 self-start sm:self-center">
-                    <span className="px-3 py-1 rounded-full text-[11px] font-medium bg-stone-100 text-stone-700 border border-stone-200/80 shadow-2xs">
-                      Đánh giá được {assessable}/{total} · {passedCount} đạt{statusSnippet}
-                    </span>
                     <button
                       type="button"
                       onClick={() => setIsDetailsExpanded(prev => !prev)}
-                      className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium text-stone-700 hover:text-stone-900 bg-stone-100 hover:bg-stone-200/80 border border-stone-200 transition-colors cursor-pointer"
+                      className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium text-stone-700 hover:text-stone-900 bg-stone-100 hover:bg-stone-200/80 border border-stone-200 transition-colors cursor-pointer"
                     >
                       <span>{isDetailsExpanded ? 'Thu gọn căn cứ' : 'Xem căn cứ đánh giá'}</span>
                       {isDetailsExpanded ? (
@@ -431,7 +473,7 @@ export const CulturalQACard: React.FC<CulturalQACardProps> = ({
             // Natural summary sentence
             let overallSummary = 'Bản phối này nhìn tổng thể khá gọn gàng và hài hòa với bối cảnh đã chọn.';
             if (qaState.result.culturalIdentity.overallStatus === 'PRESERVES_IDENTITY') {
-              overallSummary = 'Bản phối này thể hiện rất tốt phom dáng và các chi tiết cổ truyền, bảo toàn chuẩn mực nét đẹp nguyên bản.';
+              overallSummary = 'Bản phối này thể hiện rất tốt phom dáng và các chi tiết cổ truyền, phù hợp với tiêu chí đối chiếu hiện tại.';
             } else if (qaState.result.culturalIdentity.overallStatus === 'CONTEXT_SENSITIVE') {
               overallSummary = 'Bản phối dung hòa hài hòa giữa vẻ trang nhã cổ phong và nét phóng khoáng của thời trang đương đại. Các phụ kiện hoặc biến tấu phối thuộc lớp thẩm mỹ hiện đại, không phải căn cứ lịch sử bắt buộc.';
             } else if (qaState.result.culturalIdentity.overallStatus === 'WEAKENS_RECOGNIZABILITY') {
@@ -450,7 +492,7 @@ export const CulturalQACard: React.FC<CulturalQACardProps> = ({
                   </div>
                   <div className="space-y-1">
                     <span className="text-xs font-bold text-stone-900">
-                      Góc nhìn từ AC Stylist
+                      Góc nhìn từ AC
                     </span>
                     <p className="text-xs text-stone-700 leading-relaxed font-normal">
                       {overallSummary}
@@ -527,10 +569,13 @@ export const CulturalQACard: React.FC<CulturalQACardProps> = ({
                     type="button"
                     onClick={onTriggerRevision}
                     disabled={isGeneratingLookbook}
-                    className="rounded-full px-5 py-2 text-xs font-semibold bg-gradient-to-r from-indigo-600 via-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white shadow-sm shadow-indigo-200/50 flex items-center gap-2 shrink-0 cursor-pointer self-start sm:self-center transition-all disabled:opacity-50"
+                    className="rounded-full px-5 py-2 text-xs font-semibold bg-[#5457F5] hover:bg-[#474AE1] text-white shadow-sm shadow-[#5457F5]/25 hover:shadow-md flex items-center gap-2 shrink-0 cursor-pointer self-start sm:self-center transition-all disabled:opacity-50"
                   >
                     <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-                    <span>Tinh chỉnh theo đánh giá ✦ (Lần {revisionIndex + 1}/2)</span>
+                    <span>Tinh chỉnh theo đánh giá</span>
+                    <span className="text-[10px] text-white/80 font-normal">
+                      (Lần {revisionIndex + 1}/2)
+                    </span>
                   </button>
                 ) : isRevisionLimitReached ? (
                   <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-stone-200/80 text-stone-700 border border-stone-300 shadow-2xs self-start sm:self-center">
@@ -559,11 +604,27 @@ export const CulturalQACard: React.FC<CulturalQACardProps> = ({
                   <div className="space-y-1 text-[11px] text-amber-900">
                     <span className="font-semibold">Mục tiêu khớp bản phối:</span>
                     <ul className="list-disc list-inside pl-1 text-amber-800 space-y-0.5">
-                      {correctionPlan.fidelityDeltas.map((fd, idx) => (
-                        <li key={idx}>
-                          <strong>{fd.element}</strong>: {fd.description} ({fd.expectedValue})
-                        </li>
-                      ))}
+                      {correctionPlan.fidelityDeltas.map((fd, idx) => {
+                        const elementLabelMap: Record<string, string> = {
+                          palette: 'Bảng màu',
+                          fabric: 'Chất liệu vải',
+                          lowerGarment: 'Hạ phục',
+                          footwear: 'Giày dép',
+                          accessories: 'Phụ kiện'
+                        };
+                        const displayElement = elementLabelMap[fd.element] || fd.element;
+                        let displayExpected = fd.expectedValue;
+                        if (fd.element === 'fabric') displayExpected = getFabricLabel(fd.expectedValue);
+                        else if (fd.element === 'lowerGarment') displayExpected = getLowerGarmentLabel(fd.expectedValue);
+                        else if (fd.element === 'footwear') displayExpected = getFootwearLabel(fd.expectedValue);
+                        else if (fd.element === 'accessories') displayExpected = getAccessoryLabel(fd.expectedValue);
+
+                        return (
+                          <li key={idx}>
+                            <strong>{displayElement}</strong>: {fd.description} ({displayExpected})
+                          </li>
+                        );
+                      })}
                     </ul>
                   </div>
                 )}
@@ -598,307 +659,356 @@ export const CulturalQACard: React.FC<CulturalQACardProps> = ({
                     Không có điểm cần tinh chỉnh theo đánh giá
                   </span>
                   <p className="text-[11px] text-emerald-800/90 font-normal leading-relaxed">
-                    Tất cả đặc trưng quan sát được đều đạt chuẩn mực; các yếu tố không đánh giá được (nếu có) không được coi là lỗi.
+                    Tất cả đặc trưng quan sát được đều phù hợp với tiêu chí đối chiếu hiện tại; các yếu tố không đánh giá được (nếu có) không được coi là lỗi.
                   </p>
                 </div>
               </div>
             </div>
           )}
 
-          {/* G3C: USER-REFERENCED TWO-STAGE REFINEMENT SECTION ("Tinh chỉnh theo ý tôi") */}
-          <div className="p-4 sm:p-5 rounded-2xl bg-indigo-50/60 border border-indigo-200/80 space-y-3.5 shadow-2xs">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-xl bg-indigo-100 text-indigo-800 flex items-center justify-center">
-                  <Sparkles className="w-4 h-4 text-indigo-700" />
-                </div>
-                <div>
-                  <h4 className="text-xs font-bold text-stone-900">Tinh chỉnh theo ý tôi</h4>
+          {/* G3C: USER-REFERENCED TWO-STAGE REFINEMENT SECTION — PROGRESSIVE DISCLOSURE */}
+          {!isRefinementOpen ? (
+            /* Default Compact State */
+            <div className="p-4 sm:p-5 rounded-2xl bg-white border border-[#E8E3DC] shadow-2xs space-y-2.5">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="space-y-0.5">
+                  <h4 className="text-xs font-bold text-stone-900">Muốn điều chỉnh thêm?</h4>
                   <p className="text-[11px] text-stone-500 font-normal">
-                    Mô tả mong muốn thay đổi bố cục, ánh sáng, độ rủ vải hoặc dáng đứng (V0 → V1 → V2).
+                    Thay đổi ánh sáng, bố cục, độ rủ hoặc phong thái mà không thay cấu trúc bản phối.
                   </p>
                 </div>
+                {revisionIndex < 2 ? (
+                  <button
+                    type="button"
+                    onClick={() => setIsRefinementOpen(true)}
+                    className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-medium text-indigo-700 bg-indigo-50 hover:bg-indigo-100/80 border border-indigo-200/80 transition-colors cursor-pointer self-start sm:self-center"
+                  >
+                    <span>Tự mô tả điều bạn muốn thay đổi ↓</span>
+                  </button>
+                ) : (
+                  <span className="text-[11px] text-stone-400 italic">
+                    Đã dùng hết 2 lượt tinh chỉnh
+                  </span>
+                )}
               </div>
-              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-indigo-100/80 text-indigo-800">
-                Đã dùng {revisionIndex}/2 lượt tinh chỉnh
-              </span>
             </div>
+          ) : (
+            /* Expanded Refinement Container */
+            <div className="p-4 sm:p-5 rounded-2xl bg-white border border-indigo-200/80 space-y-3.5 shadow-2xs animate-in fade-in duration-200">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="w-7 h-7 rounded-xl bg-indigo-50 text-indigo-700 flex items-center justify-center">
+                    <Sparkles className="w-4 h-4 text-indigo-600" />
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-stone-900">Tự mô tả điều bạn muốn thay đổi</h4>
+                    <p className="text-[11px] text-stone-500 font-normal">
+                      Thay đổi ánh sáng, bố cục, độ rủ vải hoặc dáng đứng (V0 → V1 → V2).
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-indigo-50 text-indigo-800 border border-indigo-200/60">
+                    Lượt {revisionIndex}/2
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setIsRefinementOpen(false)}
+                    className="text-xs text-stone-500 hover:text-stone-800 cursor-pointer px-2 py-0.5"
+                  >
+                    Thu gọn ↑
+                  </button>
+                </div>
+              </div>
 
-            {revisionIndex < 2 ? (
-              <div className="space-y-3">
-                {refinementPreviewState === 'ready' && previewAnalysis ? (
-                  /* STAGE 2: PREVIEW & CONFIRMATION / BLOCKING */
-                  <div className="p-3.5 rounded-xl bg-white border border-indigo-200 space-y-3 text-xs shadow-2xs animate-in fade-in duration-200">
-                    <div className="flex items-center justify-between border-b border-indigo-100 pb-2">
-                      <span className="font-semibold text-indigo-950">{previewAnalysis.title}</span>
-                      <span
-                        className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${
-                          previewAnalysis.allowed
-                            ? 'bg-emerald-50 text-emerald-700 border border-emerald-200/80'
-                            : previewAnalysis.category === 'STRUCTURAL_CONTRADICTION'
-                            ? 'bg-rose-50 text-rose-700 border border-rose-200/80'
-                            : 'bg-amber-50 text-amber-700 border border-amber-200/80'
-                        }`}
-                      >
-                        {previewAnalysis.allowed
-                          ? `Sẵn sàng tạo V${revisionIndex + 1}`
-                          : `Từ chối - ${
-                              previewAnalysis.category === 'STRUCTURAL_CONTRADICTION'
-                                ? 'Xung đột cấu trúc'
-                                : 'Cần đổi Bản phối'
-                            }`}
-                      </span>
-                    </div>
-
-                    <div className="space-y-2 text-[11px]">
-                      <div>
-                        <span className="font-semibold text-stone-700 block mb-0.5">Yêu cầu đã ghi nhận:</span>
-                        <p className="text-stone-900 bg-stone-50 p-2 rounded-lg border border-stone-200/70 italic">
-                          "{userRefinementInput}"
-                        </p>
-                      </div>
-
-                      {previewAnalysis.allowed ? (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
-                          <div className="p-2 rounded-lg bg-emerald-50/70 border border-emerald-200/60 text-emerald-900 space-y-0.5">
-                            <span className="font-semibold block">Thay đổi hình ảnh:</span>
-                            <ul className="list-disc list-inside pl-1 space-y-0.5 text-[10px]">
-                              {(previewAnalysis.changes || [userRefinementInput]).map((c, idx) => (
-                                <li key={idx}>{c}</li>
-                              ))}
-                            </ul>
-                          </div>
-                          <div className="p-2 rounded-lg bg-amber-50/70 border border-amber-200/60 text-amber-900 space-y-0.5">
-                            <span className="font-semibold block">Yếu tố bảo toàn (Khóa):</span>
-                            <ul className="list-disc list-inside pl-1 space-y-0.5 text-[10px]">
-                              {(previewAnalysis.preserved || []).map((p, idx) => (
-                                <li key={idx}>{p}</li>
-                              ))}
-                            </ul>
-                          </div>
-                        </div>
-                      ) : (
-                        <div
-                          className={`p-3 rounded-xl border space-y-2 ${
-                            previewAnalysis.category === 'STRUCTURAL_CONTRADICTION'
-                              ? 'bg-rose-50/80 border-rose-200 text-rose-950'
-                              : 'bg-amber-50/80 border-amber-200 text-amber-950'
+              {revisionIndex < 2 ? (
+                <div className="space-y-3">
+                  {refinementPreviewState === 'ready' && previewAnalysis ? (
+                    /* STAGE 2: PREVIEW & CONFIRMATION / BLOCKING */
+                    <div className="p-3.5 rounded-xl bg-white border border-indigo-200 space-y-3 text-xs shadow-2xs animate-in fade-in duration-200">
+                      <div className="flex items-center justify-between border-b border-indigo-100 pb-2">
+                        <span className="font-semibold text-indigo-950">{previewAnalysis.title}</span>
+                        <span
+                          className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${
+                            previewAnalysis.allowed
+                              ? 'bg-emerald-50 text-emerald-700 border border-emerald-200/80'
+                              : previewAnalysis.category === 'STRUCTURAL_CONTRADICTION'
+                              ? 'bg-rose-50 text-rose-700 border border-rose-200/80'
+                              : 'bg-amber-50 text-amber-700 border border-amber-200/80'
                           }`}
                         >
-                          <div className="flex items-center gap-1.5 font-semibold text-[11px]">
-                            <AlertTriangle
-                              className={`w-4 h-4 shrink-0 ${
+                          {previewAnalysis.allowed
+                            ? `Sẵn sàng tạo V${revisionIndex + 1}`
+                            : `Từ chối - ${
                                 previewAnalysis.category === 'STRUCTURAL_CONTRADICTION'
-                                  ? 'text-rose-600'
-                                  : 'text-amber-600'
+                                  ? 'Xung đột cấu trúc'
+                                  : 'Cần đổi Bản phối'
                               }`}
-                            />
-                            <span>Lý do không thể thực hiện qua tinh chỉnh ảnh:</span>
-                          </div>
-                          <p className="text-[11px] leading-relaxed font-normal">
-                            {previewAnalysis.reason}
+                        </span>
+                      </div>
+
+                      <div className="space-y-2 text-[11px]">
+                        <div>
+                          <span className="font-semibold text-stone-700 block mb-0.5">Yêu cầu đã ghi nhận:</span>
+                          <p className="text-stone-900 bg-stone-50 p-2 rounded-lg border border-stone-200/70 italic">
+                            "{userRefinementInput}"
                           </p>
-                          <div className="pt-1.5 text-[10px] opacity-90 border-t border-stone-200/60 italic font-normal">
-                            💡 {previewAnalysis.guidance}
-                          </div>
                         </div>
-                      )}
-                    </div>
 
-                    <div className="flex items-center justify-between pt-2 border-t border-indigo-100 gap-2 flex-wrap sm:flex-nowrap">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setRefinementPreviewState('idle');
-                        }}
-                        className="text-xs text-stone-600 hover:text-stone-900 underline cursor-pointer"
-                      >
-                        Chỉnh sửa lại mô tả
-                      </button>
+                        {previewAnalysis.allowed ? (
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+                            <div className="p-2 rounded-lg bg-emerald-50/70 border border-emerald-200/60 text-emerald-900 space-y-0.5">
+                              <span className="font-semibold block">Thay đổi hình ảnh:</span>
+                              <ul className="list-disc list-inside pl-1 space-y-0.5 text-[10px]">
+                                {(previewAnalysis.changes || [userRefinementInput]).map((c, idx) => (
+                                  <li key={idx}>{c}</li>
+                                ))}
+                              </ul>
+                            </div>
+                            <div className="p-2 rounded-lg bg-amber-50/70 border border-amber-200/60 text-amber-900 space-y-0.5">
+                              <span className="font-semibold block">Yếu tố bảo toàn (Khóa):</span>
+                              <ul className="list-disc list-inside pl-1 space-y-0.5 text-[10px]">
+                                {(previewAnalysis.preserved || []).map((p, idx) => (
+                                  <li key={idx}>{p}</li>
+                                ))}
+                              </ul>
+                            </div>
+                          </div>
+                        ) : (
+                          <div
+                            className={`p-3 rounded-xl border space-y-2 ${
+                              previewAnalysis.category === 'STRUCTURAL_CONTRADICTION'
+                                ? 'bg-rose-50/80 border-rose-200 text-rose-950'
+                                : 'bg-amber-50/80 border-amber-200 text-amber-950'
+                            }`}
+                          >
+                            <div className="flex items-center gap-1.5 font-semibold text-[11px]">
+                              <AlertTriangle
+                                className={`w-4 h-4 shrink-0 ${
+                                  previewAnalysis.category === 'STRUCTURAL_CONTRADICTION'
+                                    ? 'text-rose-600'
+                                    : 'text-amber-600'
+                                }`}
+                              />
+                              <span>Lý do không thể thực hiện qua tinh chỉnh ảnh:</span>
+                            </div>
+                            <p className="text-[11px] leading-relaxed font-normal">
+                              {previewAnalysis.reason}
+                            </p>
+                            <div className="pt-1.5 text-[10px] opacity-90 border-t border-stone-200/60 italic font-normal">
+                              💡 {previewAnalysis.guidance}
+                            </div>
+                          </div>
+                        )}
+                      </div>
 
-                      {previewAnalysis.allowed ? (
+                      <div className="flex items-center justify-between pt-2 border-t border-indigo-100 gap-2 flex-wrap sm:flex-nowrap">
                         <button
                           type="button"
                           onClick={() => {
-                            if (onTriggerUserGuidedRevision) {
-                              setRefinementError(null);
-                              onTriggerUserGuidedRevision(userRefinementInput.trim());
-                            }
+                            setRefinementPreviewState('idle');
                           }}
-                          disabled={isGeneratingLookbook}
-                          className="rounded-full px-5 py-2 text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm flex items-center gap-1.5 cursor-pointer disabled:opacity-50 transition-all"
+                          className="text-xs text-stone-600 hover:text-stone-900 underline cursor-pointer"
                         >
-                          {isGeneratingLookbook ? (
+                          Chỉnh sửa lại mô tả
+                        </button>
+
+                        {previewAnalysis.allowed ? (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (onTriggerUserGuidedRevision) {
+                                setRefinementError(null);
+                                onTriggerUserGuidedRevision(userRefinementInput.trim());
+                              }
+                            }}
+                            disabled={isGeneratingLookbook}
+                            className="rounded-full px-5 py-2 text-xs font-semibold bg-[#5457F5] hover:bg-[#474AE1] text-white shadow-sm flex items-center gap-1.5 cursor-pointer disabled:opacity-50 transition-all"
+                          >
+                            {isGeneratingLookbook ? (
+                              <>
+                                <div className="w-3.5 h-3.5 rounded-full border-2 border-white border-t-transparent animate-spin" />
+                                <span>Đang tạo V{revisionIndex + 1}...</span>
+                              </>
+                            ) : (
+                              <>
+                                <Sparkles className="w-3.5 h-3.5" />
+                                <span>Xác nhận và tạo V{revisionIndex + 1}</span>
+                              </>
+                            )}
+                          </button>
+                        ) : (
+                          <div className="flex items-center gap-2">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                document.getElementById('section-2-blueprint')?.scrollIntoView({ behavior: 'smooth' });
+                                if (onReturnToSandbox) onReturnToSandbox();
+                              }}
+                              className="rounded-full px-3.5 py-1.5 text-xs font-semibold bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 flex items-center gap-1 cursor-pointer transition-all"
+                            >
+                              <ArrowRight className="w-3.5 h-3.5 text-indigo-600" />
+                              <span>Quay lại Bàn thiết kế (Step 3)</span>
+                            </button>
+                            <button
+                              type="button"
+                              disabled
+                              className="rounded-full px-3.5 py-1.5 text-xs font-semibold bg-stone-100 text-stone-400 border border-stone-200 cursor-not-allowed opacity-60 flex items-center gap-1.5"
+                              title="Yêu cầu bị khóa do vi phạm cấu trúc hoặc thuộc phạm vi Bản phối"
+                            >
+                              <Lock className="w-3.5 h-3.5" />
+                              <span>Khóa tạo V{revisionIndex + 1}</span>
+                            </button>
+                          </div>
+                        )}
+                      </div>
+
+                      {refinementError && (
+                        <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-700 flex items-center gap-2">
+                          <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
+                          <span>{refinementError}</span>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    /* STAGE 1: INPUT & ANALYSIS TRIGGER */
+                    <div className="space-y-3">
+                      <textarea
+                        value={userRefinementInput}
+                        onChange={(e) => {
+                          setUserRefinementInput(e.target.value);
+                          if (refinementError) setRefinementError(null);
+                        }}
+                        placeholder="VD: Tôi muốn ảnh sáng hơn, tà áo rủ tự nhiên hơn và dáng đứng thanh lịch hơn, nhưng vẫn giữ nguyên cấu trúc cổ và tay áo."
+                        rows={2}
+                        className="w-full p-3 rounded-xl bg-stone-50/50 border border-stone-200 text-xs text-stone-800 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 resize-none shadow-2xs"
+                      />
+
+                      {refinementError && (
+                        <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-700 flex items-center gap-2">
+                          <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
+                          <span>{refinementError}</span>
+                        </div>
+                      )}
+
+                      {/* Policy disclosure button */}
+                      <div className="pt-0.5">
+                        <button
+                          type="button"
+                          onClick={() => setIsPolicyOpen(prev => !prev)}
+                          className="text-[11px] text-stone-500 hover:text-stone-800 font-medium flex items-center gap-1 cursor-pointer"
+                        >
+                          <span>{isPolicyOpen ? 'Thu gọn nguyên tắc tinh chỉnh ↑' : 'Xem nguyên tắc tinh chỉnh →'}</span>
+                        </button>
+
+                        {isPolicyOpen && (
+                          <div className="mt-2 p-3 rounded-xl bg-stone-50/70 border border-stone-200/70 text-[11px] space-y-1.5 text-stone-600 animate-in fade-in duration-150">
+                            <div className="flex items-center gap-1.5 text-indigo-900 font-semibold">
+                              <ShieldCheck className="w-3.5 h-3.5 text-indigo-600" />
+                              <span>Phạm vi điều chỉnh hình ảnh và giữ nguyên bản phối</span>
+                            </div>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 text-[10px]">
+                              <div className="p-2 rounded-lg bg-emerald-50/70 border border-emerald-200/60 text-emerald-900 space-y-0.5">
+                                <span className="font-semibold block">Được phép điều chỉnh (Ảnh):</span>
+                                <span>Ánh sáng, bố cục, góc máy, độ rủ vải, dáng đứng, phong thái.</span>
+                              </div>
+                              <div className="p-2 rounded-lg bg-amber-50/70 border border-amber-200/60 text-amber-900 space-y-0.5">
+                                <span className="font-semibold block">Khóa cố định (Bản phối):</span>
+                                <span>Dáng áo, cổ lập lĩnh, ống tay, bảng màu, chất liệu, phụ kiện.</span>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="flex items-center justify-between pt-1">
+                        <span className="text-[10px] text-stone-400 italic">
+                          Tối đa 2 lần tinh chỉnh (V0 → V1 → V2).
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const text = userRefinementInput.trim();
+                            if (!text || text.length < 3) {
+                              setRefinementError('Vui lòng nhập mô tả tinh chỉnh hợp lệ (tối thiểu 3 ký tự).');
+                              return;
+                            }
+                            setRefinementError(null);
+                            setRefinementPreviewState('analyzing');
+                            setTimeout(() => {
+                              const analysis = classifyRefinementInput(text, garmentId);
+                              setPreviewAnalysis(analysis);
+                              setRefinementPreviewState('ready');
+                            }, 300);
+                          }}
+                          disabled={!userRefinementInput.trim() || refinementPreviewState === 'analyzing'}
+                          className="rounded-full px-5 py-2 text-xs font-semibold bg-[#5457F5] hover:bg-[#474AE1] text-white shadow-sm flex items-center gap-1.5 cursor-pointer disabled:opacity-50 transition-all"
+                        >
+                          {refinementPreviewState === 'analyzing' ? (
                             <>
                               <div className="w-3.5 h-3.5 rounded-full border-2 border-white border-t-transparent animate-spin" />
-                              <span>Đang tạo V{revisionIndex + 1}...</span>
+                              <span>Đang phân tích...</span>
                             </>
                           ) : (
                             <>
                               <Sparkles className="w-3.5 h-3.5" />
-                              <span>Xác nhận và tạo V{revisionIndex + 1}</span>
+                              <span>Xem phương án tinh chỉnh</span>
                             </>
                           )}
                         </button>
-                      ) : (
-                        <div className="flex items-center gap-2">
-                          <button
-                            type="button"
-                            onClick={() => {
-                              document.getElementById('section-2-blueprint')?.scrollIntoView({ behavior: 'smooth' });
-                              if (onReturnToSandbox) onReturnToSandbox();
-                            }}
-                            className="rounded-full px-3.5 py-1.5 text-xs font-semibold bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 flex items-center gap-1 cursor-pointer transition-all"
-                          >
-                            <ArrowRight className="w-3.5 h-3.5 text-indigo-600" />
-                            <span>Quay lại Bàn thiết kế (Step 3)</span>
-                          </button>
-                          <button
-                            type="button"
-                            disabled
-                            className="rounded-full px-3.5 py-1.5 text-xs font-semibold bg-stone-100 text-stone-400 border border-stone-200 cursor-not-allowed opacity-60 flex items-center gap-1.5"
-                            title="Yêu cầu bị khóa do vi phạm cấu trúc hoặc thuộc phạm vi Bản phối"
-                          >
-                            <Lock className="w-3.5 h-3.5" />
-                            <span>Khóa tạo V{revisionIndex + 1}</span>
-                          </button>
-                        </div>
-                      )}
-                    </div>
-
-                    {refinementError && (
-                      <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-700 flex items-center gap-2">
-                        <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
-                        <span>{refinementError}</span>
                       </div>
-                    )}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  <div className="p-3 rounded-xl bg-stone-100 border border-stone-200 text-xs text-stone-600 flex items-center gap-2">
+                    <Lock className="w-4 h-4 text-stone-500 shrink-0" />
+                    <span>Đã đạt giới hạn tối đa 2 lần tinh chỉnh (V0 → V1 → V2). Không phát sinh V3 tự động.</span>
                   </div>
-                ) : (
-                  /* STAGE 1: INPUT & ANALYSIS TRIGGER */
-                  <div className="space-y-3">
-                    <textarea
-                      value={userRefinementInput}
-                      onChange={(e) => {
-                        setUserRefinementInput(e.target.value);
-                        if (refinementError) setRefinementError(null);
-                      }}
-                      placeholder="VD: Tôi muốn ảnh sáng hơn, tà áo rủ tự nhiên hơn và dáng đứng thanh lịch hơn, nhưng vẫn giữ nguyên cấu trúc cổ và tay áo."
-                      rows={2}
-                      className="w-full p-3 rounded-xl bg-white border border-stone-200 text-xs text-stone-800 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 resize-none shadow-2xs"
-                    />
 
-                    {refinementError && (
-                      <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-700 flex items-center gap-2">
-                        <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
-                        <span>{refinementError}</span>
-                      </div>
-                    )}
-
-                    {/* Permitted vs Locked Preview */}
-                    <div className="p-3 rounded-xl bg-white/80 border border-stone-200/70 text-[11px] space-y-1.5 text-stone-600">
-                      <div className="flex items-center gap-1.5 text-indigo-900 font-semibold">
-                        <ShieldCheck className="w-3.5 h-3.5 text-indigo-600" />
-                        <span>Phạm vi điều chỉnh hình ảnh và giữ nguyên bản phối</span>
-                      </div>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 text-[10px]">
-                        <div className="p-2 rounded-lg bg-emerald-50/70 border border-emerald-200/60 text-emerald-900 space-y-0.5">
-                          <span className="font-semibold block">Được phép điều chỉnh (Ảnh):</span>
-                          <span>Ánh sáng, bố cục, góc máy, độ rủ vải, dáng đứng, phong thái.</span>
+                  {isStructuralDriftOrFailure && (
+                    <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200/90 text-rose-950 space-y-2 text-xs">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-1.5 font-semibold text-rose-900">
+                          <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0" />
+                          <span>Phát hiện sai lệch cấu trúc trên V2</span>
                         </div>
-                        <div className="p-2 rounded-lg bg-amber-50/70 border border-amber-200/60 text-amber-900 space-y-0.5">
-                          <span className="font-semibold block">Khóa cố định (Bản phối):</span>
-                          <span>Dáng áo, cổ lập lĩnh, ống tay, bảng màu, chất liệu, phụ kiện.</span>
-                        </div>
+                        <span className="text-[10px] font-medium bg-rose-100 text-rose-800 px-2 py-0.5 rounded-full">
+                          Không phát sinh V3
+                        </span>
                       </div>
-                    </div>
-
-                    <div className="flex items-center justify-between pt-1">
-                      <span className="text-[10px] text-stone-400 italic">
-                        Tối đa 2 lần tinh chỉnh (V0 → V1 → V2). Không sinh V3.
-                      </span>
+                      <p className="text-[11px] text-rose-800 leading-relaxed font-normal">
+                        Mặc dù đã dùng 2/2 lượt tinh chỉnh, bạn vẫn có thể thử lại Lần 2 để hệ thống dựng lại ảnh V2 khắc phục lỗi cấu trúc. Thao tác này thay thế trực tiếp kết quả V2 và giữ nguyên số lượt tinh chỉnh 2/2.
+                      </p>
                       <button
                         type="button"
                         onClick={() => {
-                          const text = userRefinementInput.trim();
-                          if (!text || text.length < 3) {
-                            setRefinementError('Vui lòng nhập mô tả tinh chỉnh hợp lệ (tối thiểu 3 ký tự).');
-                            return;
+                          if (onRetryRevision) {
+                            onRetryRevision(2, userRefinementInput.trim() || undefined);
                           }
-                          setRefinementError(null);
-                          setRefinementPreviewState('analyzing');
-                          setTimeout(() => {
-                            const analysis = classifyRefinementInput(text, garmentId);
-                            setPreviewAnalysis(analysis);
-                            setRefinementPreviewState('ready');
-                          }, 300);
                         }}
-                        disabled={!userRefinementInput.trim() || refinementPreviewState === 'analyzing'}
-                        className="rounded-full px-5 py-2 text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm flex items-center gap-1.5 cursor-pointer disabled:opacity-50 transition-all"
+                        disabled={isGeneratingLookbook}
+                        className="rounded-full px-4 py-2 text-xs font-semibold bg-rose-600 hover:bg-rose-700 text-white shadow-xs flex items-center gap-1.5 cursor-pointer disabled:opacity-50 transition-all"
                       >
-                        {refinementPreviewState === 'analyzing' ? (
+                        {isGeneratingLookbook ? (
                           <>
                             <div className="w-3.5 h-3.5 rounded-full border-2 border-white border-t-transparent animate-spin" />
-                            <span>Đang phân tích...</span>
+                            <span>Đang thử lại Lần 2...</span>
                           </>
                         ) : (
                           <>
-                            <Sparkles className="w-3.5 h-3.5" />
-                            <span>Xem phương án tinh chỉnh</span>
+                            <RotateCw className="w-3.5 h-3.5" />
+                            <span>Thử lại Lần 2 (Khắc phục lỗi cấu trúc)</span>
                           </>
                         )}
                       </button>
                     </div>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <div className="space-y-3">
-                <div className="p-3 rounded-xl bg-stone-100 border border-stone-200 text-xs text-stone-600 flex items-center gap-2">
-                  <Lock className="w-4 h-4 text-stone-500 shrink-0" />
-                  <span>Đã đạt giới hạn tối đa 2 lần tinh chỉnh (V0 → V1 → V2). Không phát sinh V3 tự động.</span>
+                  )}
                 </div>
-
-                {isStructuralDriftOrFailure && (
-                  <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200/90 text-rose-950 space-y-2 text-xs">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-1.5 font-semibold text-rose-900">
-                        <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0" />
-                        <span>Phát hiện sai lệch cấu trúc trên V2</span>
-                      </div>
-                      <span className="text-[10px] font-medium bg-rose-100 text-rose-800 px-2 py-0.5 rounded-full">
-                        Không phát sinh V3
-                      </span>
-                    </div>
-                    <p className="text-[11px] text-rose-800 leading-relaxed font-normal">
-                      Mặc dù đã dùng 2/2 lượt tinh chỉnh, bạn vẫn có thể thử lại Lần 2 để hệ thống dựng lại ảnh V2 khắc phục lỗi cấu trúc. Thao tác này thay thế trực tiếp kết quả V2 và giữ nguyên số lượt tinh chỉnh 2/2.
-                    </p>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        if (onRetryRevision) {
-                          onRetryRevision(2, userRefinementInput.trim() || undefined);
-                        }
-                      }}
-                      disabled={isGeneratingLookbook}
-                      className="rounded-full px-4 py-2 text-xs font-semibold bg-rose-600 hover:bg-rose-700 text-white shadow-xs flex items-center gap-1.5 cursor-pointer disabled:opacity-50 transition-all"
-                    >
-                      {isGeneratingLookbook ? (
-                        <>
-                          <div className="w-3.5 h-3.5 rounded-full border-2 border-white border-t-transparent animate-spin" />
-                          <span>Đang thử lại Lần 2...</span>
-                        </>
-                      ) : (
-                        <>
-                          <RotateCw className="w-3.5 h-3.5" />
-                          <span>Thử lại Lần 2 (Khắc phục lỗi cấu trúc)</span>
-                        </>
-                      )}
-                    </button>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
+              )}
+            </div>
+          )}
 
           {/* Collapsible Technical Evidence Section ("Xem căn cứ đánh giá") */}
           {isDetailsExpanded && (
@@ -1056,7 +1166,7 @@ export const CulturalQACard: React.FC<CulturalQACardProps> = ({
                             className="flex items-center justify-between p-2 rounded-xl bg-white border border-stone-200/60"
                           >
                             <span className="font-medium text-stone-800">
-                              Phụ kiện: {acc.accessoryId}
+                              {getAccessoryLabel(acc.accessoryId)}
                             </span>
                             {getVerdictBadge(acc.verdict)}
                           </div>
@@ -1077,7 +1187,7 @@ export const CulturalQACard: React.FC<CulturalQACardProps> = ({
                         </div>
                         <ul className="list-disc list-inside pl-1 text-amber-800">
                           {qaState.result.outfitFidelity.details.unexpectedAccessories.map((item, idx) => (
-                            <li key={idx}>{item}</li>
+                            <li key={idx}>{getAccessoryLabel(item)}</li>
                           ))}
                         </ul>
                       </div>

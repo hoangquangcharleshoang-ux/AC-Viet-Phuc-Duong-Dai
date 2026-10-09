@@ -21,6 +21,12 @@ import {
   GenerationSnapshot,
   ContextProp
 } from '../../src/types/index';
+import {
+  getFabricLabel,
+  getLowerGarmentLabel,
+  getFootwearLabel,
+  getAccessoryLabel
+} from '../../src/data/canonicalCatalog';
 
 export const QA_SCHEMA_VERSION = '1.0.0';
 export const CULTURAL_KNOWLEDGE_VERSION = '1.0.0';
@@ -303,7 +309,7 @@ export const CANONICAL_GARMENT_TRAITS: Record<GarmentId, GarmentTraitSpec[]> = {
     {
       traitId: 'front_flaps_hanging_or_tied',
       traitNameVi: 'Vạt trước buông thả song song hoặc buộc vạt trước bụng',
-      category: 'essential',
+      category: 'strongly_characteristic',
       claim_type: 'structural_anatomy',
       evidence_status: 'VERIFIED',
       source_refs: ['SRC-06'],
@@ -313,7 +319,7 @@ export const CANONICAL_GARMENT_TRAITS: Record<GarmentId, GarmentTraitSpec[]> = {
     {
       traitId: 'layered_inner_yem',
       traitNameVi: 'Mối quan hệ phân tầng với lớp nội phục (áo yếm) che ngực',
-      category: 'strongly_characteristic',
+      category: 'essential',
       claim_type: 'layering_system',
       evidence_status: 'VERIFIED',
       source_refs: ['SRC-06'],
@@ -353,7 +359,7 @@ export const CANONICAL_GARMENT_TRAITS: Record<GarmentId, GarmentTraitSpec[]> = {
     {
       traitId: 'sash_belt',
       traitNameVi: 'Dải thắt lưng, ruột tượng giữ cạp',
-      category: 'variable',
+      category: 'strongly_characteristic',
       claim_type: 'aesthetic_variable',
       evidence_status: 'VERIFIED',
       source_refs: ['SRC-06'],
@@ -394,7 +400,7 @@ export const CANONICAL_GARMENT_TRAITS: Record<GarmentId, GarmentTraitSpec[]> = {
 };
 
 export const STATUS_LABELS_VI: Record<CulturalIdentityStatus, string> = {
-  PRESERVES_IDENTITY: 'Bảo toàn nhận diện cổ phục',
+  PRESERVES_IDENTITY: 'Nhận diện tổng thể ổn',
   CONTEXT_SENSITIVE: 'Hài hòa trong cách tân đương đại',
   WEAKENS_RECOGNIZABILITY: 'Nhận diện văn hóa bị mờ nhạt',
   CHANGES_CORE_IDENTIFICATION: 'Có dấu hiệu lệch cấu trúc nhận diện',
@@ -721,7 +727,7 @@ export function buildGroundedCorrectionPlan(
     fidelityDeltas.push({
       element: 'fabric',
       description: 'Chất liệu vải thân áo cần thể hiện đúng kết cấu dệt tự nhiên.',
-      expectedValue: fabricId
+      expectedValue: getFabricLabel(fabricId)
     });
   }
 
@@ -729,7 +735,7 @@ export function buildGroundedCorrectionPlan(
     fidelityDeltas.push({
       element: 'lowerGarment',
       description: 'Hạ phục chưa khớp với bản phối chỉ định.',
-      expectedValue: lowerGarmentId
+      expectedValue: getLowerGarmentLabel(lowerGarmentId)
     });
   }
 
@@ -737,7 +743,7 @@ export function buildGroundedCorrectionPlan(
     fidelityDeltas.push({
       element: 'footwear',
       description: 'Kiểu dáng giày dép chưa khớp với bản phối.',
-      expectedValue: footwearId
+      expectedValue: getFootwearLabel(footwearId)
     });
   }
 
@@ -748,9 +754,9 @@ export function buildGroundedCorrectionPlan(
   if (trulyUnexpected.length > 0) {
     fidelityDeltas.push({
       element: 'accessories',
-      description: `Loại bỏ các phụ kiện ngoài dự kiến: ${trulyUnexpected.join(', ')}.`,
+      description: `Loại bỏ các phụ kiện ngoài dự kiến: ${trulyUnexpected.map(getAccessoryLabel).join(', ')}.`,
       expectedValue: activeAccessoryIds.length > 0
-        ? `Chỉ mang các phụ kiện: ${activeAccessoryIds.join(', ')}`
+        ? `Chỉ mang các phụ kiện: ${activeAccessoryIds.map(getAccessoryLabel).join(', ')}`
         : 'Không mang thêm phụ kiện thừa'
     });
   }
@@ -763,7 +769,7 @@ export function buildGroundedCorrectionPlan(
     }
   }
   if (activeAccessoryIds.length > 0) {
-    preservationConstraints.push(`Bảo toàn các phụ kiện đã phê duyệt trong bản phối: ${activeAccessoryIds.join(', ')}`);
+    preservationConstraints.push(`Bảo toàn các phụ kiện đã phê duyệt trong bản phối: ${activeAccessoryIds.map(getAccessoryLabel).join(', ')}`);
   }
   if (contextProps.length > 0) {
     const propDescs = contextProps.map((p: any) => p.description).join(', ');
@@ -774,7 +780,15 @@ export function buildGroundedCorrectionPlan(
   const totalFixes = culturalDeltas.length + fidelityDeltas.length;
   const revisionTargetSummary = totalFixes > 0
     ? `Kế hoạch tinh chỉnh gồm ${culturalDeltas.length} điểm văn hóa và ${fidelityDeltas.length} điểm tương khớp bản phối.`
-    : 'Bản phối đã đạt độ chuẩn mực cao, các đặc trưng cốt lõi được bảo toàn.';
+    : 'Bản phối phù hợp với tiêu chí đối chiếu hiện tại, các đặc trưng cốt lõi được bảo toàn.';
+
+  const elementLabelMap: Record<string, string> = {
+    palette: 'Bảng màu',
+    fabric: 'Chất liệu vải',
+    lowerGarment: 'Hạ phục',
+    footwear: 'Giày dép',
+    accessories: 'Phụ kiện'
+  };
 
   const actionableDeltas = [
     ...culturalDeltas.map(c => ({
@@ -787,7 +801,7 @@ export function buildGroundedCorrectionPlan(
     ...fidelityDeltas.map(f => ({
       type: 'fidelity' as const,
       id: f.element,
-      name: f.element,
+      name: elementLabelMap[f.element] || f.element,
       guidance: f.expectedValue,
       deviation: f.description
     }))

@@ -70,7 +70,8 @@ export const ACCESSORIES: CatalogItem[] = [
   { id: 'quat_giay_tram_huong', label: 'Quạt giấy nan tre hương trầm' },
   { id: 'chuoi_ngoc_trai_co', label: 'Chuỗi ngọc trai cổ điển thanh lịch' },
   { id: 'kinh_ram_gong_tron', label: 'Kính râm gọng tròn retro đương đại' },
-  { id: 'vong_bac_cham_hoa', label: 'Kiềng bạc / vòng bạc chạm hoa văn cổ' }
+  { id: 'vong_bac_cham_hoa', label: 'Kiềng bạc / vòng bạc chạm hoa văn cổ' },
+  { id: 'tram_cai_toc_toi_gian', label: 'Trâm cài tóc tối giản' }
 ];
 
 // Lookup Helpers

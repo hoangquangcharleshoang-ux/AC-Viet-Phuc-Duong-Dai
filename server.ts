@@ -675,7 +675,8 @@ QUY TẮC TƯƠNG THÍCH NGƯỜI MẶC (CULTURAL PRODUCT RULES V1.1):
 Quy tắc phán quyết:
 - primary: { garmentId, rationale } (1-2 câu giải thích khách quan theo công năng và bối cảnh).
 - alternative: { garmentId, rationale } | null (CHỈ TRẢ VỀ KHI CÓ PHƯƠNG ÁN THỨ HAI THỰC SỰ HỢP LÝ; NẾU KHÔNG CÓ PHƯƠNG ÁN NÀO HỢP LÝ THÌ TRẢ VỀ NULL).
-- Phản hồi định dạng JSON khớp chính xác schema.`;
+- Phản hồi định dạng JSON khớp chính xác schema.
+- YÊU CẦU NGÔN NGỮ: Toàn bộ nội dung rationale BẮT BUỘC phải viết bằng tiếng Việt tự nhiên với đầy đủ dấu thanh (tiếng Việt có dấu chuẩn mực, tuyệt đối không viết không dấu).`;
 
       const userContent = JSON.stringify({
         promptText: promptText || '',
@@ -827,7 +828,8 @@ QUY TẮC LỰA CHỌN PHỤ KIỆN VÀ GIÀY DÉP (CULTURAL PRODUCT RULES V1.1)
 - footwearId: Chọn DUY NHẤT 1 ID từ danh mục FOOTWEAR (ví dụ: 'leather_loafer', 'classic_oxford', 'guoc_moc_truyen_thong', 'chunky_sneaker', 'mule_minimalist', 'strappy_sandals'). TUYỆT ĐỐI KHÔNG đưa giày dép vào mảng phụ kiện.
 - accessoryIds: BẮT BUỘC chỉ chọn từ danh mục ACCESSORIES đã được sàng lọc tương thích theo dáng áo, người mặc và bối cảnh ở trên.
   * Đề xuất từ 0 đến TỐI ĐA 2 phụ kiện. NẾU danh mục ACCESSORIES rỗng hoặc không có phụ kiện phù hợp, accessoryIds BẮT BUỘC là mảng rỗng [] (Ưu tiên không phụ kiện hơn là tự bịa phụ kiện).
-  * TUYỆT ĐỐI KHÔNG tự tiện suy diễn trâm cài tóc cho nữ, ngọc bội cho nam áo tấc, hoặc biến chuỗi ngọc trai / quạt cầm tay thành trang phục truyền thống mặc định.
+  * Phụ kiện trâm cài tóc ('tram_cai_toc_toi_gian'): Là gợi ý phối đương đại, CHỈ được chọn khi KHÔNG có phụ kiện đội đầu (khăn đóng, khăn mỏ quạ, nón thúng). TUYỆT ĐỐI KHÔNG chọn trâm cùng lúc với khăn hoặc nón, và không coi trâm là phụ kiện truyền thống bắt buộc.
+  * TUYỆT ĐỐI KHÔNG tự tiện suy diễn ngọc bội cho nam áo tấc, hoặc biến chuỗi ngọc trai / quạt cầm tay thành trang phục truyền thống mặc định.
 
 BẮT BUỘC chỉ chọn các Canonical ID từ danh mục Catalog được cung cấp:
 ${JSON.stringify(catalogContext, null, 2)}
@@ -1474,6 +1476,9 @@ app.get('/api/generated-images/:generationId', async (req, res) => {
  * 8. Cache & return HTTP 200 CulturalVisualQAOutput
  */
 app.post('/api/verify-lookbook', async (req, res) => {
+  res.setHeader('X-AC-API-Response', '1');
+  res.setHeader('Content-Type', 'application/json');
+
   const { generationId, boundFingerprint } = req.body || {};
 
   if (!generationId || typeof generationId !== 'string' || !boundFingerprint || typeof boundFingerprint !== 'string') {
@@ -1665,6 +1670,7 @@ Trả về JSON cấu trúc đúng schema.`;
       const routeResult = await routeGeminiTask({
         task: 'VISUAL_QA',
         requestId,
+        maxExecutionAttempts: 1, // MAX_EXECUTION_ATTEMPTS_PER_HTTP_REQUEST = 1
         isStillCurrent: () => !clientDisconnected && isTaskCurrent(),
         executeWithModel: async (modelId, isCanary, signal) => {
           const sdkStartTime = Date.now();
@@ -1786,11 +1792,31 @@ Trả về JSON cấu trúc đúng schema.`;
     serverVisualQACache.set(qaCacheKey, result);
     return res.status(200).json(result);
   } catch (error: any) {
-    const status = error?.status || 503;
-    const code = error?.code || 'VISUAL_QA_FAILED';
-    const message = error?.message || 'Không thể hoàn tất thẩm định thị giác lúc này. Vui lòng thử lại sau.';
+    if (res.writableEnded) {
+      console.warn('[Phase 2C] Response already ended, ignoring error:', error?.message || error);
+      return;
+    }
+    res.setHeader('X-AC-API-Response', '1');
+    res.setHeader('Content-Type', 'application/json');
+
+    const status = (typeof error?.status === 'number' && error.status >= 400 && error.status < 600)
+      ? error.status
+      : 503;
+
+    if (status === 400 || status === 409 || status === 410) {
+      return res.status(status).json({
+        status,
+        code: error?.code || 'INVALID_QA_REQUEST',
+        message: error?.message || 'Yêu cầu không hợp lệ.',
+        retryable: false
+      });
+    }
+
+    const code = error?.code || 'VISUAL_QA_TEMPORARILY_UNAVAILABLE';
+    const message = 'AC chưa thể hoàn tất đánh giá bản phối lúc này. Ảnh của bạn đã được tạo an toàn.';
     const retryable = error?.retryable ?? true;
-    console.error('Error in /api/verify-lookbook:', code, error?.message || error);
+
+    console.error('Error in /api/verify-lookbook:', status, code, error?.message || error);
     return res.status(status).json({ status, code, message, retryable });
   }
 });

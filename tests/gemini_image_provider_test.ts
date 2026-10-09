@@ -1,5 +1,5 @@
 /**
- * AC — Gemini Image Provider Unit Test Suite (Neutral Configurable Transport)
+ * AC — Gemini Image Provider Unit Test Suite (Stali Image Gateway Transport)
  */
 
 import { GeminiImageProvider } from '../server/services/geminiImageProvider';
@@ -20,7 +20,7 @@ function assert(condition: boolean, msg: string) {
 
 async function runTests() {
   console.log('========================================================');
-  console.log('RUNNING GEMINI IMAGE PROVIDER ADAPTER TEST SUITE');
+  console.log('RUNNING STALI IMAGE PROVIDER ADAPTER TEST SUITE');
   console.log('========================================================\n');
 
   // Test 1: Instantiation without IMAGE_API_KEY throws IMAGE_PROVIDER_NOT_CONFIGURED on generate
@@ -45,7 +45,7 @@ async function runTests() {
     results.push({ name: 'TEST_01_UNCONFIGURED_KEY_GUARD', passed: false, message: err.message });
   }
 
-  // Test 2: Missing IMAGE_API_BASE_URL throws IMAGE_PROVIDER_NOT_CONFIGURED
+  // Test 2: Missing baseUrl throws IMAGE_PROVIDER_NOT_CONFIGURED
   try {
     const provider = new GeminiImageProvider({ apiKey: 'key-123', baseUrl: '' });
 
@@ -59,7 +59,7 @@ async function runTests() {
       assert(err.code === 'IMAGE_PROVIDER_NOT_CONFIGURED', 'Code must be IMAGE_PROVIDER_NOT_CONFIGURED');
       assert(err.message.includes('IMAGE_API_BASE_URL'), 'Message must mention missing IMAGE_API_BASE_URL');
     }
-    assert(threw, 'Should throw when IMAGE_API_BASE_URL is missing');
+    assert(threw, 'Should throw when baseUrl is missing');
 
     results.push({ name: 'TEST_02_MISSING_BASE_URL_GUARD', passed: true, message: 'Missing IMAGE_API_BASE_URL correctly throws 503 IMAGE_PROVIDER_NOT_CONFIGURED' });
   } catch (err: any) {

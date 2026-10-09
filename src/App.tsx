@@ -222,8 +222,22 @@ export default function App() {
         } else if (action.type === 'SET_FABRIC') {
           updated.remixProposal.fabricId = action.targetValue;
         } else if (action.type === 'ADD_ACCESSORY') {
-          if (!updated.remixProposal.accessoryIds.includes(action.targetValue)) {
-            updated.remixProposal.accessoryIds = [...updated.remixProposal.accessoryIds, action.targetValue].slice(-2);
+          const currentAccs = updated.remixProposal.accessoryIds || [];
+          const headwearIds = ['khan_dong_truyen_thong', 'khan_mo_qua', 'non_thung_quai_thao'];
+          if (action.targetValue === 'tram_cai_toc_toi_gian') {
+            const hasHeadwear = currentAccs.some(id => headwearIds.includes(id));
+            if (!hasHeadwear && !currentAccs.includes(action.targetValue)) {
+              updated.remixProposal.accessoryIds = [...currentAccs, action.targetValue].slice(-2);
+            }
+          } else if (headwearIds.includes(action.targetValue)) {
+            const hasHairpin = currentAccs.includes('tram_cai_toc_toi_gian');
+            if (!hasHairpin && !currentAccs.includes(action.targetValue)) {
+              updated.remixProposal.accessoryIds = [...currentAccs, action.targetValue].slice(-2);
+            }
+          } else {
+            if (!currentAccs.includes(action.targetValue)) {
+              updated.remixProposal.accessoryIds = [...currentAccs, action.targetValue].slice(-2);
+            }
           }
         } else if (action.type === 'SET_COLOR') {
           const primaryIdx = updated.remixProposal.palette.findIndex(c => c.role === 'PRIMARY');
@@ -925,7 +939,7 @@ export default function App() {
 
       // Requirement 1: Automatic non-blocking QA trigger for new successful generations (v0, v1, v2)
       hydratedQARecoveredRef.current.add(`${res.generationId}_${res.outfitFingerprint}`);
-      handleVerifyLookbook(res.generationId, res.outfitFingerprint, false);
+      handleVerifyLookbook(res.generationId, res.outfitFingerprint);
     } catch (err: any) {
       if (activeLookbookFingerprintRef.current !== targetFingerprint) return;
       setLookbookState({
@@ -1236,7 +1250,7 @@ export default function App() {
 
     hydratedQARecoveredRef.current.add(recoveryKey);
     console.log('[Hydration Recovery] Triggering 1-shot recovery for missing QA restored from persistence:', { genId, boundFp });
-    handleVerifyLookbook(genId, boundFp, false);
+    handleVerifyLookbook(genId, boundFp);
   }, [hasHydrated, lookbookState, visualQAState.status, handleVerifyLookbook]);
 
   // Reset Session Flow (Requirement 31 & Micro-Patch: Bắt đầu lại)

@@ -87,14 +87,14 @@ export const TraitTransitionsView: React.FC<TraitTransitionsViewProps> = ({
   const getVerdictMiniBadge = (verdict?: TraitVerdict) => {
     switch (verdict) {
       case 'PASS':
-        return <span className="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/60">PASS</span>;
+        return <span className="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/60">Đặc trưng rõ</span>;
       case 'PARTIAL':
-        return <span className="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-amber-50 text-amber-700 border border-amber-200/60">PARTIAL</span>;
+        return <span className="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-amber-50 text-amber-700 border border-amber-200/60">Cần tinh chỉnh</span>;
       case 'FAIL':
-        return <span className="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-rose-50 text-rose-700 border border-rose-200/60">FAIL</span>;
+        return <span className="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-rose-50 text-rose-700 border border-rose-200/60">Lệch chuẩn</span>;
       case 'NOT_ASSESSABLE':
       default:
-        return <span className="px-2 py-0.5 rounded-md text-[10px] font-medium bg-stone-100 text-stone-600 border border-stone-200/80">Khuất</span>;
+        return <span className="px-2 py-0.5 rounded-md text-[10px] font-medium bg-stone-100 text-stone-600 border border-stone-200/80">Chưa xác nhận</span>;
     }
   };
 

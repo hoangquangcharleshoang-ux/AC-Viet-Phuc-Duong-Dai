@@ -1,15 +1,11 @@
 /**
  * AC — Context-Aware Cultural Remix Co-pilot
- * Configurable Image Generation Provider
+ * Image Generation Provider via Stali Image API
  *
- * Configured Image API Transport:
- * - Uses neutral HTTP request transport (POST /v1/images/generations)
- * - Server-side only (IMAGE_API_KEY never exposed to frontend)
- * - Configured model: process.env.IMAGE_PROVIDER_MODEL ?? 'req/gemini-3.0-pro-image'
- * - Native 3:4 aspect ratio support
- * - Real image dimensions decoded via sharp
- * - Sanitized diagnostics for error inspection without leaking authorization/API keys
- * - Bounded retry for transient errors; fail-fast for auth / rate limit / bad request
+ * Architecture:
+ * - Transport: Stali Image API (POST /v1/images/generations) via native fetch
+ * - Model: req/gemini-3.0-pro-image
+ * - Aspect Ratio: 3:4 aspect ratio support & sharp transform
  */
 
 import {
@@ -47,19 +43,20 @@ export class GeminiImageProvider implements ImageProvider {
 
   constructor(config?: GeminiProviderConfig) {
     const apiKey = config?.apiKey !== undefined ? config.apiKey : process.env.IMAGE_API_KEY;
-    const baseUrl = config?.baseUrl !== undefined ? config.baseUrl : process.env.IMAGE_API_BASE_URL;
+    const baseUrl = config?.baseUrl !== undefined ? config.baseUrl : (process.env.IMAGE_API_BASE_URL || 'https://api.stali.vn');
     const envModel = process.env.IMAGE_PROVIDER_MODEL;
 
     this.apiKey = apiKey || '';
     this.baseUrl = baseUrl || '';
     this.model =
       config?.model ||
-      (envModel && envModel.trim().length > 0 && !envModel.toLowerCase().includes('gpt')
+      (envModel && envModel.trim().length > 0
         ? envModel.trim()
         : 'req/gemini-3.0-pro-image');
+
     const envTimeoutRaw = process.env.IMAGE_GENERATION_TIMEOUT_MS;
     const parsedEnvTimeout = envTimeoutRaw ? parseInt(envTimeoutRaw, 10) : 110000;
-    this.timeoutMs = config?.timeoutMs || (parsedEnvTimeout > 110000 ? 110000 : parsedEnvTimeout);
+    this.timeoutMs = config?.timeoutMs || parsedEnvTimeout;
 
     this.apiKeyPresent = Boolean(this.apiKey && this.apiKey.trim().length > 0);
     this.baseUrlPresent = Boolean(this.baseUrl && this.baseUrl.trim().length > 0);
@@ -67,17 +64,13 @@ export class GeminiImageProvider implements ImageProvider {
     if (!this.apiKeyPresent) {
       this.missingConfigMessage =
         'Dịch vụ tạo ảnh chưa được cấu hình. Vui lòng cung cấp IMAGE_API_KEY trong môi trường server.';
-    } else if (!this.baseUrlPresent) {
-      this.missingConfigMessage =
-        'Dịch vụ tạo ảnh chưa được cấu hình. Vui lòng cung cấp IMAGE_API_BASE_URL trong môi trường server.';
     }
 
-    console.log('[GeminiImageProvider] Environment Configuration:', {
+    console.log('[GeminiImageProvider] Stali Image Gateway initialized:', {
       IMAGE_API_KEY_PRESENT: this.apiKeyPresent,
-      IMAGE_API_BASE_URL_PRESENT: this.baseUrlPresent,
+      IMAGE_API_BASE_URL: this.baseUrl,
       IMAGE_PROVIDER_MODEL: this.model,
-      IMAGE_GENERATION_TIMEOUT_MS: this.timeoutMs,
-      IMAGE_EPHEMERAL_TTL_MS: parseInt(process.env.IMAGE_EPHEMERAL_TTL_MS || '1800000', 10)
+      TIMEOUT_MS: this.timeoutMs
     });
   }
 
@@ -86,21 +79,25 @@ export class GeminiImageProvider implements ImageProvider {
   }
 
   public async generate(input: ImageGenerationInput): Promise<GeneratedImagePayload> {
-    if (!this.apiKeyPresent || !this.baseUrlPresent || this.missingConfigMessage) {
+    const { prompt } = input;
+
+    if (!this.apiKeyPresent) {
       throw new ImageProviderError(
         503,
         'IMAGE_PROVIDER_NOT_CONFIGURED',
-        this.missingConfigMessage ||
-          'Dịch vụ tạo ảnh chưa được cấu hình. Vui lòng cung cấp IMAGE_API_KEY và IMAGE_API_BASE_URL trong môi trường server.',
+        this.missingConfigMessage || 'Dịch vụ tạo ảnh chưa được cấu hình đầy đủ.',
         false
       );
     }
 
-    const { prompt } = input;
-    let attempt = 0;
-    const maxAttempts = 2; // initial + max 1 transient retry
-    const totalDeadlineMs = parseInt(process.env.IMAGE_SERVER_TOTAL_DEADLINE_MS || '115000', 10);
-    const startTime = Date.now();
+    if (!this.baseUrlPresent) {
+      throw new ImageProviderError(
+        503,
+        'IMAGE_PROVIDER_NOT_CONFIGURED',
+        'Dịch vụ tạo ảnh chưa được cấu hình. Vui lòng cung cấp IMAGE_API_BASE_URL.',
+        false
+      );
+    }
 
     const cleanBase = this.baseUrl.trim().replace(/\/+$/, '');
     let endpoint = cleanBase;
@@ -113,262 +110,133 @@ export class GeminiImageProvider implements ImageProvider {
         endpoint = `${endpoint}/v1/images/generations`;
       }
     }
-
-    // Ensure we don't accidentally duplicate /v1/v1 if base URL already ends with /v1
     endpoint = endpoint.replace(/\/v1\/v1\//g, '/v1/');
 
-    console.log('[GeminiImageProvider] Final Request URL:', endpoint);
+    console.log('[GeminiImageProvider] Stali Request URL:', endpoint);
 
-    while (attempt < maxAttempts) {
-      attempt++;
-      const elapsed = Date.now() - startTime;
-      const remainingTotal = totalDeadlineMs - elapsed;
-      if (remainingTotal <= 1000) {
+    let timeoutTimer: NodeJS.Timeout | undefined;
+
+    try {
+      const controller = new AbortController();
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        timeoutTimer = setTimeout(() => {
+          controller.abort();
+          reject(
+            new ImageProviderError(
+              504,
+              'IMAGE_GENERATION_TIMEOUT',
+              'Quá trình tạo ảnh mất nhiều thời gian hơn dự kiến. Vui lòng thử lại.',
+              true
+            )
+          );
+        }, this.timeoutMs);
+      });
+
+      const requestPayload = {
+        model: this.model,
+        prompt: prompt,
+        n: 1,
+        size: '1024x1536',
+        response_format: 'b64_json'
+      };
+
+      const fetchPromise = fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this.apiKey.trim()}`,
+          'User-Agent': 'aistudio-build'
+        },
+        body: JSON.stringify(requestPayload),
+        signal: controller.signal
+      });
+
+      const response = await Promise.race([fetchPromise, timeoutPromise]);
+      if (timeoutTimer) clearTimeout(timeoutTimer);
+
+      if (!response.ok) {
+        let errorText = '';
+        try {
+          errorText = await response.text();
+        } catch {}
+        const status = response.status;
+        throw { status, message: errorText || `HTTP error ${status}` };
+      }
+
+      const data: any = await response.json();
+      let base64Data: string | null = null;
+      let mimeType = 'image/png';
+
+      const item = data?.data?.[0] || data?.[0] || data;
+      if (item?.b64_json) {
+        base64Data = item.b64_json;
+      } else if (item?.image_base64) {
+        base64Data = item.image_base64;
+      } else if (data?.b64_json) {
+        base64Data = data.b64_json;
+      } else if (item?.url) {
+        const imgRes = await fetch(item.url);
+        if (imgRes.ok) {
+          const buf = await imgRes.arrayBuffer();
+          base64Data = Buffer.from(buf).toString('base64');
+          const ct = imgRes.headers.get('content-type');
+          if (ct) mimeType = ct;
+        }
+      }
+
+      if (!base64Data) {
         throw new ImageProviderError(
-          504,
-          'IMAGE_GENERATION_TIMEOUT',
-          'Quá trình tạo ảnh mất nhiều thời gian hơn dự kiến. Bạn có thể thử lại.',
-          true
+          502,
+          'IMAGE_GENERATION_FAILED',
+          'Không nhận được dữ liệu base64 hình ảnh từ nhà cung cấp dịch vụ.',
+          false
         );
       }
 
-      const currentAttemptTimeout = Math.min(this.timeoutMs, remainingTotal);
-      let timeoutTimer: NodeJS.Timeout | undefined;
+      const buffer = Buffer.from(base64Data, 'base64');
+      const transformed = await transformToTrue3x4(buffer, mimeType);
 
-      try {
-        const controller = new AbortController();
-        const timeoutPromise = new Promise<never>((_, reject) => {
-          timeoutTimer = setTimeout(() => {
-            controller.abort();
-            reject(
-              new ImageProviderError(
-                504,
-                'IMAGE_GENERATION_TIMEOUT',
-                'Quá trình tạo ảnh mất nhiều thời gian hơn dự kiến. Bạn có thể thử lại.',
-                true
-              )
-            );
-          }, currentAttemptTimeout);
-        });
+      return {
+        bytes: transformed.bytes,
+        mimeType: transformed.mimeType,
+        width: transformed.width,
+        height: transformed.height
+      };
+    } catch (err: any) {
+      if (timeoutTimer) clearTimeout(timeoutTimer);
 
-        const requestPayload = {
-          model: this.model,
-          prompt: prompt,
-          n: 1,
-          size: '1024x1536',
-          response_format: 'b64_json'
-        };
+      if (err instanceof ImageProviderError) {
+        throw err;
+      }
 
-        const fetchPromise = fetch(endpoint, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${this.apiKey.trim()}`,
-            'User-Agent': 'aistudio-build'
-          },
-          body: JSON.stringify(requestPayload),
-          signal: controller.signal
-        });
+      const status = err?.status || err?.statusCode || 500;
+      const rawErrMsg = err?.message || String(err);
+      const sanitizedErrMsg = sanitizeErrorMessage(rawErrMsg);
 
-        const response = await Promise.race([fetchPromise, timeoutPromise]);
-        if (timeoutTimer) clearTimeout(timeoutTimer);
+      console.error('[GeminiImageProvider] Stali Gateway Error:', {
+        endpoint,
+        model: this.model,
+        httpStatus: status,
+        errorMessageSanitized: sanitizedErrMsg
+      });
 
-        if (!response.ok) {
-          let errorText = '';
-          try {
-            errorText = await response.text();
-          } catch {}
-          const status = response.status;
-          throw { status, message: errorText || `HTTP error ${status}` };
-        }
-
-        const contentType = response.headers?.get
-          ? response.headers.get('content-type') || ''
-          : (response.headers as any)?.['content-type'] || '';
-        if (contentType.includes('text/html')) {
-          throw new ImageProviderError(
-            502,
-            'IMAGE_PROVIDER_INVALID_RESPONSE',
-            'Dịch vụ tạo ảnh trả về định dạng HTML (không phải JSON). Vui lòng kiểm tra lại cấu hình IMAGE_API_BASE_URL.',
-            false
-          );
-        }
-
-        const data: any = await response.json();
-
-        let base64Data: string | null = null;
-        let mimeType = 'image/png';
-
-        const item = data?.data?.[0] || data?.[0] || data;
-        if (item?.b64_json) {
-          base64Data = item.b64_json;
-        } else if (item?.image_base64) {
-          base64Data = item.image_base64;
-        } else if (data?.b64_json) {
-          base64Data = data.b64_json;
-        } else if (item?.url) {
-          const imgRes = await fetch(item.url);
-          if (imgRes.ok) {
-            const buf = await imgRes.arrayBuffer();
-            base64Data = Buffer.from(buf).toString('base64');
-            const ct = imgRes.headers.get('content-type');
-            if (ct) mimeType = ct;
-          }
-        }
-
-        if (!base64Data) {
-          throw new ImageProviderError(
-            502,
-            'IMAGE_GENERATION_FAILED',
-            'Không nhận được dữ liệu base64 hình ảnh từ nhà cung cấp dịch vụ.',
-            false
-          );
-        }
-
-        const buffer = Buffer.from(base64Data, 'base64');
-        const transformed = await transformToTrue3x4(buffer, mimeType);
-
-        return {
-          bytes: transformed.bytes,
-          mimeType: transformed.mimeType,
-          width: transformed.width,
-          height: transformed.height
-        };
-      } catch (err: any) {
-        if (timeoutTimer) clearTimeout(timeoutTimer);
-
-        if (err instanceof ImageProviderError) {
-          if (err.code === 'IMAGE_GENERATION_TIMEOUT') {
-            throw err;
-          }
-          throw err;
-        }
-
-        const status = err?.status || err?.statusCode || 500;
-        const rawErrMsg = err?.message || String(err);
-        const sanitizedErrMsg = sanitizeErrorMessage(rawErrMsg);
-
-        console.error('[GeminiImageProvider] Generation Error:', {
-          stage: 'image_gateway_api',
-          endpoint,
-          model: this.model,
-          httpStatus: status,
-          errorMessageSanitized: sanitizedErrMsg
-        });
-
-        const errMsgLower = rawErrMsg.toLowerCase();
-
-        // 1. Auth errors (401 / 403 / API Key) -> Fail fast, 0 retry
-        if (
-          status === 401 ||
-          status === 403 ||
-          errMsgLower.includes('api_key') ||
-          errMsgLower.includes('api key') ||
-          errMsgLower.includes('unauthorized') ||
-          errMsgLower.includes('forbidden') ||
-          errMsgLower.includes('permission_denied')
-        ) {
-          throw new ImageProviderError(
-            status === 403 ? 403 : 401,
-            'IMAGE_PROVIDER_AUTH_ERROR',
-            'Khóa xác thực dịch vụ tạo ảnh không hợp lệ hoặc thiếu quyền truy cập.',
-            false
-          );
-        }
-
-        // 1.b Endpoint / Not Found errors (404) -> Fail fast, 0 retry
-        if (status === 404) {
-          throw new ImageProviderError(
-            404,
-            'IMAGE_PROVIDER_ENDPOINT_ERROR',
-            'Không tìm thấy điểm cuối (endpoint) dịch vụ tạo ảnh. Vui lòng kiểm tra lại IMAGE_API_BASE_URL.',
-            false
-          );
-        }
-
-        // 2. Rate limit / Quota (429) -> Fail fast or retry if budget >= 60s
-        if (
-          status === 429 ||
-          errMsgLower.includes('rate limit') ||
-          errMsgLower.includes('quota') ||
-          errMsgLower.includes('resource_exhausted')
-        ) {
-          if (attempt < maxAttempts) {
-            const remaining = totalDeadlineMs - (Date.now() - startTime);
-            if (remaining >= 60000) {
-              console.warn(
-                `[GeminiImageProvider] Rate limit / Quota error (remaining budget ${Math.round(remaining / 1000)}s >= 60s), retrying once...`
-              );
-              await new Promise((r) => setTimeout(r, 1000));
-              continue;
-            }
-          }
-          throw new ImageProviderError(
-            429,
-            'IMAGE_PROVIDER_RATE_LIMITED',
-            'Dịch vụ tạo ảnh đang tạm thời vượt quá hạn mức sử dụng. Vui lòng thử lại sau ít phút.',
-            false
-          );
-        }
-
-        // 3. Timeout error -> ABSOLUTELY NO RETRY. Fail fast immediately!
-        if (
-          errMsgLower.includes('timeout') ||
-          errMsgLower.includes('timed out') ||
-          err?.code === 'ETIMEDOUT' ||
-          err?.name === 'AbortError'
-        ) {
-          throw new ImageProviderError(
-            504,
-            'IMAGE_GENERATION_TIMEOUT',
-            'Quá trình tạo ảnh mất nhiều thời gian hơn dự kiến. Bạn có thể thử lại.',
-            true
-          );
-        }
-
-        // 4. Transient 5xx or Network error -> Retry once ONLY IF remainingBudget >= 60000ms
-        const isTransient =
-          status >= 500 ||
-          errMsgLower.includes('econnreset') ||
-          errMsgLower.includes('socket hang up') ||
-          errMsgLower.includes('service_unavailable') ||
-          errMsgLower.includes('503') ||
-          errMsgLower.includes('network') ||
-          errMsgLower.includes('fetch');
-
-        if (isTransient && attempt < maxAttempts) {
-          const remaining = totalDeadlineMs - (Date.now() - startTime);
-          if (remaining >= 60000) {
-            console.warn(
-              `[GeminiImageProvider] Transient error (status ${status}, remaining budget ${Math.round(remaining / 1000)}s >= 60s), retrying once...`,
-              sanitizedErrMsg
-            );
-            await new Promise((r) => setTimeout(r, 1000));
-            continue;
-          } else {
-            console.warn(
-              `[GeminiImageProvider] Transient error (status ${status}), but remaining budget ${Math.round(remaining / 1000)}s < 60s. Failing fast.`
-            );
-          }
-        }
-
-        // 5. Non-transient errors
+      if (status === 401) {
         throw new ImageProviderError(
-          status >= 500 ? 503 : 400,
-          status >= 500 ? 'IMAGE_PROVIDER_UNAVAILABLE' : 'IMAGE_GENERATION_FAILED',
-          status >= 500
-            ? 'Dịch vụ tạo ảnh đang tạm thời không khả dụng. Vui lòng thử lại sau.'
-            : 'Yêu cầu tạo ảnh không thể hoàn tất. Vui lòng kiểm tra lại cấu hình.',
-          isTransient
+          401,
+          'IMAGE_PROVIDER_AUTH_ERROR',
+          'Khóa API hình ảnh không hợp lệ hoặc không có quyền truy cập.',
+          false
         );
       }
+
+      throw new ImageProviderError(
+        status >= 500 ? 503 : 400,
+        status >= 500 ? 'IMAGE_PROVIDER_UNAVAILABLE' : 'IMAGE_GENERATION_FAILED',
+        status >= 500
+          ? 'Dịch vụ tạo ảnh đang tạm thời không khả dụng. Vui lòng thử lại sau.'
+          : 'Yêu cầu tạo ảnh không thể hoàn tất.',
+        true
+      );
     }
-
-    throw new ImageProviderError(
-      503,
-      'IMAGE_PROVIDER_UNAVAILABLE',
-      'Dịch vụ tạo ảnh đang tạm thời không khả dụng sau khi thử lại. Vui lòng thử lại sau.',
-      true
-    );
   }
 }

@@ -103,6 +103,39 @@ export function isPearlRequestedExplicitly(promptText?: string): boolean {
   );
 }
 
+export const TRADITIONAL_HEADWEAR_IDS = [
+  'khan_dong_truyen_thong',
+  'khan_mo_qua',
+  'non_thung_quai_thao'
+] as const;
+
+/**
+ * Checks if user prompt explicitly requests a hairpin / trâm cài tóc.
+ * Trâm cài tóc tối giản is a CONTEMPORARY_STYLING_RECOMMENDATION.
+ */
+export function isHairpinRequestedExplicitly(promptText?: string): boolean {
+  if (!promptText) return false;
+  const p = promptText.toLowerCase();
+
+  // Negative checks
+  if (
+    p.includes('không trâm') ||
+    p.includes('không cài trâm') ||
+    p.includes('không dùng trâm') ||
+    p.includes('tránh trâm') ||
+    /\bno\s+hairpins?\b/i.test(p) ||
+    /\bwithout\s+hairpins?\b/i.test(p)
+  ) {
+    return false;
+  }
+
+  return (
+    p.includes('trâm') ||
+    p.includes('cài tóc') ||
+    /\bhairpins?\b/i.test(p)
+  );
+}
+
 /**
  * Validates and enforces Wearer Compatibility Matrix for Call A Recommendation
  * 
@@ -350,6 +383,20 @@ export function getPolicyCompatibleAccessories(params: {
         break;
       }
 
+      case 'tram_cai_toc_toi_gian': {
+        // Minimalist hairpin: CONTEMPORARY_STYLING_RECOMMENDATION
+        // - Optional contemporary styling accessory, never a historical default for any MVP garment
+        // - Compatible when traditionalRatio <= 69 and explorationIntent !== 'MORE_TRADITIONAL'
+        // - Allowed when user explicitly requests it, or for female/neutral in contemporary-leaning contexts
+        const hairpinExplicit = isHairpinRequestedExplicitly(promptText);
+        if (hairpinExplicit) {
+          isAllowed = true;
+        } else if ((effectiveWearer === 'nu' || effectiveWearer === 'neutral') && traditionalRatio <= 69 && explorationIntent !== 'MORE_TRADITIONAL') {
+          isAllowed = true;
+        }
+        break;
+      }
+
       default:
         isAllowed = false;
         break;
@@ -413,9 +460,23 @@ export function sanitizeBlueprintWithPolicy(
   }
 
   // Filter raw accessories so only policy-allowed items survive
-  const sanitizedAccessoryIds = rawAccessoryIds
+  let sanitizedAccessoryIds = rawAccessoryIds
     .filter(id => typeof id === 'string' && allowedIds.has(id))
     .slice(0, 2);
+
+  // Headwear conflict guard:
+  // Traditional headwear (khan_dong, khan_mo_qua, non_thung_quai_thao) and hairpin cannot co-exist!
+  const hasHeadwear = sanitizedAccessoryIds.some(id => TRADITIONAL_HEADWEAR_IDS.includes(id as any));
+  const hasHairpin = sanitizedAccessoryIds.includes('tram_cai_toc_toi_gian');
+  if (hasHeadwear && hasHairpin) {
+    if (isHairpinRequestedExplicitly(promptText)) {
+      // User explicitly requested hairpin: prioritize hairpin, drop headwear
+      sanitizedAccessoryIds = sanitizedAccessoryIds.filter(id => !TRADITIONAL_HEADWEAR_IDS.includes(id as any));
+    } else {
+      // Auto-suggestion: headwear takes precedence, drop hairpin
+      sanitizedAccessoryIds = sanitizedAccessoryIds.filter(id => id !== 'tram_cai_toc_toi_gian');
+    }
+  }
 
   return {
     allowedAccessories,

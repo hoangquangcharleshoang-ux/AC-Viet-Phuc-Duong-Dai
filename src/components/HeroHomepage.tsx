@@ -120,9 +120,9 @@ export const HeroHomepage: React.FC<HeroHomepageProps> = ({
 
   // Calculate dynamic slider label based on continuous value (0 -> 100)
   const getSliderLabel = (val: number): string => {
-    if (val === 50) return 'Cân bằng 50/50';
-    if (val < 50) return `${100 - val}% truyền thống`;
-    return `${val}% hiện đại`;
+    if (val <= 30) return 'Gần nguyên bản';
+    if (val <= 70) return 'Cân bằng';
+    return 'Biến tấu hơn';
   };
 
   // Current selected labels for header display
@@ -157,18 +157,18 @@ export const HeroHomepage: React.FC<HeroHomepageProps> = ({
   return (
     <section className="space-y-10 sm:space-y-12 pt-0 sm:pt-2">
       {/* 1. Hero Typography (Unboxed, airy, optical-centered) */}
-      <div className="text-center space-y-4 max-w-3xl mx-auto px-2">
+      <div className="text-center space-y-4 max-w-[860px] mx-auto px-2">
         <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-semibold tracking-wider text-[#4285F4] bg-white/70 backdrop-blur-md border border-[#4285F4]/20 shadow-2xs uppercase">
           <span className="w-1.5 h-1.5 rounded-full bg-[#4285F4] animate-pulse" />
           <span>TRỢ LÝ AI PHỐI VIỆT PHỤC</span>
         </div>
 
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-semibold text-[#1F1F1F] tracking-tight leading-[1.25]">
-          Tái định nghĩa Việt phục trong đời sống đương đại
+        <h1 className="text-3xl sm:text-4xl md:text-[50px] font-bold text-[#242321] tracking-tight leading-[1.14]">
+          Phối Việt phục cho hôm nay, giữ đúng nét cốt lõi.
         </h1>
 
-        <p className="text-sm sm:text-base text-[#5F6368] leading-relaxed max-w-2xl mx-auto font-normal">
-          Việt phục không chỉ thuộc về quá khứ, mà là hệ thống thẩm mỹ và cấu trúc may đo đặc trưng của người Việt qua từng thời kỳ. AC đồng hành cùng bạn khám phá, thấu hiểu và thử nghiệm phối Việt phục mà vẫn giữ trọn bản sắc vốn có.
+        <p className="text-base sm:text-lg text-[#6F6B66] leading-[1.6] max-w-2xl mx-auto font-normal">
+          Chọn dịp và phong cách của bạn. AC sẽ gợi ý dáng áo phù hợp, chỉ rõ điều nên giữ, phần có thể biến tấu và giúp bạn hình dung bản phối.
         </p>
       </div>
 
@@ -194,7 +194,7 @@ export const HeroHomepage: React.FC<HeroHomepageProps> = ({
                 value={promptText}
                 onChange={e => onPromptChange(e.target.value)}
                 placeholder="Ví dụ: Mình cần một bộ Việt phục dự lễ tốt nghiệp đại học, phong thái trẻ trung với tone đỏ chủ đạo..."
-                className="w-full bg-transparent border-none text-base text-stone-900 placeholder:text-stone-400 focus:outline-none leading-relaxed font-normal resize-none h-[78px] p-0"
+                className="w-full bg-transparent border-none text-base text-stone-900 placeholder:text-stone-400 focus:outline-none leading-relaxed font-normal resize-none h-[54px] p-0"
               />
             </div>
           </div>
@@ -298,13 +298,12 @@ export const HeroHomepage: React.FC<HeroHomepageProps> = ({
             {/* HÀNG ĐÁY — GỘP THANH TRƯỢT GỌN GÀNG (~35%) VÀ NÚT CTA CÙNG MỘT HÀNG */}
             <div className="pt-3 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-t border-stone-100">
               {/* Bên trái: Cụm thanh trượt thu gọn chiếm ~35% - 40% bề ngang */}
-              <div className="w-full sm:w-72 max-w-[280px] space-y-2">
+              <div className="w-full sm:w-80 max-w-[320px] space-y-2">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-stone-500 font-normal text-[11px]">Truyền thống hơn</span>
+                  <span className="text-[11px] font-bold text-stone-700 uppercase tracking-wider">Mức biến tấu</span>
                   <span className="text-xs font-semibold text-indigo-950 bg-indigo-50/90 px-2.5 py-0.5 rounded-full border border-indigo-200/60 shadow-2xs">
                     {getSliderLabel(sliderValue)}
                   </span>
-                  <span className="text-stone-500 font-normal text-[11px]">Hiện đại hơn</span>
                 </div>
 
                 <div className="relative flex items-center">
@@ -321,9 +320,9 @@ export const HeroHomepage: React.FC<HeroHomepageProps> = ({
                       } else {
                         setInternalSliderValue(val);
                       }
-                      if (val < 35) {
+                      if (val <= 30) {
                         onSelectIntent('traditional');
-                      } else if (val > 65) {
+                      } else if (val >= 71) {
                         onSelectIntent('expressive');
                       } else {
                         onSelectIntent('balanced');
@@ -331,6 +330,11 @@ export const HeroHomepage: React.FC<HeroHomepageProps> = ({
                     }}
                     className="w-full slider-indigo cursor-pointer"
                   />
+                </div>
+
+                <div className="flex items-center justify-between text-[11px] text-stone-500 font-medium px-0.5">
+                  <span>Gần nguyên bản</span>
+                  <span>Đương đại hơn</span>
                 </div>
               </div>
 
@@ -353,7 +357,7 @@ export const HeroHomepage: React.FC<HeroHomepageProps> = ({
                       document.getElementById('section-garments')?.scrollIntoView({ behavior: 'smooth' });
                     }
                   }}
-                  className="rounded-full px-6 py-2.5 bg-gradient-to-r from-indigo-400 via-indigo-400 to-sky-400 border border-white/50 text-white font-medium text-sm tracking-wide shadow-md shadow-indigo-200/50 hover:shadow-lg hover:shadow-indigo-300/60 hover:brightness-105 active:scale-[0.98] transition-all duration-300 cursor-pointer flex items-center gap-2 disabled:opacity-70"
+                  className="rounded-full px-6 py-2.5 bg-[#5457F5] hover:bg-[#474AE1] text-white font-medium text-sm tracking-wide shadow-sm shadow-[#5457F5]/25 hover:shadow-md active:scale-[0.98] transition-all duration-200 cursor-pointer flex items-center gap-2 disabled:opacity-60"
                 >
                   {isRecommending ? (
                     <>
@@ -381,7 +385,7 @@ export const HeroHomepage: React.FC<HeroHomepageProps> = ({
             CÁC DÁNG ÁO AC ĐANG HỖ TRỢ
           </h2>
           <p className="text-xs sm:text-sm text-stone-500 font-normal">
-            Nền tảng may đo chuẩn mực thời Nguyễn và Bắc Bộ làm điểm tựa cho mọi sáng tạo.
+            Ba dáng áo nền tảng được AC dùng làm điểm tựa cho các gợi ý phối đương đại.
           </p>
         </div>
 

@@ -31,6 +31,8 @@ export interface RouteResult<T> {
   routeMeta: RouteMeta;
 }
 
+export const MAX_EXECUTION_ATTEMPTS_PER_HTTP_REQUEST = 1;
+
 export interface RouteTaskOptions<T> {
   task: GeminiTask;
   requestId: string;
@@ -41,6 +43,7 @@ export interface RouteTaskOptions<T> {
   isStillCurrent?: () => boolean;
   deadlineMs?: number;
   candidateTimeoutCapMs?: number;
+  maxExecutionAttempts?: number;
 }
 
 function sanitizeErrorMessage(msg: string): string {
@@ -222,9 +225,14 @@ export async function routeGeminiTask<T>(options: RouteTaskOptions<T>): Promise<
         ? Math.min(remainingBudget * 0.35, remainingCandidatesAfterThis * reservePerCandidate)
         : 0;
 
-    // For VISUAL_QA: limit to at most 2 attempts (primary + 1 fallback) to ensure clean termination before outer proxy ceiling
-    if (task === 'VISUAL_QA' && attemptCount >= 2) {
-      console.log(`[ModelRouter] VISUAL_QA reached maximum attempt limit (2), avoiding sequential proxy timeout`);
+    // For VISUAL_QA: Policy MAX_EXECUTION_ATTEMPTS_PER_HTTP_REQUEST = 1
+    // Each /api/verify-lookbook only executes at most 1 model per HTTP request.
+    const maxExecutionLimit =
+      options.maxExecutionAttempts ??
+      (task === 'VISUAL_QA' && !options.customBreaker ? MAX_EXECUTION_ATTEMPTS_PER_HTTP_REQUEST : undefined);
+
+    if (maxExecutionLimit !== undefined && attemptCount >= maxExecutionLimit) {
+      console.log(`[ModelRouter] ${task} reached maximum execution attempt limit (${maxExecutionLimit}), avoiding sequential fallback`);
       break;
     }
 
@@ -395,6 +403,34 @@ export async function routeGeminiTask<T>(options: RouteTaskOptions<T>): Promise<
             );
           }
 
+          // VISUAL_QA Policy: MAX_EXECUTION_ATTEMPTS_PER_HTTP_REQUEST = 1
+          // Each /api/verify-lookbook only executes at most 1 model per HTTP request.
+          // Do NOT sequentially execute a second model in the same HTTP request.
+          // If first candidate fails with timeout, 503, network error, or temporarily unavailable:
+          // Terminate request immediately with structured JSON retryable error.
+          const maxExecLimit =
+            options.maxExecutionAttempts ??
+            (task === 'VISUAL_QA' && !options.customBreaker ? MAX_EXECUTION_ATTEMPTS_PER_HTTP_REQUEST : undefined);
+
+          if (task === 'VISUAL_QA' && maxExecLimit !== undefined && attemptCount >= maxExecLimit) {
+            console.warn(`[ModelRouter] VISUAL_QA candidate failed (${classified.category}, status: ${classified.status}). Policy MAX_EXECUTION_ATTEMPTS_PER_HTTP_REQUEST=1 engaged: terminating immediately without sequential fallback.`, {
+              task,
+              requestId,
+              candidateModel,
+              category: classified.category,
+              status: classified.status
+            });
+
+            const status = classified.status === 504 ? 504 : 503;
+            throw new ModelRouterError(
+              status,
+              'VISUAL_QA_TEMPORARILY_UNAVAILABLE',
+              'AC chưa thể hoàn tất đánh giá bản phối lúc này. Ảnh của bạn đã được tạo an toàn.',
+              true,
+              classified
+            );
+          }
+
           // Fallback to next candidate (NO same-model retry for 503/timeout!)
           console.warn(`[ModelRouter] Candidate failed, falling back to next candidate`, {
             task,
@@ -461,8 +497,10 @@ export async function routeGeminiTask<T>(options: RouteTaskOptions<T>): Promise<
   if (finalNow >= deadlineAt || (deadlineAt - finalNow) < ROUTER_CONFIG.minCandidateTimeoutMs) {
     throw new ModelRouterError(
       504,
-      'GEMINI_ROUTER_DEADLINE_EXCEEDED',
-      'Dịch vụ AI đang phản hồi chậm. Vui lòng thử lại sau giây lát.',
+      task === 'VISUAL_QA' ? 'VISUAL_QA_TEMPORARILY_UNAVAILABLE' : 'GEMINI_ROUTER_DEADLINE_EXCEEDED',
+      task === 'VISUAL_QA'
+        ? 'AC chưa thể hoàn tất đánh giá bản phối lúc này. Ảnh của bạn đã được tạo an toàn.'
+        : 'Dịch vụ AI đang phản hồi chậm. Vui lòng thử lại sau giây lát.',
       true
     );
   }
@@ -479,8 +517,10 @@ export async function routeGeminiTask<T>(options: RouteTaskOptions<T>): Promise<
 
   throw new ModelRouterError(
     503,
-    'NO_COMPATIBLE_MODEL_AVAILABLE',
-    'Dịch vụ AI đang tạm thời không khả dụng. Vui lòng thử lại sau.',
+    task === 'VISUAL_QA' ? 'VISUAL_QA_TEMPORARILY_UNAVAILABLE' : 'NO_COMPATIBLE_MODEL_AVAILABLE',
+    task === 'VISUAL_QA'
+      ? 'AC chưa thể hoàn tất đánh giá bản phối lúc này. Ảnh của bạn đã được tạo an toàn.'
+      : 'Dịch vụ AI đang tạm thời không khả dụng. Vui lòng thử lại sau.',
     true,
     lastClassifiedError
   );

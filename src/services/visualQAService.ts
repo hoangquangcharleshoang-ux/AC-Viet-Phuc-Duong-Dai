@@ -118,12 +118,12 @@ export async function verifyLookbookImage(
         const errJson = await res.json().catch(() => ({}));
         let code = errJson.code;
         if (!code) {
-          if (res.status === 410) code = 'EPHEMERAL_IMAGE_EXPIRED';
-          else if (res.status === 409) code = 'FINGERPRINT_MISMATCH';
-          else if (res.status === 503) code = 'QA_SERVICE_UNAVAILABLE';
-          else if (res.status === 504) code = 'QA_TIMEOUT';
-          else if (res.status === 429) code = 'QA_SERVICE_UNAVAILABLE';
-          else code = 'QA_INTERNAL_ERROR';
+          code = res.status === 410 ? 'EPHEMERAL_IMAGE_EXPIRED'
+            : res.status === 409 ? 'FINGERPRINT_MISMATCH'
+            : res.status === 503 ? 'QA_SERVICE_UNAVAILABLE'
+            : res.status === 504 ? 'QA_TIMEOUT'
+            : res.status === 429 ? 'QA_SERVICE_UNAVAILABLE'
+            : 'QA_INTERNAL_ERROR';
         }
 
         const message = errJson.message || `Lỗi đánh giá bản phối (${res.status})`;

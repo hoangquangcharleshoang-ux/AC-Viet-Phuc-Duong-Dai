@@ -16,10 +16,15 @@ import {
   isMaleTuThanExplicitRemix,
   isFanRequestedExplicitly,
   isPearlRequestedExplicitly,
+  isHairpinRequestedExplicitly,
+  TRADITIONAL_HEADWEAR_IDS,
   sanitizeBlueprintWithPolicy
 } from '../server/services/culturalPolicyService';
 import { compileVisualPrompt } from '../server/services/visualPromptCompiler';
 import { GarmentRecommendationOutput, GenerateLookbookRequest } from '../src/types/index';
+import { ACCESSORIES, getAccessoryLabel } from '../src/data/canonicalCatalog';
+import { CANONICAL_GARMENT_TRAITS, aggregateCulturalVisualQA } from '../server/services/visualQAAggregator';
+import { computeOutfitFingerprint } from '../src/shared/fingerprint';
 
 function assert(condition: boolean, message: string) {
   if (!condition) {
@@ -479,6 +484,151 @@ async function runTestSuite() {
   );
 
   console.log('[PASS] 4.1 Visual Prompt Compiler enforces v1.1 guardrails, hairstyle policy, and anti-hallucination guards');
+
+  // -------------------------------------------------------------------------
+  // 5. HAIRPIN CONTEMPORARY STYLING & HEADWEAR CONFLICT GUARDS
+  // -------------------------------------------------------------------------
+  console.log('\n--- TEST GROUP 5: HAIRPIN CONTEMPORARY STYLING & HEADWEAR CONFLICT GUARDS ---');
+
+  // Test 5.1: Catalog has Trâm cài tóc tối giản and returns correct human-readable display label
+  const hairpin = ACCESSORIES.find(a => a.id === 'tram_cai_toc_toi_gian');
+  assert(hairpin != null, 'Catalog must contain tram_cai_toc_toi_gian');
+  assert(hairpin?.label === 'Trâm cài tóc tối giản', 'Hairpin display label must be "Trâm cài tóc tối giản"');
+  assert(getAccessoryLabel('tram_cai_toc_toi_gian') === 'Trâm cài tóc tối giản', 'getAccessoryLabel must return canonical display label');
+  console.log('[PASS] 5.1 Catalog has Trâm cài tóc tối giản and returns canonical display label');
+
+  // Test 5.2: Hairpin is NOT a cultural identity trait for any MVP garment
+  const allTraitSpecs = [
+    ...CANONICAL_GARMENT_TRAITS.ngu_than_chen,
+    ...CANONICAL_GARMENT_TRAITS.ao_tac,
+    ...CANONICAL_GARMENT_TRAITS.ao_tu_than
+  ];
+  const hasHairpinTrait = allTraitSpecs.some(t => t.traitId.includes('hairpin') || t.traitId.includes('tram'));
+  assert(!hasHairpinTrait, 'Hairpin must NOT be a cultural identity trait in CANONICAL_GARMENT_TRAITS');
+  console.log('[PASS] 5.2 Hairpin is not a cultural identity requirement');
+
+  // Test 5.3: Outfit with active headwear does not auto-suggest hairpin (Headwear conflict guard)
+  const sanitizedWithHeadwear = sanitizeBlueprintWithPolicy(
+    'ngu_than_chen',
+    { remixProposal: { accessoryIds: ['khan_dong_truyen_thong', 'tram_cai_toc_toi_gian'] } },
+    'Phối đồ thanh lịch',
+    { wearer: 'nam', traditionalRatio: 60 }
+  );
+  assert(
+    sanitizedWithHeadwear.sanitizedAccessoryIds.includes('khan_dong_truyen_thong'),
+    'Traditional headwear must be preserved'
+  );
+  assert(
+    !sanitizedWithHeadwear.sanitizedAccessoryIds.includes('tram_cai_toc_toi_gian'),
+    'Hairpin must NOT be auto-suggested when traditional headwear is active'
+  );
+  console.log('[PASS] 5.3 Active headwear prevents automatic addition of hairpin');
+
+  // Test 5.4: User explicit intent for hairpin is respected and prioritizes hairpin over conflicting headwear
+  assert(isHairpinRequestedExplicitly('Tôi muốn cài thêm trâm tối giản') === true, 'isHairpinRequestedExplicitly detects Vietnamese request');
+  assert(isHairpinRequestedExplicitly('không dùng trâm') === false, 'Negative intent returns false');
+  const sanitizedUserHairpin = sanitizeBlueprintWithPolicy(
+    'ngu_than_chen',
+    { remixProposal: { accessoryIds: ['khan_dong_truyen_thong', 'tram_cai_toc_toi_gian'] } },
+    'Tôi muốn cài thêm trâm tối giản',
+    { wearer: 'nu', traditionalRatio: 50 }
+  );
+  assert(
+    sanitizedUserHairpin.sanitizedAccessoryIds.includes('tram_cai_toc_toi_gian'),
+    'Explicit user hairpin intent must be preserved'
+  );
+  assert(
+    !sanitizedUserHairpin.sanitizedAccessoryIds.some(id => TRADITIONAL_HEADWEAR_IDS.includes(id as any)),
+    'Conflicting headwear must be removed when user explicitly requests hairpin'
+  );
+  console.log('[PASS] 5.4 User explicit intent for hairpin handled via existing accessory flow');
+
+  // Test 5.5: Blueprint with hairpin reflects in outfit fingerprint
+  const fpWithout = computeOutfitFingerprint({
+    garmentId: 'ngu_than_chen',
+    palette: [{ id: 'do_son_tram', role: 'PRIMARY' }],
+    fabricId: 'to_tam_ha_dong',
+    lowerGarmentId: 'silk_pants_wide',
+    footwearId: 'leather_loafer',
+    accessoryIds: []
+  });
+  const fpWith = computeOutfitFingerprint({
+    garmentId: 'ngu_than_chen',
+    palette: [{ id: 'do_son_tram', role: 'PRIMARY' }],
+    fabricId: 'to_tam_ha_dong',
+    lowerGarmentId: 'silk_pants_wide',
+    footwearId: 'leather_loafer',
+    accessoryIds: ['tram_cai_toc_toi_gian']
+  });
+  assert(fpWithout !== fpWith, 'Fingerprint must update when hairpin is added');
+  const fpWithDuplicate = computeOutfitFingerprint({
+    garmentId: 'ngu_than_chen',
+    palette: [{ id: 'do_son_tram', role: 'PRIMARY' }],
+    fabricId: 'to_tam_ha_dong',
+    lowerGarmentId: 'silk_pants_wide',
+    footwearId: 'leather_loafer',
+    accessoryIds: ['tram_cai_toc_toi_gian']
+  });
+  assert(fpWith === fpWithDuplicate, 'Fingerprint must be deterministic for identical accessory state');
+  console.log('[PASS] 5.5 Fingerprint reflects hairpin addition/subtraction');
+
+  // Test 5.6: Visual QA does not treat absence of hairpin as cultural failure
+  const qaOutputWithoutHairpin = aggregateCulturalVisualQA(
+    'ngu_than_chen',
+    CANONICAL_GARMENT_TRAITS.ngu_than_chen.map(t => ({
+      traitId: t.traitId,
+      verdict: 'PASS' as const,
+      visualEvidence: 'Chi tiết quan sát rõ'
+    })),
+    {
+      palette: { primaryMatch: 'PASS', supportingMatch: 'PASS', accentMatch: 'PASS' },
+      fabricMatch: 'PASS',
+      lowerGarmentMatch: 'PASS',
+      footwearMatch: 'PASS',
+      expectedAccessories: [],
+      unexpectedAccessories: []
+    },
+    'gen_test',
+    fpWithout
+  );
+  assert(
+    qaOutputWithoutHairpin.culturalIdentity.overallStatus === 'PRESERVES_IDENTITY',
+    'Absence of hairpin must NOT cause cultural failure'
+  );
+  console.log('[PASS] 5.6 Absence of hairpin is never a cultural identity failure');
+
+  // Test 5.7: Visual prompt compiler includes appearance guard (no tassels, no phoenix crown)
+  const compiledHairpinPrompt = compileVisualPrompt({
+    garmentId: 'ngu_than_chen',
+    genderPresentation: 'nu',
+    remixProposal: {
+      palette: [{ id: 'do_son_tram', hex: '#8E2829', name: 'Đỏ son trầm', role: 'PRIMARY', origin: 'USER_REQUESTED' }],
+      fabricId: 'to_tam_ha_dong',
+      lowerGarmentId: 'silk_pants_wide',
+      footwearId: 'leather_loafer',
+      accessoryIds: ['tram_cai_toc_toi_gian'],
+      contextProps: []
+    },
+    context: {
+      occasion: 'street_cafe',
+      style: 'thanh_lich',
+      traditionalRatio: 50,
+      userStyleIntent: 'Cài trâm tối giản'
+    },
+    outfitFingerprint: fpWith
+  });
+  assert(
+    compiledHairpinPrompt.prompt.includes('tram cai toc toi gian') &&
+    compiledHairpinPrompt.prompt.includes('no hanging tassels') &&
+    compiledHairpinPrompt.prompt.includes('no elaborate phoenix crown'),
+    'Compiled prompt must enforce appearance guardrails against tassels and phoenix crowns'
+  );
+  console.log('[PASS] 5.7 Visual prompt compiler enforces restrained minimalist hairpin appearance');
+
+  // Test 5.8: Zero regression on fan and pearl explicit-only guards
+  assert(!isFanRequestedExplicitly('Dạo phố thanh lịch'), 'Fan without request returns false');
+  assert(!isPearlRequestedExplicitly('Dạo phố thanh lịch'), 'Pearl without request returns false');
+  console.log('[PASS] 5.8 Fan and pearl explicit-only guards preserved 100%');
 
   console.log('\n========================================================');
   console.log('G2 CULTURAL PRODUCT RULES v1.1 RUNTIME SUITE: ALL TESTS PASSED');

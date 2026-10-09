@@ -67,6 +67,8 @@ export const Section2Blueprint: React.FC<Section2BlueprintProps> = ({
 }) => {
   // Local state for removable accessories (Requirement 6)
   const [internalActiveAccessories, setInternalActiveAccessories] = useState<string[]>([]);
+  // Progressive disclosure state for cultural evidence in Column 3
+  const [isEvidenceOpen, setIsEvidenceOpen] = useState<boolean>(false);
 
   // Effective accessories: controlled prop takes precedence if provided
   const activeAccessories = controlledActiveAccessories !== undefined
@@ -275,7 +277,7 @@ export const Section2Blueprint: React.FC<Section2BlueprintProps> = ({
                   <div className="flex items-center gap-2">
                     <Shield className="w-4 h-4 text-emerald-600" />
                     <h3 className="text-sm font-semibold text-stone-900 tracking-tight">
-                      Giữ nhận diện
+                      Giữ cốt lõi
                     </h3>
                   </div>
                   <span className="text-[11px] font-medium text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/60">
@@ -328,7 +330,7 @@ export const Section2Blueprint: React.FC<Section2BlueprintProps> = ({
                   <div className="flex items-center gap-2">
                     <Layers className="w-4 h-4 text-indigo-600" />
                     <h3 className="text-sm font-semibold text-stone-900 tracking-tight">
-                      Gợi ý phối hiện đại
+                      Biến tấu an toàn
                     </h3>
                   </div>
                   <span className="text-[11px] font-medium text-indigo-800 bg-indigo-50 px-2 py-0.5 rounded-full border border-indigo-200/60">
@@ -455,23 +457,23 @@ export const Section2Blueprint: React.FC<Section2BlueprintProps> = ({
               </div>
             </div>
 
-            {/* CỘT 3 — Lưu ý phối đồ (Ngôn ngữ tự nhiên) */}
+            {/* CỘT 3 — Cần cân nhắc (Amber Accent Tint) */}
             <div
-              className="rounded-3xl p-5 sm:p-6 bg-white/80 border border-stone-200/80 shadow-xs flex flex-col justify-between space-y-5"
+              className="rounded-3xl p-5 sm:p-6 bg-white/90 border border-amber-200/70 shadow-2xs flex flex-col justify-between space-y-5"
               style={{
                 backdropFilter: 'blur(20px)',
                 WebkitBackdropFilter: 'blur(20px)'
               }}
             >
               <div className="space-y-4">
-                <div className="flex items-center justify-between pb-2 border-b border-stone-100">
+                <div className="flex items-center justify-between pb-2 border-b border-amber-100/70">
                   <div className="flex items-center gap-2">
-                    <HelpCircle className="w-4 h-4 text-stone-500" />
+                    <HelpCircle className="w-4 h-4 text-[#B97818]" />
                     <h3 className="text-sm font-semibold text-stone-900 tracking-tight">
-                      Lưu ý phối đồ
+                      Cần cân nhắc
                     </h3>
                   </div>
-                  <span className="text-[11px] font-medium text-stone-600 bg-stone-100 px-2 py-0.5 rounded-full border border-stone-200">
+                  <span className="text-[11px] font-medium text-[#B97818] bg-amber-50/80 px-2 py-0.5 rounded-full border border-amber-200/60">
                     Bối cảnh
                   </span>
                 </div>
@@ -485,21 +487,30 @@ export const Section2Blueprint: React.FC<Section2BlueprintProps> = ({
                     <ul className="space-y-1.5 text-stone-600">
                       {blueprint.contextCautions.map((caution, idx) => (
                         <li key={idx} className="flex items-start gap-2">
-                          <span className="text-stone-400 font-bold">•</span>
+                          <span className="text-[#B97818] font-bold">•</span>
                           <span className="leading-relaxed">{caution}</span>
                         </li>
                       ))}
                     </ul>
                   </div>
 
-                  {/* Căn cứ văn hóa */}
-                  <div className="pt-2 border-t border-stone-100 space-y-1.5">
-                    <span className="text-xs font-semibold text-stone-700 block">
-                      Căn cứ văn hóa
-                    </span>
-                    <p className="text-stone-600 leading-relaxed font-normal bg-stone-50/70 p-3 rounded-2xl border border-stone-100">
-                      {getEvidenceUncertaintyNote(selectedGarmentId)}
-                    </p>
+                  {/* Căn cứ văn hóa — Progressive Disclosure */}
+                  <div className="pt-2 border-t border-amber-100/60 space-y-2">
+                    <button
+                      type="button"
+                      onClick={() => setIsEvidenceOpen(prev => !prev)}
+                      className="text-xs font-semibold text-[#B97818] hover:text-amber-800 flex items-center justify-between w-full cursor-pointer py-0.5 transition-colors"
+                    >
+                      <span>Căn cứ cho gợi ý trên</span>
+                      <span className="text-[11px] font-normal text-stone-400">
+                        {isEvidenceOpen ? 'Thu gọn ↑' : 'Chi tiết →'}
+                      </span>
+                    </button>
+                    {isEvidenceOpen && (
+                      <p className="text-stone-600 leading-relaxed font-normal bg-stone-50/90 p-3 rounded-2xl border border-stone-200/70 text-xs animate-in fade-in duration-150">
+                        {getEvidenceUncertaintyNote(selectedGarmentId)}
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>
@@ -537,10 +548,10 @@ export const Section2Blueprint: React.FC<Section2BlueprintProps> = ({
               <button
                 onClick={handleGenerateClick}
                 disabled={isGeneratingLookbook || isLoading || isRecommending || !blueprint}
-                className={`rounded-full px-6 py-2.5 font-medium text-sm tracking-wide shadow-md transition-all duration-300 flex items-center gap-2 ${
+                className={`rounded-full px-6 py-2.5 font-medium text-sm tracking-wide transition-all duration-200 flex items-center gap-2 ${
                   isGeneratingLookbook || isLoading || isRecommending || !blueprint
                     ? 'bg-stone-200 text-stone-500 border border-stone-300 cursor-not-allowed opacity-70'
-                    : 'bg-gradient-to-r from-indigo-500 via-indigo-600 to-sky-500 border border-white/50 text-white shadow-indigo-200/50 hover:shadow-lg hover:shadow-indigo-300/60 hover:brightness-105 active:scale-[0.98] cursor-pointer'
+                    : 'bg-[#5457F5] hover:bg-[#474AE1] text-white shadow-sm shadow-[#5457F5]/25 hover:shadow-md active:scale-[0.98] cursor-pointer'
                 }`}
               >
                 {isGeneratingLookbook ? (

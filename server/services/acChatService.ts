@@ -214,6 +214,7 @@ QUY TẮC BẮT BUỘC & RANH GIỚI TRẢ LỜI:
    - Áo tấc: Có cả nam và nữ lịch sử. Ống tay thụng hình chữ nhật là cốt lõi. Chiều dài tay áo "~1 tấc qua ngón tay" là ước lượng dân gian (PROBABLE/APPROXIMATE), không phải quy chế đo lường bắt buộc.
    - Áo tứ thân: Dân gian Bắc Bộ ghi nhận ở nữ giới. Nam giới mặc áo tứ thân chưa có đủ căn cứ xác lập trong lịch sử; chỉ đề cập dưới dạng TÁI DIỄN GIẢI ĐƯƠNG ĐẠI, không gọi là "áo tứ thân nam truyền thống".
    - Vòng chuỗi ngọc trai và quạt cầm tay: Thuộc diện EXPLICIT_ONLY. Trợ lý KHÔNG TỰ ĐỘNG gợi ý chúng nếu người dùng không chủ động nhắc đến.
+   - Trâm cài tóc tối giản: Là gợi ý phối đương đại (CONTEMPORARY_STYLING_RECOMMENDATION), KHÔNG PHẢI phụ kiện lịch sử bắt buộc hay mặc định của bất kỳ dáng áo nào (Áo ngũ thân tay chẽn, Áo tấc, Áo tứ thân). Trâm chỉ phù hợp khi không đội khăn/nón truyền thống (không xung đột với headwear). Khi người dùng hỏi (ví dụ "Áo ngũ thân có thể cài trâm không?"), câu trả lời phải phân biệt rõ: có thể dùng như một gợi ý phối đương đại nếu không xung đột với khăn/headwear đang mặc; AC hiện không có căn cứ để coi trâm là phụ kiện lịch sử mặc định của dáng áo này. Tuyệt đối KHÔNG trả lời trâm là phụ kiện truyền thống bắt buộc.
 
 8. GIẢI THÍCH ĐÁNH GIÁ THỊ GIÁC (VISUAL QA):
    - Bạn KHÔNG nhìn trực tiếp ảnh pixel. Chỉ giải thích dựa trên các trường cấu trúc trong phần đánh giá Visual QA đã cấp.
@@ -347,6 +348,19 @@ export function validateAndSanitizeACChatResponse(
         if (isValidTarget && act.targetValue === 'chuoi_ngoc_trai_co' && !isPearlRequestedExplicitly(contextState?.promptText)) {
           isValidTarget = false;
         }
+        if (isValidTarget && act.targetValue === 'tram_cai_toc_toi_gian') {
+          const currentAccs = contextState?.blueprintSummary?.accessoryNames || [];
+          const hasHeadwear = currentAccs.some(name =>
+            name.toLowerCase().includes('khăn') ||
+            name.toLowerCase().includes('nón') ||
+            name.includes('khan_dong') ||
+            name.includes('khan_mo_qua') ||
+            name.includes('non_thung')
+          );
+          if (hasHeadwear) {
+            isValidTarget = false;
+          }
+        }
       } else if (act.type === 'SET_COLOR') {
         isValidTarget = PALETTES.some(p => p.id === act.targetValue);
       }
@@ -464,7 +478,7 @@ export function getOfflineACChatResponse(
       };
     }
     return {
-      answer: `AC Stylist ghi nhận trạng thái: ${contextState.visualQA.statusLabelVi || 'Bảo toàn nhận diện'}. Các đặc trưng cấu trúc cốt lõi được đối soát trực quan theo quy chuẩn của dáng áo.`,
+      answer: `AC kiểm tra ghi nhận trạng thái: ${contextState.visualQA.statusLabelVi || 'Nhận diện tổng thể ổn'}. Các đặc trưng cấu trúc cốt lõi được đối soát trực quan theo tiêu chí đối chiếu hiện tại của dáng áo.`,
       answerMode: 'CURRENT_LOOK_EXPLANATION',
       evidenceRefs: [
         {
@@ -476,6 +490,16 @@ export function getOfflineACChatResponse(
           evidenceStatus: 'VERIFIED'
         }
       ],
+      relatedCurrentState: { garmentId: currentGarment }
+    };
+  }
+
+  // Hairpin / trâm cài tóc question
+  if (lower.includes('trâm') || lower.includes('cài tóc') || lower.includes('hairpin')) {
+    return {
+      answer: 'Có thể dùng như một gợi ý phối đương đại nếu không xung đột với khăn/headwear đang mặc; AC hiện không có căn cứ để coi trâm là phụ kiện lịch sử mặc định của dáng áo này.',
+      answerMode: 'PRODUCT_GUIDANCE',
+      evidenceRefs: [],
       relatedCurrentState: { garmentId: currentGarment }
     };
   }
