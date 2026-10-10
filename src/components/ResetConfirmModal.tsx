@@ -40,12 +40,12 @@ export const ResetConfirmModal: React.FC<ResetConfirmModalProps> = ({
       }}
     >
       <div
-        className="relative w-full max-w-sm rounded-3xl bg-white/95 backdrop-blur-xl border border-stone-200/90 shadow-2xl p-6 sm:p-7 space-y-5 transform transition-all animate-in zoom-in-95 duration-150"
+        className="relative w-full max-w-sm rounded-3xl bg-[var(--surface)]/95 backdrop-blur-xl border border-[var(--surface-border)] shadow-2xl p-6 sm:p-7 space-y-5 transform transition-all animate-in zoom-in-95 duration-150"
       >
         <button
           type="button"
           onClick={onCancel}
-          className="absolute top-4 right-4 p-1.5 rounded-full text-stone-400 hover:text-stone-700 hover:bg-stone-100 transition-colors cursor-pointer"
+          className="absolute top-4 right-4 p-1.5 rounded-full text-[var(--text-muted)] hover:text-[var(--text-secondary)] hover:bg-[var(--surface-2)] transition-colors cursor-pointer"
           aria-label="Đóng"
         >
           <X className="w-4 h-4" />
@@ -58,21 +58,21 @@ export const ResetConfirmModal: React.FC<ResetConfirmModalProps> = ({
           <div className="space-y-1">
             <h3
               id="reset-modal-title"
-              className="text-base font-semibold text-stone-900 leading-snug tracking-tight"
+              className="text-base font-semibold text-[var(--text)] leading-snug tracking-tight"
             >
               Bạn muốn xóa bản phối hiện tại và bắt đầu lại?
             </h3>
-            <p className="text-xs text-stone-500 font-normal leading-relaxed">
+            <p className="text-xs text-[var(--text-muted)] font-normal leading-relaxed">
               Các gợi ý trang phục, bản phối chi tiết và ảnh minh họa trong phiên sẽ được làm mới về ban đầu.
             </p>
           </div>
         </div>
 
-        <div className="flex items-center justify-end gap-2.5 pt-2 border-t border-stone-100">
+        <div className="flex items-center justify-end gap-2.5 pt-2 border-t border-[var(--surface-border)]">
           <button
             type="button"
             onClick={onCancel}
-            className="rounded-full px-4 py-2 text-xs font-medium text-stone-600 hover:text-stone-900 hover:bg-stone-100 border border-stone-200 transition-colors cursor-pointer"
+            className="rounded-full px-4 py-2 text-xs font-medium text-[var(--text-secondary)] hover:text-[var(--text)] hover:bg-[var(--surface-2)] border border-[var(--surface-border)] transition-colors cursor-pointer"
           >
             Hủy
           </button>

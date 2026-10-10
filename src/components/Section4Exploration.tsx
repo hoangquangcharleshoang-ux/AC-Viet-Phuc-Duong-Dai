@@ -93,9 +93,9 @@ export const Section4Exploration: React.FC<Section4ExplorationProps> = ({
       title: 'Phối khác cùng tinh thần',
       subtitle: 'Thử một cách phối mới nhưng vẫn giữ tinh thần của trang phục gốc.',
       icon: Compass,
-      accentBg: 'bg-stone-50 hover:bg-stone-100/70',
-      accentBorder: 'border-stone-200/80',
-      badgeColor: 'text-stone-800 bg-stone-100 border-stone-300/80',
+      accentBg: 'bg-[var(--surface-2)] hover:bg-[var(--surface-2)]',
+      accentBorder: 'border-[var(--surface-border)]',
+      badgeColor: 'text-[var(--text)] bg-[var(--surface-2)] border-[var(--surface-border)]',
       level: 'Vừa'
     }
   ];
@@ -105,18 +105,18 @@ export const Section4Exploration: React.FC<Section4ExplorationProps> = ({
   const isLoadingActive = activeIntentTab ? isExploring[activeIntentTab] : false;
 
   return (
-    <section id="section-exploration" className="rounded-3xl p-6 sm:p-8 bg-white/90 border border-stone-200/90 shadow-sm space-y-6 transition-all duration-300 scroll-mt-20">
+    <section id="section-exploration" className="rounded-3xl p-6 sm:p-8 bg-[var(--surface)]/90 border border-[var(--surface-border)] shadow-sm space-y-6 transition-all duration-300 scroll-mt-20">
       {/* Header */}
       <div className="space-y-1">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-xl bg-amber-50 border border-amber-200/80 flex items-center justify-center text-[#C26715] shadow-2xs">
             <Compass className="w-4 h-4" />
           </div>
-          <h3 className="text-base sm:text-lg font-bold text-stone-900 tracking-tight">
+          <h3 className="text-base sm:text-lg font-bold text-[var(--text)] tracking-tight">
             Khám phá thêm
           </h3>
         </div>
-        <p className="text-xs sm:text-sm text-stone-600 font-normal">
+        <p className="text-xs sm:text-sm text-[var(--text-secondary)] font-normal">
           Khám phá một cách phối khác từ cùng nhu cầu, trong khi bản phối gốc vẫn được giữ nguyên.
         </p>
       </div>
@@ -162,7 +162,7 @@ export const Section4Exploration: React.FC<Section4ExplorationProps> = ({
               }}
               className={`rounded-2xl p-5 border transition-all duration-200 cursor-pointer flex flex-col justify-between gap-4 ${
                 isSelected
-                  ? 'bg-white border-2 border-[#C26715] shadow-md shadow-amber-100/60 ring-2 ring-[#C26715]/20'
+                  ? 'bg-[var(--surface)] border-2 border-[#C26715] shadow-md shadow-amber-100/60 ring-2 ring-[#C26715]/20'
                   : `${card.accentBg} ${card.accentBorder} shadow-2xs hover:shadow-md`
               }`}
             >
@@ -178,12 +178,12 @@ export const Section4Exploration: React.FC<Section4ExplorationProps> = ({
                     </span>
                   )}
                 </div>
-                <p className="text-xs text-stone-700 font-normal leading-relaxed">
+                <p className="text-xs text-[var(--text-secondary)] font-normal leading-relaxed">
                   {card.subtitle}
                 </p>
               </div>
 
-              <div className="pt-2 border-t border-stone-200/60 flex items-center justify-between text-xs font-semibold text-stone-900">
+              <div className="pt-2 border-t border-[var(--surface-border)] flex items-center justify-between text-xs font-semibold text-[var(--text)]">
                 <span className="flex items-center gap-1.5">
                   <IconComp className="w-3.5 h-3.5 text-[#C26715]" />
                   <span>{hasResult ? 'Xem kết quả' : 'Khám phá hướng này'}</span>
@@ -191,7 +191,7 @@ export const Section4Exploration: React.FC<Section4ExplorationProps> = ({
                 {loading ? (
                   <div className="w-4 h-4 rounded-full border-2 border-[#C26715] border-t-transparent animate-spin" />
                 ) : (
-                  <ChevronRight className={`w-4 h-4 transition-transform ${isSelected ? 'translate-x-0.5 text-[#C26715]' : 'text-stone-400'}`} />
+                  <ChevronRight className={`w-4 h-4 transition-transform ${isSelected ? 'translate-x-0.5 text-[#C26715]' : 'text-[var(--text-muted)]'}`} />
                 )}
               </div>
             </div>
@@ -207,7 +207,7 @@ export const Section4Exploration: React.FC<Section4ExplorationProps> = ({
               <span className="text-[11px] font-bold uppercase tracking-wider text-amber-900 bg-amber-100/80 px-2.5 py-0.5 rounded-full border border-amber-300/70">
                 PHƯƠNG ÁN KHÁM PHÁ: {activeCard.title}
               </span>
-              <h4 className="text-sm font-semibold text-stone-900">
+              <h4 className="text-sm font-semibold text-[var(--text)]">
                 So sánh cấu trúc & Hồ sơ định hình
               </h4>
             </div>
@@ -219,7 +219,7 @@ export const Section4Exploration: React.FC<Section4ExplorationProps> = ({
                   onTriggerExploration(activeIntentTab);
                 }
               }}
-              className="rounded-full px-4 py-1.5 text-xs font-medium text-amber-900 bg-white hover:bg-amber-50/80 border border-amber-300/80 shadow-2xs transition-colors flex items-center gap-1.5 shrink-0 cursor-pointer self-start sm:self-center"
+              className="rounded-full px-4 py-1.5 text-xs font-medium text-amber-900 bg-[var(--surface)] hover:bg-amber-50/80 border border-amber-300/80 shadow-2xs transition-colors flex items-center gap-1.5 shrink-0 cursor-pointer self-start sm:self-center"
             >
               <RefreshCw className={`w-3.5 h-3.5 text-[#C26715] ${isLoadingActive ? 'animate-spin' : ''}`} />
               <span>Tạo phương án khác cùng hướng</span>
@@ -231,7 +231,7 @@ export const Section4Exploration: React.FC<Section4ExplorationProps> = ({
               <div className="w-8 h-8 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-center shadow-sm">
                 <div className="w-4 h-4 rounded-full border-2 border-[#C26715] border-t-transparent animate-spin" />
               </div>
-              <span className="text-xs font-medium text-stone-600">
+              <span className="text-xs font-medium text-[var(--text-secondary)]">
                 Đang tổng hợp phương án khám phá văn hóa...
               </span>
             </div>
@@ -240,12 +240,12 @@ export const Section4Exploration: React.FC<Section4ExplorationProps> = ({
               {/* Structured Diff Grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
                 {/* GIỮ NGUYÊN (Heritage Green) */}
-                <div className="rounded-xl p-4 bg-white/90 border border-emerald-200/80 shadow-2xs space-y-2">
+                <div className="rounded-xl p-4 bg-[var(--surface)]/90 border border-emerald-200/80 shadow-2xs space-y-2">
                   <div className="flex items-center gap-1.5 text-emerald-800 font-bold">
                     <span className="w-2 h-2 rounded-full bg-emerald-600" />
                     <span>GIỮ NGUYÊN</span>
                   </div>
-                  <ul className="space-y-1 text-stone-700 font-normal list-disc list-inside">
+                  <ul className="space-y-1 text-[var(--text-secondary)] font-normal list-disc list-inside">
                     <li>Dáng áo chuẩn nguyên bản: {garment.canonical_name}</li>
                     <li>Cổ đứng lập lĩnh & cấu trúc thân áo tĩnh tại</li>
                     <li>Bảo toàn nguyên vẹn giới tính & bối cảnh không gian</li>
@@ -253,27 +253,27 @@ export const Section4Exploration: React.FC<Section4ExplorationProps> = ({
                 </div>
 
                 {/* THAY ĐỔI (Warm Amber / Gold) */}
-                <div className="rounded-xl p-4 bg-white/90 border border-amber-200/80 shadow-2xs space-y-2">
+                <div className="rounded-xl p-4 bg-[var(--surface)]/90 border border-amber-200/80 shadow-2xs space-y-2">
                   <div className="flex items-center gap-1.5 text-amber-900 font-bold">
                     <span className="w-2 h-2 rounded-full bg-amber-600" />
                     <span>THAY ĐỔI</span>
                   </div>
-                  <div className="space-y-1.5 text-stone-700">
-                    <div className="flex justify-between items-center border-b border-stone-100 pb-1">
-                      <span className="text-stone-500 font-medium">Chất liệu vải:</span>
-                      <span className="font-semibold text-stone-900">{getFabricLabel(activeExploration.blueprint.remixProposal.fabricId)}</span>
+                  <div className="space-y-1.5 text-[var(--text-secondary)]">
+                    <div className="flex justify-between items-center border-b border-[var(--surface-border)] pb-1">
+                      <span className="text-[var(--text-muted)] font-medium">Chất liệu vải:</span>
+                      <span className="font-semibold text-[var(--text)]">{getFabricLabel(activeExploration.blueprint.remixProposal.fabricId)}</span>
                     </div>
-                    <div className="flex justify-between items-center border-b border-stone-100 pb-1">
-                      <span className="text-stone-500 font-medium">Hạ phục:</span>
-                      <span className="font-semibold text-stone-900">{getLowerGarmentLabel(activeExploration.blueprint.remixProposal.lowerGarmentId)}</span>
+                    <div className="flex justify-between items-center border-b border-[var(--surface-border)] pb-1">
+                      <span className="text-[var(--text-muted)] font-medium">Hạ phục:</span>
+                      <span className="font-semibold text-[var(--text)]">{getLowerGarmentLabel(activeExploration.blueprint.remixProposal.lowerGarmentId)}</span>
                     </div>
-                    <div className="flex justify-between items-center border-b border-stone-100 pb-1">
-                      <span className="text-stone-500 font-medium">Giày dép:</span>
-                      <span className="font-semibold text-stone-900">{getFootwearLabel(activeExploration.blueprint.remixProposal.footwearId)}</span>
+                    <div className="flex justify-between items-center border-b border-[var(--surface-border)] pb-1">
+                      <span className="text-[var(--text-muted)] font-medium">Giày dép:</span>
+                      <span className="font-semibold text-[var(--text)]">{getFootwearLabel(activeExploration.blueprint.remixProposal.footwearId)}</span>
                     </div>
                     <div className="flex justify-between items-center pb-1">
-                      <span className="text-stone-500 font-medium">Phụ kiện:</span>
-                      <span className="font-semibold text-stone-900">
+                      <span className="text-[var(--text-muted)] font-medium">Phụ kiện:</span>
+                      <span className="font-semibold text-[var(--text)]">
                         {activeExploration.blueprint.remixProposal.accessoryIds.length > 0
                           ? activeExploration.blueprint.remixProposal.accessoryIds.map(id => getAccessoryLabel(id)).join(', ')
                           : 'Tối giản'}
@@ -285,24 +285,24 @@ export const Section4Exploration: React.FC<Section4ExplorationProps> = ({
 
               {/* VÌ SAO & MỨC THAY ĐỔI */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
-                <div className="sm:col-span-2 rounded-xl p-4 bg-white/90 border border-stone-200/80 shadow-2xs space-y-1.5">
-                  <span className="font-bold text-stone-900 block">VÌ SAO (Lý giải phong cách):</span>
-                  <p className="text-stone-600 leading-relaxed font-normal">
+                <div className="sm:col-span-2 rounded-xl p-4 bg-[var(--surface)]/90 border border-[var(--surface-border)] shadow-2xs space-y-1.5">
+                  <span className="font-bold text-[var(--text)] block">VÌ SAO (Lý giải phong cách):</span>
+                  <p className="text-[var(--text-secondary)] leading-relaxed font-normal">
                     {activeExploration.stylingRationale}
                   </p>
-                  <p className="text-stone-500 text-[11px] italic pt-1">
+                  <p className="text-[var(--text-muted)] text-[11px] italic pt-1">
                     {activeExploration.changesRelativeToOriginal}
                   </p>
                 </div>
 
-                <div className="rounded-xl p-4 bg-white/90 border border-stone-200/80 shadow-2xs flex flex-col justify-between space-y-2">
+                <div className="rounded-xl p-4 bg-[var(--surface)]/90 border border-[var(--surface-border)] shadow-2xs flex flex-col justify-between space-y-2">
                   <div className="space-y-1">
-                    <span className="font-bold text-stone-900 block">MỨC THAY ĐỔI:</span>
+                    <span className="font-bold text-[var(--text)] block">MỨC THAY ĐỔI:</span>
                     <span className="inline-block px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-900 border border-amber-300">
                       {activeCard.level}
                     </span>
                   </div>
-                  <p className="text-[11px] text-stone-500 font-normal">
+                  <p className="text-[11px] text-[var(--text-muted)] font-normal">
                     Đảm bảo giữ vững cốt lõi di sản.
                   </p>
                 </div>
@@ -331,7 +331,7 @@ export const Section4Exploration: React.FC<Section4ExplorationProps> = ({
               </div>
             </div>
           ) : (
-            <div className="py-8 text-center text-xs text-stone-500">
+            <div className="py-8 text-center text-xs text-[var(--text-muted)]">
               Nhấn “Tạo phương án khác cùng hướng” hoặc chọn thẻ để tải gợi ý khám phá.
             </div>
           )}

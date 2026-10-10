@@ -94,7 +94,7 @@ export const TraitTransitionsView: React.FC<TraitTransitionsViewProps> = ({
         return <span className="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-rose-50 text-rose-700 border border-rose-200/60">Lệch chuẩn</span>;
       case 'NOT_ASSESSABLE':
       default:
-        return <span className="px-2 py-0.5 rounded-md text-[10px] font-medium bg-stone-100 text-stone-600 border border-stone-200/80">Chưa xác nhận</span>;
+        return <span className="px-2 py-0.5 rounded-md text-[10px] font-medium bg-[var(--surface-2)] text-[var(--text-secondary)] border border-[var(--surface-border)]">Chưa xác nhận</span>;
     }
   };
 
@@ -123,15 +123,15 @@ export const TraitTransitionsView: React.FC<TraitTransitionsViewProps> = ({
         );
       case 'NOT_ASSESSABLE':
         return (
-          <span className="inline-flex items-center gap-1 text-[11px] font-medium text-stone-500 bg-stone-50 px-2 py-0.5 rounded-full border border-stone-200/60">
-            <Eye className="w-3 h-3 text-stone-400" />
+          <span className="inline-flex items-center gap-1 text-[11px] font-medium text-[var(--text-muted)] bg-[var(--surface-2)] px-2 py-0.5 rounded-full border border-[var(--surface-border)]">
+            <Eye className="w-3 h-3 text-[var(--text-muted)]" />
             <span>Góc khuất</span>
           </span>
         );
       default:
         return (
-          <span className="inline-flex items-center gap-1 text-[11px] font-medium text-stone-600 bg-stone-50 px-2 py-0.5 rounded-full border border-stone-200/60">
-            <Minus className="w-3 h-3 text-stone-400" />
+          <span className="inline-flex items-center gap-1 text-[11px] font-medium text-[var(--text-secondary)] bg-[var(--surface-2)] px-2 py-0.5 rounded-full border border-[var(--surface-border)]">
+            <Minus className="w-3 h-3 text-[var(--text-muted)]" />
             <span>Giữ nguyên</span>
           </span>
         );
@@ -139,15 +139,15 @@ export const TraitTransitionsView: React.FC<TraitTransitionsViewProps> = ({
   };
 
   return (
-    <div className="p-4 rounded-2xl bg-stone-50/90 border border-stone-200/80 space-y-3 text-xs">
+    <div className="p-4 rounded-2xl bg-[var(--surface-2)] border border-[var(--surface-border)] space-y-3 text-xs">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <TrendingUp className="w-4 h-4 text-[#C26715]" />
-          <span className="font-semibold text-stone-900">
+          <span className="font-semibold text-[var(--text)]">
             Chuyển dịch nhận diện giữa các phiên bản (v{previousRev.revisionIndex} → v{currentRev.revisionIndex})
           </span>
         </div>
-        <span className="text-[11px] text-stone-500 font-normal">
+        <span className="text-[11px] text-[var(--text-muted)] font-normal">
           Tiến trình tinh chỉnh văn hóa
         </span>
       </div>
@@ -156,10 +156,10 @@ export const TraitTransitionsView: React.FC<TraitTransitionsViewProps> = ({
         {transitions.map(t => (
           <div
             key={t.traitId}
-            className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-2.5 rounded-xl bg-white border border-stone-200/60"
+            className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-2.5 rounded-xl bg-[var(--surface)] border border-[var(--surface-border)]"
           >
             <div className="flex items-center gap-2 min-w-0">
-              <span className="font-medium text-stone-800 truncate">
+              <span className="font-medium text-[var(--text)] truncate">
                 {t.traitNameVi}
               </span>
             </div>
@@ -167,7 +167,7 @@ export const TraitTransitionsView: React.FC<TraitTransitionsViewProps> = ({
             <div className="flex items-center gap-2.5 shrink-0">
               <div className="flex items-center gap-1">
                 {getVerdictMiniBadge(t.previousVerdict)}
-                <ArrowRight className="w-3 h-3 text-stone-400" />
+                <ArrowRight className="w-3 h-3 text-[var(--text-muted)]" />
                 {getVerdictMiniBadge(t.currentVerdict)}
               </div>
               {getDirectionBadge(t.direction)}

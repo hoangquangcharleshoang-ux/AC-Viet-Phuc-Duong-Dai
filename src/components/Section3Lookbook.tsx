@@ -68,6 +68,7 @@ interface Section3LookbookProps {
   isExploringBranch?: boolean;
   explorationTitle?: string;
   onReturnToRoot?: () => void;
+  onColorChange?: (paletteId: string) => void;
 }
 
 export const Section3Lookbook: React.FC<Section3LookbookProps> = ({
@@ -89,7 +90,8 @@ export const Section3Lookbook: React.FC<Section3LookbookProps> = ({
   onSelectRevision,
   isExploringBranch = false,
   explorationTitle,
-  onReturnToRoot
+  onReturnToRoot,
+  onColorChange
 }) => {
   const [isLightboxOpen, setIsLightboxOpen] = useState<boolean>(false);
 
@@ -178,7 +180,7 @@ export const Section3Lookbook: React.FC<Section3LookbookProps> = ({
               <span className="font-bold text-amber-950 block sm:inline mr-1">
                 Đang xem nhánh khám phá: {explorationTitle || 'Biến tấu'}
               </span>
-              <span className="text-stone-600 font-normal">
+              <span className="text-[var(--text-secondary)] font-normal">
                 — Bản phối gốc và V0/V1/V2 vẫn được bảo toàn.
               </span>
             </div>
@@ -199,17 +201,17 @@ export const Section3Lookbook: React.FC<Section3LookbookProps> = ({
           <Sparkles className="w-3.5 h-3.5 text-[#C26715] animate-pulse" />
           <span>Bước 3 · Hình Ảnh Minh Họa</span>
         </div>
-        <h2 className="text-xl sm:text-2xl font-semibold text-stone-900 tracking-tight">
+        <h2 className="text-xl sm:text-2xl font-semibold text-[var(--text)] tracking-tight">
           Nhìn bản phối thành hình
         </h2>
-        <p className="text-xs sm:text-sm text-stone-500 font-normal">
+        <p className="text-xs sm:text-sm text-[var(--text-muted)] font-normal">
           Ảnh minh họa được dựng từ bản phối để bạn hình dung phom dáng, bảng màu và cách phối tổng thể.
         </p>
       </div>
 
       {/* Main Container */}
       <div
-        className="rounded-3xl p-5 sm:p-7 md:p-8 bg-white/90 border border-stone-200/90 shadow-sm transition-all duration-300"
+        className="rounded-3xl p-5 sm:p-7 md:p-8 bg-[var(--surface)]/90 border border-[var(--surface-border)] shadow-sm transition-all duration-300"
         style={{
           backdropFilter: 'blur(24px)',
           WebkitBackdropFilter: 'blur(24px)'
@@ -222,10 +224,10 @@ export const Section3Lookbook: React.FC<Section3LookbookProps> = ({
               <Clock className="w-6 h-6" />
             </div>
             <div className="space-y-1.5 max-w-md">
-              <h3 className="text-base font-semibold text-stone-900">
+              <h3 className="text-base font-semibold text-[var(--text)]">
                 Lần tạo ảnh trước đã bị gián đoạn
               </h3>
-              <p className="text-xs text-stone-500 leading-relaxed font-normal">
+              <p className="text-xs text-[var(--text-muted)] leading-relaxed font-normal">
                 {lookbookState.message || 'Bạn có thể tiếp tục tạo ảnh minh họa khi sẵn sàng.'}
               </p>
             </div>
@@ -248,10 +250,10 @@ export const Section3Lookbook: React.FC<Section3LookbookProps> = ({
               <Clock className="w-6 h-6" />
             </div>
             <div className="space-y-1.5 max-w-md">
-              <h3 className="text-base font-semibold text-stone-900">
+              <h3 className="text-base font-semibold text-[var(--text)]">
                 Ảnh minh họa trước đã hết thời hạn lưu tạm
               </h3>
-              <p className="text-xs text-stone-500 leading-relaxed font-normal">
+              <p className="text-xs text-[var(--text-muted)] leading-relaxed font-normal">
                 Bản phối và các lựa chọn trang phục của bạn vẫn được giữ nguyên vẹn.
               </p>
             </div>
@@ -274,17 +276,17 @@ export const Section3Lookbook: React.FC<Section3LookbookProps> = ({
               <AlertCircle className="w-6 h-6" />
             </div>
             <div className="space-y-1.5 max-w-md">
-              <h3 className="text-base font-semibold text-stone-900">
+              <h3 className="text-base font-semibold text-[var(--text)]">
                 Chưa thể hoàn tất hình ảnh minh họa
               </h3>
-              <p className="text-xs text-stone-600 leading-relaxed font-normal">
+              <p className="text-xs text-[var(--text-secondary)] leading-relaxed font-normal">
                 {lookbookState.message}
               </p>
             </div>
             {onRegenerate && (
               <button
                 onClick={() => onRegenerate(false)}
-                className="mt-2 rounded-full px-5 py-2 text-xs font-medium bg-white text-stone-800 border border-stone-200 hover:border-amber-400 hover:text-amber-900 transition-all shadow-2xs flex items-center gap-1.5 cursor-pointer"
+                className="mt-2 rounded-full px-5 py-2 text-xs font-medium bg-[var(--surface)] text-[var(--text)] border border-[var(--surface-border)] hover:border-amber-400 hover:text-amber-900 transition-all shadow-2xs flex items-center gap-1.5 cursor-pointer"
               >
                 <RotateCw className="w-3.5 h-3.5" />
                 <span>Thử tạo lại</span>
@@ -296,22 +298,22 @@ export const Section3Lookbook: React.FC<Section3LookbookProps> = ({
         {/* INITIAL GENERATING SKELETON (When no previous image exists) */}
         {lookbookState.status === 'generating' && !displayImageUrl && (
           <div className="flex flex-col items-center justify-center py-16 sm:py-24 space-y-6 text-center">
-            <div className="relative w-64 sm:w-80 aspect-[2/3] rounded-3xl bg-[#F8F6F0] border border-stone-200/80 overflow-hidden flex flex-col items-center justify-center shadow-inner">
+            <div className="relative w-64 sm:w-80 aspect-[2/3] rounded-3xl bg-[#F8F6F0] border border-[var(--surface-border)] overflow-hidden flex flex-col items-center justify-center shadow-inner">
               <div className="absolute inset-0 bg-gradient-to-tr from-amber-100/30 via-stone-100/50 to-amber-50/20 animate-pulse" />
               <div className="relative z-10 flex flex-col items-center space-y-3 p-6">
-                <div className="w-10 h-10 rounded-2xl bg-white/95 border border-amber-200 flex items-center justify-center shadow-xs">
+                <div className="w-10 h-10 rounded-2xl bg-[var(--surface)]/95 border border-amber-200 flex items-center justify-center shadow-xs">
                   <div className="w-5 h-5 rounded-full border-2 border-[#C26715] border-t-transparent animate-spin" />
                 </div>
-                <span className="text-xs font-semibold text-stone-700 tracking-tight">
+                <span className="text-xs font-semibold text-[var(--text-secondary)] tracking-tight">
                   Đang tạo ảnh...
                 </span>
               </div>
             </div>
             <div className="space-y-1 max-w-md">
-              <h3 className="text-base font-semibold text-stone-900">
+              <h3 className="text-base font-semibold text-[var(--text)]">
                 AC đang dựng bản phối của bạn
               </h3>
-              <p className="text-xs text-stone-500 font-normal leading-relaxed">
+              <p className="text-xs text-[var(--text-muted)] font-normal leading-relaxed">
                 Đang đối chiếu bảng màu và các đặc trưng cốt lõi của {selectedGarmentId === 'ngu_than_chen' ? 'Áo ngũ thân tay chẽn' : selectedGarmentId === 'ao_tac' ? 'Áo tấc' : 'Áo tứ thân'}.
               </p>
             </div>
@@ -363,7 +365,7 @@ export const Section3Lookbook: React.FC<Section3LookbookProps> = ({
 
             {/* Revision Selector Tabs (When multiple revisions exist in thread) */}
             {revisions && revisions.length > 1 && (
-              <div className="flex flex-wrap items-center gap-2 p-1.5 rounded-2xl bg-stone-100/90 border border-stone-200/80 w-fit shadow-2xs">
+              <div className="flex flex-wrap items-center gap-2 p-1.5 rounded-2xl bg-[var(--surface-2)] border border-[var(--surface-border)] w-fit shadow-2xs">
                 {revisions.map((rev) => {
                   const label =
                     rev.revisionIndex === 0
@@ -378,7 +380,7 @@ export const Section3Lookbook: React.FC<Section3LookbookProps> = ({
                       className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                         isSelected
                           ? 'bg-[#C26715] text-white shadow-2xs'
-                          : 'text-stone-600 hover:text-stone-900 hover:bg-stone-200/60 font-medium'
+                          : 'text-[var(--text-secondary)] hover:text-[var(--text)] hover:bg-stone-200/60 font-medium'
                       }`}
                     >
                       {label}
@@ -394,7 +396,7 @@ export const Section3Lookbook: React.FC<Section3LookbookProps> = ({
               <div className="lg:col-span-6 flex flex-col items-center space-y-3">
                 {/* Lookbook Canvas Card with Warm Neutral Background */}
                 <div
-                  className="relative w-full max-w-md mx-auto aspect-[3/4] rounded-3xl overflow-hidden bg-[#F8F6F0] border border-stone-200/85 shadow-sm flex items-center justify-center group"
+                  className="relative w-full max-w-md mx-auto aspect-[3/4] rounded-3xl overflow-hidden bg-[#F8F6F0] border border-[var(--surface-border)] shadow-sm flex items-center justify-center group"
                 >
                   <img
                     src={displayImageUrl}
@@ -416,7 +418,7 @@ export const Section3Lookbook: React.FC<Section3LookbookProps> = ({
                   {/* Generating Spinner Overlay */}
                   {isGenerating && (
                     <div className="absolute inset-0 bg-stone-900/20 backdrop-blur-[1.5px] flex flex-col items-center justify-center gap-3">
-                      <div className="w-10 h-10 rounded-2xl bg-white/95 border border-stone-200 flex items-center justify-center shadow-md">
+                      <div className="w-10 h-10 rounded-2xl bg-[var(--surface)]/95 border border-[var(--surface-border)] flex items-center justify-center shadow-md">
                         <div className="w-5 h-5 rounded-full border-2 border-[#C26715] border-t-transparent animate-spin" />
                       </div>
                       <span className="text-xs font-semibold text-white px-3 py-1 rounded-full bg-stone-900/70 backdrop-blur-md shadow-xs">
@@ -432,7 +434,7 @@ export const Section3Lookbook: React.FC<Section3LookbookProps> = ({
                     {/* [Xem lớn] Lightbox Button */}
                     <button
                       onClick={() => setIsLightboxOpen(true)}
-                      className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium text-stone-700 bg-stone-100/90 hover:bg-stone-200/90 border border-stone-200/80 transition-colors shadow-2xs cursor-pointer"
+                      className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium text-[var(--text-secondary)] bg-[var(--surface-2)] hover:bg-stone-200/90 border border-[var(--surface-border)] transition-colors shadow-2xs cursor-pointer"
                     >
                       <Maximize2 className="w-3.5 h-3.5" />
                       <span>Xem lớn</span>
@@ -443,7 +445,7 @@ export const Section3Lookbook: React.FC<Section3LookbookProps> = ({
                       <a
                         href={`/api/generated-images/${displayGenerationId}?download=1`}
                         download
-                        className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium text-stone-700 bg-stone-100/90 hover:bg-stone-200/90 border border-stone-200/80 transition-colors shadow-2xs cursor-pointer"
+                        className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium text-[var(--text-secondary)] bg-[var(--surface-2)] hover:bg-stone-200/90 border border-[var(--surface-border)] transition-colors shadow-2xs cursor-pointer"
                       >
                         <Download className="w-3.5 h-3.5" />
                         <span>Tải ảnh</span>
@@ -466,9 +468,9 @@ export const Section3Lookbook: React.FC<Section3LookbookProps> = ({
               </div>
 
               {/* RIGHT: DETAILS PANEL — EDITORIAL “OUTFIT RECIPE” */}
-              <div className="lg:col-span-6 rounded-3xl p-6 sm:p-7 bg-white border border-[#E8E3DC] shadow-2xs space-y-4">
+              <div className="lg:col-span-6 rounded-3xl p-6 sm:p-7 bg-[var(--surface)] border border-[#E8E3DC] shadow-2xs space-y-4">
                 <div className="border-b border-[#E8E3DC] pb-3">
-                  <h3 className="text-base font-bold text-stone-900 tracking-tight">
+                  <h3 className="text-base font-bold text-[var(--text)] tracking-tight">
                     Bản phối của bạn
                   </h3>
                 </div>
@@ -477,14 +479,14 @@ export const Section3Lookbook: React.FC<Section3LookbookProps> = ({
                   <div className="space-y-3.5 text-xs">
                     {/* 1. Dáng áo */}
                     <div className="space-y-0.5">
-                      <span className="text-[10px] font-bold text-stone-400 uppercase tracking-wider block">
+                      <span className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider block">
                         Dáng áo
                       </span>
-                      <div className="text-sm font-semibold text-stone-900">
+                      <div className="text-sm font-semibold text-[var(--text)]">
                         {garment.canonical_name}
                       </div>
                       {garment.historical_function && (
-                        <div className="text-[11px] text-stone-500 font-normal">
+                        <div className="text-[11px] text-[var(--text-muted)] font-normal">
                           {garment.historical_function.split(';')[0]}
                         </div>
                       )}
@@ -494,7 +496,7 @@ export const Section3Lookbook: React.FC<Section3LookbookProps> = ({
 
                     {/* 2. Bảng màu */}
                     <div className="space-y-2">
-                      <span className="text-[10px] font-bold text-stone-400 uppercase tracking-wider block">
+                      <span className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider block">
                         Bảng màu
                       </span>
                       <div className="space-y-1.5">
@@ -509,7 +511,7 @@ export const Section3Lookbook: React.FC<Section3LookbookProps> = ({
                             item.role === 'PRIMARY'
                               ? 'bg-amber-50 text-amber-900 border-amber-200/60'
                               : item.role === 'SUPPORTING'
-                              ? 'bg-stone-100 text-stone-700 border-stone-200/60'
+                              ? 'bg-[var(--surface-2)] text-[var(--text-secondary)] border-[var(--surface-border)]'
                               : 'bg-amber-50 text-amber-800 border-amber-200/60';
 
                           return (
@@ -522,7 +524,7 @@ export const Section3Lookbook: React.FC<Section3LookbookProps> = ({
                                   className="w-4.5 h-4.5 rounded-full border border-black/10 shrink-0 shadow-2xs"
                                   style={{ backgroundColor: item.hex || '#E5E5E5' }}
                                 />
-                                <span className="font-medium text-stone-800 text-xs truncate">
+                                <span className="font-medium text-[var(--text)] text-xs truncate">
                                   {item.name || item.id}
                                 </span>
                               </div>
@@ -539,10 +541,10 @@ export const Section3Lookbook: React.FC<Section3LookbookProps> = ({
 
                     {/* 3. Chất liệu */}
                     <div className="flex items-center justify-between py-0.5">
-                      <span className="text-[10px] font-bold text-stone-400 uppercase tracking-wider">
+                      <span className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider">
                         Chất liệu
                       </span>
-                      <span className="text-xs font-medium text-stone-800 text-right">
+                      <span className="text-xs font-medium text-[var(--text)] text-right">
                         {getFabricLabel(displaySnapshot.fabricId)}
                       </span>
                     </div>
@@ -551,10 +553,10 @@ export const Section3Lookbook: React.FC<Section3LookbookProps> = ({
 
                     {/* 4. Hạ phục */}
                     <div className="flex items-center justify-between py-0.5">
-                      <span className="text-[10px] font-bold text-stone-400 uppercase tracking-wider">
+                      <span className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider">
                         Hạ phục
                       </span>
-                      <span className="text-xs font-medium text-stone-800 text-right">
+                      <span className="text-xs font-medium text-[var(--text)] text-right">
                         {getLowerGarmentLabel(displaySnapshot.lowerGarmentId)}
                       </span>
                     </div>
@@ -563,10 +565,10 @@ export const Section3Lookbook: React.FC<Section3LookbookProps> = ({
 
                     {/* 5. Giày dép */}
                     <div className="flex items-center justify-between py-0.5">
-                      <span className="text-[10px] font-bold text-stone-400 uppercase tracking-wider">
+                      <span className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider">
                         Giày
                       </span>
-                      <span className="text-xs font-medium text-stone-800 text-right">
+                      <span className="text-xs font-medium text-[var(--text)] text-right">
                         {getFootwearLabel(displaySnapshot.footwearId)}
                       </span>
                     </div>
@@ -575,10 +577,10 @@ export const Section3Lookbook: React.FC<Section3LookbookProps> = ({
 
                     {/* 6. Phụ kiện */}
                     <div className="flex items-start justify-between py-0.5 gap-3">
-                      <span className="text-[10px] font-bold text-stone-400 uppercase tracking-wider shrink-0 mt-0.5">
+                      <span className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider shrink-0 mt-0.5">
                         Phụ kiện
                       </span>
-                      <div className="text-xs font-medium text-stone-800 text-right">
+                      <div className="text-xs font-medium text-[var(--text)] text-right">
                         {displaySnapshot.activeAccessoryIds.length > 0 ? (
                           <span>
                             {displaySnapshot.activeAccessoryIds
@@ -586,7 +588,7 @@ export const Section3Lookbook: React.FC<Section3LookbookProps> = ({
                               .join(' · ')}
                           </span>
                         ) : (
-                          <span className="text-stone-400 italic font-normal">
+                          <span className="text-[var(--text-muted)] italic font-normal">
                             Không sử dụng phụ kiện
                           </span>
                         )}
@@ -594,7 +596,7 @@ export const Section3Lookbook: React.FC<Section3LookbookProps> = ({
                     </div>
                   </div>
                 ) : (
-                  <div className="py-8 text-center text-xs text-stone-400 font-normal">
+                  <div className="py-8 text-center text-xs text-[var(--text-muted)] font-normal">
                     Chưa có thông số chi tiết của bản phối.
                   </div>
                 )}
@@ -620,6 +622,7 @@ export const Section3Lookbook: React.FC<Section3LookbookProps> = ({
               onTriggerRevision={onTriggerRevision}
               onTriggerUserGuidedRevision={onTriggerUserGuidedRevision}
               onRetryRevision={onRetryRevision}
+              onColorChange={onColorChange}
             />
           </div>
         )}
@@ -642,7 +645,7 @@ export const Section3Lookbook: React.FC<Section3LookbookProps> = ({
             <button
               onClick={() => setIsLightboxOpen(false)}
               aria-label="Đóng xem lớn"
-              className="absolute -top-12 right-0 sm:right-0 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
+              className="absolute -top-12 right-0 sm:right-0 p-2 rounded-full bg-[var(--surface)]/10 hover:bg-[var(--surface)]/20 text-white transition-colors cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
@@ -651,7 +654,7 @@ export const Section3Lookbook: React.FC<Section3LookbookProps> = ({
             <img
               src={displayImageUrl}
               alt={`Xem lớn ảnh minh họa ${garment.canonical_name}`}
-              className="max-w-[92vw] max-h-[88vh] w-auto h-auto object-contain rounded-2xl shadow-2xl border border-white/10"
+              className="max-w-[92vw] max-h-[88vh] w-auto h-auto object-contain rounded-2xl shadow-2xl border border-[var(--glass-border)]"
             />
           </div>
         </div>

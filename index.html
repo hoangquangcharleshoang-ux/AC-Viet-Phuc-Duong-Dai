@@ -41,6 +41,41 @@
         } catch (_) {}
       })();
     </script>
+    <meta name="color-scheme" content="light dark" />
+    <script>
+      (function() {
+        try {
+          var stored = localStorage.getItem('ac_theme');
+          var mode = (stored === 'dark' || stored === 'light' || stored === 'system') ? stored : 'light';
+          var mql = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+          var isDark = mode === 'dark' || (mode === 'system' && mql && mql.matches);
+          var root = document.documentElement;
+          if (isDark) {
+            root.classList.add('dark');
+            root.style.colorScheme = 'dark';
+          } else {
+            root.classList.remove('dark');
+            root.style.colorScheme = 'light';
+          }
+          if (mql && mql.addEventListener) {
+            mql.addEventListener('change', function(e) {
+              try {
+                var current = localStorage.getItem('ac_theme');
+                if (current === 'system') {
+                  if (e.matches) {
+                    root.classList.add('dark');
+                    root.style.colorScheme = 'dark';
+                  } else {
+                    root.classList.remove('dark');
+                    root.style.colorScheme = 'light';
+                  }
+                }
+              } catch (_) {}
+            });
+          }
+        } catch (_) {}
+      })();
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>AC</title>
     <meta name="description" content="Trợ lý tương tác thông minh hỗ trợ khám phá, kiểm chứng ranh giới văn hóa và phối Việt phục đương đại (AI Arena Vietnam 2026)." />

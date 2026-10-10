@@ -159,35 +159,26 @@ export const HeroHomepage: React.FC<HeroHomepageProps> = ({
     <section id="section-context" className="space-y-10 sm:space-y-12 pt-0 sm:pt-2 scroll-mt-20">
       {/* 1. Hero Typography (Unboxed, airy, optical-centered) */}
       <div className="text-center space-y-4 max-w-[860px] mx-auto px-2">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-semibold tracking-wider text-[#4285F4] bg-white/70 backdrop-blur-md border border-[#4285F4]/20 shadow-2xs uppercase">
-          <span className="w-1.5 h-1.5 rounded-full bg-[#4285F4] animate-pulse" />
+        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-semibold tracking-wider text-[var(--info-pill-text)] bg-[var(--info-pill-bg)] border border-[var(--info-pill-text)]/20 shadow-2xs uppercase">
+          <span className="w-1.5 h-1.5 rounded-full bg-[var(--info-pill-text)] animate-pulse" />
           <span>TRỢ LÝ AI PHỐI VIỆT PHỤC</span>
         </div>
 
-        <h1 className="text-3xl sm:text-4xl md:text-[50px] font-bold text-[#242321] tracking-tight leading-[1.14]">
+        <h1 className="text-3xl sm:text-4xl md:text-[50px] font-bold text-[var(--text)] tracking-tight leading-[1.14]">
           Hôm nay, bạn muốn mặc Việt phục thế nào?
         </h1>
 
-        <p className="text-base sm:text-lg text-[#6F6B66] leading-[1.6] max-w-2xl mx-auto font-normal">
+        <p className="text-base sm:text-lg text-[var(--text-secondary)] leading-[1.6] max-w-2xl mx-auto font-normal">
           Chọn dịp và phong cách. AC sẽ gợi ý dáng áo phù hợp, cho biết điểm nào nên giữ, phần nào có thể biến tấu và giúp bạn hình dung bản phối.
         </p>
       </div>
 
       {/* 2. Hero Input Omnibox (Lam Chàm Ái Tím Tone & Multiline Textarea 2-3 lines) */}
       <div className="w-full max-w-4xl mx-auto">
-        <div
-          className="rounded-3xl p-6 sm:p-7 transition-all duration-300 space-y-5 relative"
-          style={{
-            background: 'rgba(255, 255, 255, 0.75)',
-            backdropFilter: 'blur(24px)',
-            WebkitBackdropFilter: 'blur(24px)',
-            border: '1px solid rgba(255, 255, 255, 0.9)',
-            boxShadow: '0 16px 40px -8px rgba(0, 0, 0, 0.05), 0 4px 16px -2px rgba(0, 0, 0, 0.02)'
-          }}
-        >
+        <div className="glass-panel rounded-3xl p-6 sm:p-7 transition-all duration-300 space-y-5 relative">
           {/* Main Input Row: Textarea 2-3 dòng, cố định ~78px, không kéo giãn resize-none */}
           <div className="flex items-start gap-3.5 px-2 pt-1">
-            <Sparkles className="w-5 h-5 text-[#FBBC05] shrink-0 mt-1 animate-pulse" />
+            <Sparkles className="w-5 h-5 text-[var(--accent)] shrink-0 mt-1 animate-pulse" />
             <div className="flex-1 min-w-0">
               <textarea
                 ref={textareaRef}
@@ -195,16 +186,16 @@ export const HeroHomepage: React.FC<HeroHomepageProps> = ({
                 value={promptText}
                 onChange={e => onPromptChange(e.target.value)}
                 placeholder="Ví dụ: Tôi muốn một bộ Việt phục trẻ trung để dự lễ tốt nghiệp đại học."
-                className="w-full bg-transparent border-none text-base text-stone-900 placeholder:text-stone-400 focus:outline-none leading-relaxed font-normal resize-none h-[54px] p-0"
+                className="w-full bg-transparent border-none text-base text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none leading-relaxed font-normal resize-none h-[54px] p-0"
               />
             </div>
           </div>
 
-          <div className="pt-4 border-t border-stone-200/60 space-y-4">
+          <div className="pt-4 border-t border-[var(--surface-border)] space-y-4">
             {/* TẦNG A — MỤC DỊP (Occasion) */}
             <div className="space-y-2">
               <div className="flex items-center gap-2 text-xs">
-                <span className="text-[11px] font-bold text-stone-400 uppercase tracking-wider">
+                <span className="text-[11px] font-bold text-[var(--text-secondary)] uppercase tracking-wider">
                   DỊP
                 </span>
               </div>
@@ -219,11 +210,11 @@ export const HeroHomepage: React.FC<HeroHomepageProps> = ({
                       onClick={() => handleSelectOccasionPill(item)}
                       className={`px-3.5 py-1.5 rounded-full text-xs transition-all cursor-pointer ${
                         isSelected
-                          ? 'font-medium text-amber-900 bg-amber-50 border-2 border-amber-400 shadow-sm shadow-amber-100/50 flex items-center gap-1.5'
-                          : 'font-normal text-stone-600 bg-white/60 backdrop-blur-sm border border-stone-200/80 hover:bg-white/80 hover:text-stone-900 shadow-2xs'
+                          ? 'font-medium text-[var(--chip-selected-text)] bg-[var(--chip-selected-bg)] border-2 border-[var(--chip-selected-border)] shadow-sm flex items-center gap-1.5'
+                          : 'font-normal text-[var(--chip-text)] bg-[var(--chip-bg)] border border-[var(--chip-border)] hover:bg-[var(--surface-2)] hover:text-[var(--text)] shadow-2xs'
                       }`}
                     >
-                      {isSelected && <span className="w-1.5 h-1.5 rounded-full bg-amber-600 shrink-0" />}
+                      {isSelected && <span className="w-1.5 h-1.5 rounded-full bg-[var(--chip-selected-border)] shrink-0" />}
                       <span>{item.label}</span>
                     </button>
                   );
@@ -234,7 +225,7 @@ export const HeroHomepage: React.FC<HeroHomepageProps> = ({
             {/* TẦNG B — MỤC PHONG CÁCH (Style) */}
             <div className="space-y-2">
               <div className="flex items-center gap-2 text-xs">
-                <span className="text-[11px] font-bold text-stone-400 uppercase tracking-wider">
+                <span className="text-[11px] font-bold text-[var(--text-secondary)] uppercase tracking-wider">
                   PHONG CÁCH
                 </span>
               </div>
@@ -249,11 +240,11 @@ export const HeroHomepage: React.FC<HeroHomepageProps> = ({
                       onClick={() => handleSelectStylePill(item)}
                       className={`px-3.5 py-1.5 rounded-full text-xs transition-all cursor-pointer ${
                         isSelected
-                          ? 'font-medium text-amber-900 bg-amber-50 border-2 border-amber-400 shadow-sm shadow-amber-100/50 flex items-center gap-1.5'
-                          : 'font-normal text-stone-600 bg-white/60 backdrop-blur-sm border border-stone-200/80 hover:bg-white/80 hover:text-stone-900 shadow-2xs'
+                          ? 'font-medium text-[var(--chip-selected-text)] bg-[var(--chip-selected-bg)] border-2 border-[var(--chip-selected-border)] shadow-sm flex items-center gap-1.5'
+                          : 'font-normal text-[var(--chip-text)] bg-[var(--chip-bg)] border border-[var(--chip-border)] hover:bg-[var(--surface-2)] hover:text-[var(--text)] shadow-2xs'
                       }`}
                     >
-                      {isSelected && <span className="w-1.5 h-1.5 rounded-full bg-amber-600 shrink-0" />}
+                      {isSelected && <span className="w-1.5 h-1.5 rounded-full bg-[var(--chip-selected-border)] shrink-0" />}
                       <span>{item.label}</span>
                     </button>
                   );
@@ -264,7 +255,7 @@ export const HeroHomepage: React.FC<HeroHomepageProps> = ({
             {/* TẦNG C — MỤC NGƯỜI MẶC (Gender Presentation) */}
             <div className="space-y-2">
               <div className="flex items-center gap-2 text-xs">
-                <span className="text-[11px] font-bold text-stone-400 uppercase tracking-wider">
+                <span className="text-[11px] font-bold text-[var(--text-secondary)] uppercase tracking-wider">
                   NGƯỜI MẶC
                 </span>
               </div>
@@ -284,11 +275,11 @@ export const HeroHomepage: React.FC<HeroHomepageProps> = ({
                       onClick={() => onGenderChange?.(item.id as 'nam' | 'nu' | 'neutral')}
                       className={`px-3.5 py-1.5 rounded-full text-xs transition-all cursor-pointer ${
                         isSelected
-                          ? 'font-medium text-amber-900 bg-amber-50 border-2 border-amber-400 shadow-sm shadow-amber-100/50 flex items-center gap-1.5'
-                          : 'font-normal text-stone-600 bg-white/60 backdrop-blur-sm border border-stone-200/80 hover:bg-white/80 hover:text-stone-900 shadow-2xs'
+                          ? 'font-medium text-[var(--chip-selected-text)] bg-[var(--chip-selected-bg)] border-2 border-[var(--chip-selected-border)] shadow-sm flex items-center gap-1.5'
+                          : 'font-normal text-[var(--chip-text)] bg-[var(--chip-bg)] border border-[var(--chip-border)] hover:bg-[var(--surface-2)] hover:text-[var(--text)] shadow-2xs'
                       }`}
                     >
-                      {isSelected && <span className="w-1.5 h-1.5 rounded-full bg-amber-600 shrink-0" />}
+                      {isSelected && <span className="w-1.5 h-1.5 rounded-full bg-[var(--chip-selected-border)] shrink-0" />}
                       <span>{item.label}</span>
                     </button>
                   );
@@ -297,11 +288,11 @@ export const HeroHomepage: React.FC<HeroHomepageProps> = ({
             </div>
 
             {/* HÀNG ĐÁY — GỘP THANH TRƯỢT GỌN GÀNG (~35%) VÀ NÚT CTA CÙNG MỘT HÀNG */}
-            <div className="pt-3 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-t border-stone-100">
+            <div className="pt-3 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-t border-[var(--surface-border)]">
               {/* Bên trái: Cụm thanh trượt thu gọn chiếm ~35% - 40% bề ngang */}
               <div className="w-full sm:w-80 max-w-[320px] space-y-1.5">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-[11px] font-bold text-stone-700 uppercase tracking-wider">Mức biến tấu</span>
+                  <span className="text-[11px] font-bold text-[var(--text-secondary)] uppercase tracking-wider">Mức biến tấu</span>
                 </div>
 
                 <div className="relative pt-6 pb-1">
@@ -313,7 +304,7 @@ export const HeroHomepage: React.FC<HeroHomepageProps> = ({
                       transform: 'translateX(-50%)'
                     }}
                   >
-                    <span className="inline-block px-2 py-0.5 rounded-full text-[11px] font-bold text-amber-950 bg-amber-100 border border-amber-300/90 shadow-2xs text-center min-w-[28px]">
+                    <span className="inline-block px-2 py-0.5 rounded-full text-[11px] font-bold text-[var(--chip-selected-text)] bg-[var(--chip-selected-bg)] border border-[var(--chip-selected-border)] shadow-2xs text-center min-w-[28px]">
                       {sliderValue}
                     </span>
                   </div>
@@ -348,7 +339,7 @@ export const HeroHomepage: React.FC<HeroHomepageProps> = ({
                   />
                 </div>
 
-                <div className="flex items-center justify-between text-[11px] text-stone-500 font-medium px-0.5">
+                <div className="flex items-center justify-between text-[11px] text-[var(--text-muted)] font-medium px-0.5">
                   <span>Gần nguyên bản</span>
                   <span>Đương đại hơn</span>
                 </div>
@@ -397,10 +388,10 @@ export const HeroHomepage: React.FC<HeroHomepageProps> = ({
       <div id="section-garments" className="space-y-6 pt-4">
         {/* Section Title */}
         <div className="text-center sm:text-left space-y-1">
-          <h2 className="text-base sm:text-lg font-semibold text-stone-900 tracking-tight">
+          <h2 className="text-base sm:text-lg font-semibold text-[var(--text)] tracking-tight">
             CÁC DÁNG ÁO AC ĐANG HỖ TRỢ
           </h2>
-          <p className="text-xs sm:text-sm text-stone-500 font-normal">
+          <p className="text-xs sm:text-sm text-[var(--text-muted)] font-normal">
             Ba dáng áo nền tảng được AC dùng làm điểm tựa cho các gợi ý phối đương đại.
           </p>
         </div>
@@ -410,17 +401,10 @@ export const HeroHomepage: React.FC<HeroHomepageProps> = ({
           {garmentsData.map(garment => (
             <div
               key={garment.id}
-              className="rounded-3xl p-4 pb-6 transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-xl hover:border-white flex flex-col group cursor-default"
-              style={{
-                background: 'rgba(255, 255, 255, 0.65)',
-                backdropFilter: 'blur(24px)',
-                WebkitBackdropFilter: 'blur(24px)',
-                border: '1px solid rgba(255, 255, 255, 0.85)',
-                boxShadow: '0 12px 32px -4px rgba(0, 0, 0, 0.04), 0 4px 12px -2px rgba(0, 0, 0, 0.02)'
-              }}
+              className="glass-card-interactive rounded-3xl p-4 pb-6 flex flex-col group cursor-default"
             >
               {/* 1. Khung ảnh trơn: Bo góc rounded-2xl, tỷ lệ aspect-[3/4], ảnh phủ tràn mép sắc nét, hoàn toàn sạch chữ */}
-              <div className="relative aspect-[3/4] w-full rounded-2xl overflow-hidden bg-stone-100/50 shadow-2xs">
+              <div className="relative aspect-[3/4] w-full rounded-2xl overflow-hidden bg-[var(--surface-2)] shadow-2xs">
                 <GarmentImageRotator
                   images={garment.images}
                   alt={garment.name}
@@ -431,13 +415,13 @@ export const HeroHomepage: React.FC<HeroHomepageProps> = ({
 
               {/* 2. Tên dáng áo */}
               <div className="flex items-center justify-between mt-4 mb-1.5">
-                <h3 className="text-lg font-semibold text-stone-900 tracking-tight">
+                <h3 className="text-lg font-semibold text-[var(--text)] tracking-tight">
                   {garment.name}
                 </h3>
               </div>
 
               {/* 3. Mô tả ngắn */}
-              <p className="text-sm text-stone-500 leading-relaxed font-normal">
+              <p className="text-sm text-[var(--text-muted)] leading-relaxed font-normal">
                 {garment.description}
               </p>
             </div>

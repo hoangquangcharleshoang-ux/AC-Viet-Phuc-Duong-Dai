@@ -88,7 +88,7 @@ export const GarmentImageRotator: React.FC<GarmentImageRotatorProps> = ({
 
   if (images.length === 1) {
     return (
-      <div className="relative w-full h-full overflow-hidden bg-stone-100/50">
+      <div className="relative w-full h-full overflow-hidden bg-[var(--surface-2)]">
         <img
           src={images[0]}
           alt={alt}
@@ -120,7 +120,7 @@ export const GarmentImageRotator: React.FC<GarmentImageRotatorProps> = ({
   };
 
   return (
-    <div className="relative w-full h-full overflow-hidden bg-stone-100/50">
+    <div className="relative w-full h-full overflow-hidden bg-[var(--surface-2)]">
       {/* Persistent Slot A */}
       <img
         src={slotA}

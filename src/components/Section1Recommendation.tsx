@@ -80,14 +80,14 @@ export const Section1Recommendation: React.FC<Section1RecommendationProps> = ({
     <section id="section-recommendations" className="space-y-6 pt-4 scroll-mt-20">
       {/* Section Header */}
       <div className="space-y-1.5">
-        <div className="inline-flex items-center gap-2 px-3 py-0.5 rounded-full text-xs font-semibold tracking-wider text-amber-900 bg-amber-100/80 border border-amber-300/80 uppercase shadow-2xs">
-          <Sparkles className="w-3.5 h-3.5 text-[#C26715] animate-pulse" />
+        <div className="inline-flex items-center gap-2 px-3 py-0.5 rounded-full text-xs font-semibold tracking-wider text-[var(--chip-selected-text)] bg-[var(--chip-selected-bg)] border border-[var(--chip-selected-border)] uppercase shadow-2xs">
+          <Sparkles className="w-3.5 h-3.5 text-[var(--accent)] animate-pulse" />
           <span>Bước 1 · Dáng Áo Nền Tảng</span>
         </div>
-        <h2 className="text-xl sm:text-2xl font-semibold text-stone-900 tracking-tight">
+        <h2 className="text-xl sm:text-2xl font-semibold text-[var(--text)] tracking-tight">
           Gợi ý dáng áo phù hợp
         </h2>
-        <p className="text-xs sm:text-sm text-stone-500 font-normal">
+        <p className="text-xs sm:text-sm text-[var(--text-muted)] font-normal">
           Gợi ý dựa trên dịp sử dụng, phong cách và mức độ trang trọng bạn đã chọn.
         </p>
       </div>
@@ -99,8 +99,8 @@ export const Section1Recommendation: React.FC<Section1RecommendationProps> = ({
           onClick={() => onSelectGarment(recommendation.primary.garmentId)}
           className={`rounded-3xl p-5 sm:p-6 transition-all duration-300 flex flex-col justify-between relative group cursor-pointer ${
             selectedGarmentId === recommendation.primary.garmentId
-              ? 'bg-white/95 border border-amber-300 shadow-md shadow-amber-100/50 -translate-y-0.5'
-              : 'bg-white/70 border border-stone-200/80 hover:bg-white/90 hover:border-amber-200 shadow-xs'
+              ? 'bg-[var(--surface)] border border-[var(--chip-selected-border)] shadow-md -translate-y-0.5'
+              : 'bg-[var(--surface)]/70 border border-[var(--surface-border)] hover:bg-[var(--surface)] hover:border-[var(--chip-selected-border)]/50 shadow-xs'
           }`}
           style={{
             backdropFilter: 'blur(20px)',
@@ -110,11 +110,11 @@ export const Section1Recommendation: React.FC<Section1RecommendationProps> = ({
           <div className="space-y-4">
             {/* Header: User-facing badge 'Khuyên dùng' */}
             <div className="flex items-center justify-between">
-              <span className="px-3 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-800 border border-emerald-200/80 shadow-2xs">
+              <span className="px-3 py-1 rounded-full text-xs font-medium bg-[var(--pass-bg)] text-[var(--pass-text)] border border-[var(--pass-border)] shadow-2xs">
                 Khuyên dùng
               </span>
               {selectedGarmentId === recommendation.primary.garmentId && (
-                <span className="text-[11px] font-medium text-amber-900 bg-amber-100/80 px-2.5 py-0.5 rounded-full border border-amber-300/80">
+                <span className="text-[11px] font-medium text-[var(--chip-selected-text)] bg-[var(--chip-selected-bg)] px-2.5 py-0.5 rounded-full border border-[var(--chip-selected-border)]">
                   Đã chọn
                 </span>
               )}
@@ -122,7 +122,7 @@ export const Section1Recommendation: React.FC<Section1RecommendationProps> = ({
 
             <div className="flex gap-4 sm:gap-5 items-start">
               {/* Fashion-first Image (28-32% desktop width target, aspect 3:4) */}
-              <div className="w-[30%] sm:w-[32%] shrink-0 max-w-[140px] min-w-[95px] aspect-[3/4] rounded-2xl overflow-hidden bg-stone-100 shadow-inner">
+              <div className="w-[30%] sm:w-[32%] shrink-0 max-w-[140px] min-w-[95px] aspect-[3/4] rounded-2xl overflow-hidden bg-[var(--surface-2)] shadow-inner">
                 <img
                   src={getRecommendationAsset(recommendation.primary.garmentId)}
                   alt={primaryGarment.canonical_name}
@@ -132,10 +132,10 @@ export const Section1Recommendation: React.FC<Section1RecommendationProps> = ({
 
               {/* Title & Conversational Rationale */}
               <div className="space-y-2 flex-1 min-w-0">
-                <h3 className="text-base sm:text-lg font-semibold text-stone-900 tracking-tight">
+                <h3 className="text-base sm:text-lg font-semibold text-[var(--text)] tracking-tight">
                   {primaryGarment.canonical_name}
                 </h3>
-                <p className="text-xs sm:text-sm text-stone-600 leading-relaxed font-normal">
+                <p className="text-xs sm:text-sm text-[var(--text-secondary)] leading-relaxed font-normal">
                   {recommendation.primary.rationale}
                 </p>
               </div>
@@ -144,8 +144,8 @@ export const Section1Recommendation: React.FC<Section1RecommendationProps> = ({
 
           {/* Action indicator at bottom (Requirement 5: Only show button on unselected card) */}
           {selectedGarmentId !== recommendation.primary.garmentId && (
-            <div className="pt-3.5 mt-3.5 border-t border-stone-100 flex items-center justify-end">
-              <span className="px-3.5 py-1 rounded-full text-xs font-medium text-stone-700 bg-white border border-stone-200 group-hover:border-amber-400 group-hover:text-amber-900 transition-all shadow-2xs flex items-center gap-1">
+            <div className="pt-3.5 mt-3.5 border-t border-[var(--surface-border)] flex items-center justify-end">
+              <span className="px-3.5 py-1 rounded-full text-xs font-medium text-[var(--text-secondary)] bg-[var(--surface-2)] border border-[var(--surface-border)] group-hover:border-[var(--chip-selected-border)] group-hover:text-[var(--text)] transition-all shadow-2xs flex items-center gap-1">
                 <span>Chọn {primaryGarment.canonical_name}</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </span>
@@ -159,8 +159,8 @@ export const Section1Recommendation: React.FC<Section1RecommendationProps> = ({
             onClick={() => onSelectGarment(recommendation.alternative!.garmentId)}
             className={`rounded-3xl p-5 sm:p-6 transition-all duration-300 flex flex-col justify-between relative group cursor-pointer ${
               selectedGarmentId === recommendation.alternative.garmentId
-                ? 'bg-white/95 border border-amber-300 shadow-md shadow-amber-100/50 -translate-y-0.5'
-                : 'bg-white/70 border border-stone-200/80 hover:bg-white/90 hover:border-amber-200 shadow-xs'
+                ? 'bg-[var(--surface)] border border-[var(--chip-selected-border)] shadow-md -translate-y-0.5'
+                : 'bg-[var(--surface)]/70 border border-[var(--surface-border)] hover:bg-[var(--surface)] hover:border-[var(--chip-selected-border)]/50 shadow-xs'
             }`}
             style={{
               backdropFilter: 'blur(20px)',
@@ -170,11 +170,11 @@ export const Section1Recommendation: React.FC<Section1RecommendationProps> = ({
             <div className="space-y-4">
               {/* Header: User-facing badge 'Cân nhắc thêm' */}
               <div className="flex items-center justify-between">
-                <span className="px-3 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-800 border border-amber-200/80 shadow-2xs">
+                <span className="px-3 py-1 rounded-full text-xs font-medium bg-[var(--warn-bg)] text-[var(--warn-text)] border border-[var(--warn-border)] shadow-2xs">
                   Cân nhắc thêm
                 </span>
                 {selectedGarmentId === recommendation.alternative.garmentId && (
-                  <span className="text-[11px] font-medium text-amber-900 bg-amber-100/80 px-2.5 py-0.5 rounded-full border border-amber-300/80">
+                  <span className="text-[11px] font-medium text-[var(--chip-selected-text)] bg-[var(--chip-selected-bg)] px-2.5 py-0.5 rounded-full border border-[var(--chip-selected-border)]">
                     Đã chọn
                   </span>
                 )}
@@ -182,7 +182,7 @@ export const Section1Recommendation: React.FC<Section1RecommendationProps> = ({
 
               <div className="flex gap-4 sm:gap-5 items-start">
                 {/* Fashion-first Image (28-32% desktop width target, aspect 3:4) */}
-                <div className="w-[30%] sm:w-[32%] shrink-0 max-w-[140px] min-w-[95px] aspect-[3/4] rounded-2xl overflow-hidden bg-stone-100 shadow-inner">
+                <div className="w-[30%] sm:w-[32%] shrink-0 max-w-[140px] min-w-[95px] aspect-[3/4] rounded-2xl overflow-hidden bg-[var(--surface-2)] shadow-inner">
                   <img
                     src={getRecommendationAsset(recommendation.alternative.garmentId)}
                     alt={altGarment.canonical_name}
@@ -192,10 +192,10 @@ export const Section1Recommendation: React.FC<Section1RecommendationProps> = ({
 
                 {/* Title & Conversational Rationale */}
                 <div className="space-y-2 flex-1 min-w-0">
-                  <h3 className="text-base sm:text-lg font-semibold text-stone-900 tracking-tight">
+                  <h3 className="text-base sm:text-lg font-semibold text-[var(--text)] tracking-tight">
                     {altGarment.canonical_name}
                   </h3>
-                  <p className="text-xs sm:text-sm text-stone-600 leading-relaxed font-normal">
+                  <p className="text-xs sm:text-sm text-[var(--text-secondary)] leading-relaxed font-normal">
                     {recommendation.alternative.rationale}
                   </p>
                 </div>
@@ -204,8 +204,8 @@ export const Section1Recommendation: React.FC<Section1RecommendationProps> = ({
 
             {/* Action indicator at bottom (Requirement 5: Only show button on unselected card) */}
             {selectedGarmentId !== recommendation.alternative.garmentId && (
-              <div className="pt-3.5 mt-3.5 border-t border-stone-100 flex items-center justify-end">
-                <span className="px-3.5 py-1 rounded-full text-xs font-medium text-stone-700 bg-white border border-stone-200 group-hover:border-amber-400 group-hover:text-amber-900 transition-all shadow-2xs flex items-center gap-1">
+              <div className="pt-3.5 mt-3.5 border-t border-[var(--surface-border)] flex items-center justify-end">
+                <span className="px-3.5 py-1 rounded-full text-xs font-medium text-[var(--text-secondary)] bg-[var(--surface-2)] border border-[var(--surface-border)] group-hover:border-[var(--chip-selected-border)] group-hover:text-[var(--text)] transition-all shadow-2xs flex items-center gap-1">
                   <span>Thử phương án này</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </span>
@@ -218,7 +218,7 @@ export const Section1Recommendation: React.FC<Section1RecommendationProps> = ({
       {/* Knowledge-on-demand Accordion (Default Collapsed, No alert box syndrome) */}
       <div
         id="section-cultural-understanding"
-        className="rounded-3xl border border-stone-200/80 bg-white/75 overflow-hidden transition-all shadow-sm scroll-mt-20"
+        className="rounded-3xl border border-[var(--surface-border)] bg-[var(--surface)]/75 overflow-hidden transition-all shadow-sm scroll-mt-20"
         style={{
           backdropFilter: 'blur(20px)',
           WebkitBackdropFilter: 'blur(20px)'
@@ -226,54 +226,54 @@ export const Section1Recommendation: React.FC<Section1RecommendationProps> = ({
       >
         <button
           onClick={() => setIsAccordionOpen(!isAccordionOpen)}
-          className="w-full px-5 sm:px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-left hover:bg-stone-50/60 transition-colors cursor-pointer"
+          className="w-full px-5 sm:px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-left hover:bg-[var(--surface-2)] transition-colors cursor-pointer"
         >
           <div className="flex items-center gap-2.5 min-w-0">
-            <BookOpen className="w-4 h-4 text-[#C26715] shrink-0" />
+            <BookOpen className="w-4 h-4 text-[var(--accent)] shrink-0" />
             <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-3 min-w-0">
-              <span className="text-sm sm:text-base font-semibold text-stone-900 tracking-tight">
+              <span className="text-sm sm:text-base font-semibold text-[var(--text)] tracking-tight">
                 Hiểu về {currentGarment.canonical_name}
               </span>
               {!isAccordionOpen && (
-                <span className="text-xs text-stone-500 font-normal truncate sm:overflow-visible sm:whitespace-normal">
+                <span className="text-xs text-[var(--text-muted)] font-normal truncate sm:overflow-visible sm:whitespace-normal">
                   {traitPreview}
                 </span>
               )}
             </div>
           </div>
-          <div className="flex items-center gap-1.5 text-xs font-medium text-[#C26715] shrink-0 self-end sm:self-auto">
+          <div className="flex items-center gap-1.5 text-xs font-medium text-[var(--accent)] shrink-0 self-end sm:self-auto">
             <span>{isAccordionOpen ? 'Thu gọn' : 'Xem đặc trưng và nguồn đối chiếu'}</span>
             {isAccordionOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
           </div>
         </button>
 
         {isAccordionOpen && (
-          <div className="px-5 sm:px-6 pb-6 pt-3 space-y-6 border-t border-stone-100 text-xs sm:text-sm">
+          <div className="px-5 sm:px-6 pb-6 pt-3 space-y-6 border-t border-[var(--surface-border)] text-xs sm:text-sm">
             {/* 1. Top Definition / Overview */}
-            <div className="bg-amber-50/60 p-4 rounded-2xl border border-amber-200/60 space-y-1.5">
-              <span className="text-[11px] font-semibold text-amber-900 uppercase tracking-wider block">
+            <div className="bg-[var(--chip-selected-bg)]/50 p-4 rounded-2xl border border-[var(--chip-selected-border)]/50 space-y-1.5">
+              <span className="text-[11px] font-semibold text-[var(--chip-selected-text)] uppercase tracking-wider block">
                 Áo này là gì?
               </span>
-              <p className="text-stone-800 leading-relaxed font-medium">
+              <p className="text-[var(--text)] leading-relaxed font-medium">
                 {currentGarment.cultural_narrative?.short_definition || currentGarment.definition}
               </p>
             </div>
 
             {/* 2. Grid: Origin & Cultural Meaning */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="bg-stone-50/70 p-4 rounded-2xl border border-stone-100 space-y-1.5">
-                <span className="text-[11px] font-semibold text-stone-400 uppercase tracking-wider block">
+              <div className="bg-[var(--surface-2)] p-4 rounded-2xl border border-[var(--surface-border)] space-y-1.5">
+                <span className="text-[11px] font-semibold text-[var(--text-muted)] uppercase tracking-wider block">
                   Nguồn gốc & Bối cảnh
                 </span>
-                <p className="text-stone-700 leading-relaxed font-normal">
+                <p className="text-[var(--text-secondary)] leading-relaxed font-normal">
                   {currentGarment.cultural_narrative?.origin_context || currentGarment.definition}
                 </p>
               </div>
-              <div className="bg-stone-50/70 p-4 rounded-2xl border border-stone-100 space-y-1.5">
-                <span className="text-[11px] font-semibold text-stone-400 uppercase tracking-wider block">
+              <div className="bg-[var(--surface-2)] p-4 rounded-2xl border border-[var(--surface-border)] space-y-1.5">
+                <span className="text-[11px] font-semibold text-[var(--text-muted)] uppercase tracking-wider block">
                   Vai trò & Ý nghĩa văn hóa
                 </span>
-                <p className="text-stone-700 leading-relaxed font-normal">
+                <p className="text-[var(--text-secondary)] leading-relaxed font-normal">
                   {currentGarment.cultural_narrative?.cultural_meaning || currentGarment.historical_function}
                 </p>
               </div>
@@ -281,19 +281,19 @@ export const Section1Recommendation: React.FC<Section1RecommendationProps> = ({
 
             {/* 3. Form & Function & Wearing Experience */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="bg-stone-50/70 p-4 rounded-2xl border border-stone-100 space-y-1.5">
-                <span className="text-[11px] font-semibold text-stone-400 uppercase tracking-wider block">
+              <div className="bg-[var(--surface-2)] p-4 rounded-2xl border border-[var(--surface-border)] space-y-1.5">
+                <span className="text-[11px] font-semibold text-[var(--text-muted)] uppercase tracking-wider block">
                   Hình thái & Công năng
                 </span>
-                <p className="text-stone-700 leading-relaxed font-normal">
+                <p className="text-[var(--text-secondary)] leading-relaxed font-normal">
                   {currentGarment.cultural_narrative?.form_function || 'Cấu trúc thiết kế tối ưu hóa cho công năng và bối cảnh sử dụng.'}
                 </p>
               </div>
-              <div className="bg-stone-50/70 p-4 rounded-2xl border border-stone-100 space-y-1.5">
-                <span className="text-[11px] font-semibold text-stone-400 uppercase tracking-wider block">
+              <div className="bg-[var(--surface-2)] p-4 rounded-2xl border border-[var(--surface-border)] space-y-1.5">
+                <span className="text-[11px] font-semibold text-[var(--text-muted)] uppercase tracking-wider block">
                   Trải nghiệm khi mặc
                 </span>
-                <p className="text-stone-700 leading-relaxed font-normal">
+                <p className="text-[var(--text-secondary)] leading-relaxed font-normal">
                   {currentGarment.cultural_narrative?.wearing_experience || 'Đảm bảo sự thoải mái, linh hoạt và phù hợp với vóc dáng người mặc đương đại.'}
                 </p>
               </div>
@@ -301,11 +301,11 @@ export const Section1Recommendation: React.FC<Section1RecommendationProps> = ({
 
             {/* 4. Quick Recognition & Contemporary Use */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="bg-white p-4 rounded-2xl border border-stone-200/80 space-y-2">
+              <div className="bg-[var(--surface)] p-4 rounded-2xl border border-[var(--surface-border)] space-y-2">
                 <span className="text-[11px] font-semibold text-amber-900 uppercase tracking-wider block">
                   Nhận diện nhanh
                 </span>
-                <ul className="space-y-1 pl-2 text-xs text-stone-700">
+                <ul className="space-y-1 pl-2 text-xs text-[var(--text-secondary)]">
                   {(currentGarment.cultural_narrative?.quick_recognition || currentGarment.traits.essential).map((t, idx) => (
                     <li key={idx} className="flex items-start gap-2">
                       <span className="text-[#C26715] font-bold">•</span>
@@ -314,11 +314,11 @@ export const Section1Recommendation: React.FC<Section1RecommendationProps> = ({
                   ))}
                 </ul>
               </div>
-              <div className="bg-white p-4 rounded-2xl border border-stone-200/80 space-y-2">
+              <div className="bg-[var(--surface)] p-4 rounded-2xl border border-[var(--surface-border)] space-y-2">
                 <span className="text-[11px] font-semibold text-amber-900 uppercase tracking-wider block">
                   Ứng dụng ngày nay
                 </span>
-                <p className="text-stone-700 leading-relaxed font-normal">
+                <p className="text-[var(--text-secondary)] leading-relaxed font-normal">
                   {currentGarment.cultural_narrative?.contemporary_use || 'Được ứng dụng linh hoạt trong các dịp lễ hội, kỷ yếu, sự kiện văn hóa và đời sống.'}
                 </p>
               </div>
@@ -326,8 +326,8 @@ export const Section1Recommendation: React.FC<Section1RecommendationProps> = ({
 
             {/* 5. Uncertainties / Academic Humility Note */}
             {currentGarment.cultural_narrative?.uncertainties && (
-              <div className="bg-stone-100/80 p-3.5 rounded-xl border border-stone-200 text-stone-600 text-[11px] space-y-1">
-                <span className="font-semibold text-stone-700 uppercase tracking-wider block">
+              <div className="bg-[var(--surface-2)] p-3.5 rounded-xl border border-[var(--surface-border)] text-[var(--text-secondary)] text-[11px] space-y-1">
+                <span className="font-semibold text-[var(--text-secondary)] uppercase tracking-wider block">
                   Lưu ý về tư liệu
                 </span>
                 <p>{currentGarment.cultural_narrative.uncertainties}</p>
@@ -335,9 +335,9 @@ export const Section1Recommendation: React.FC<Section1RecommendationProps> = ({
             )}
 
             {/* 6. Căn cứ tư liệu — Human-readable citations */}
-            <div className="pt-2 border-t border-stone-100">
+            <div className="pt-2 border-t border-[var(--surface-border)]">
               <div className="flex items-center justify-between flex-wrap gap-2">
-                <span className="text-xs text-stone-500 font-normal">
+                <span className="text-xs text-[var(--text-muted)] font-normal">
                   Nguồn đối chiếu · {sourceCount} nguồn
                 </span>
                 <button
@@ -354,7 +354,7 @@ export const Section1Recommendation: React.FC<Section1RecommendationProps> = ({
                     const src = SOURCES_CATALOG[srcId];
                     if (!src) return null;
                     return (
-                      <div key={srcId} className="p-3.5 rounded-2xl bg-white border border-stone-200/80 shadow-2xs space-y-2">
+                      <div key={srcId} className="p-3.5 rounded-2xl bg-[var(--surface)] border border-[var(--surface-border)] shadow-2xs space-y-2">
                         <div className="flex items-center justify-between gap-1">
                           <span className="text-[10px] font-medium text-amber-900 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
                             {src.type}
@@ -369,25 +369,25 @@ export const Section1Recommendation: React.FC<Section1RecommendationProps> = ({
                               <span>Xem nguồn ↗</span>
                             </a>
                           ) : (
-                            <span className="text-[10px] text-stone-400 font-normal">
+                            <span className="text-[10px] text-[var(--text-muted)] font-normal">
                               Thư tịch / Hiện vật
                             </span>
                           )}
                         </div>
-                        <p className="text-xs font-semibold text-stone-800 leading-snug">{src.title}</p>
-                        <p className="text-[11px] text-stone-500">
+                        <p className="text-xs font-semibold text-[var(--text)] leading-snug">{src.title}</p>
+                        <p className="text-[11px] text-[var(--text-muted)]">
                           {src.author}
                           {src.institution && ` · ${src.institution}`}
                           {src.year && ` (${src.year})`}
                         </p>
                         {src.locator && (
-                          <p className="text-[10px] text-stone-400 italic">
+                          <p className="text-[10px] text-[var(--text-muted)] italic">
                             {src.locator}
                           </p>
                         )}
                         {src.supportedClaims && (
-                          <p className="text-[11px] text-stone-600 leading-relaxed pt-1 border-t border-stone-100">
-                            <span className="font-medium text-stone-700">Nội dung đối chiếu: </span>
+                          <p className="text-[11px] text-[var(--text-secondary)] leading-relaxed pt-1 border-t border-[var(--surface-border)]">
+                            <span className="font-medium text-[var(--text-secondary)]">Nội dung đối chiếu: </span>
                             {src.supportedClaims}
                           </p>
                         )}

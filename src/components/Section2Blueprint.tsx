@@ -16,7 +16,8 @@ import {
   Layers,
   HelpCircle,
   X,
-  ArrowRight
+  ArrowRight,
+  Palette
 } from 'lucide-react';
 import { GarmentId, BlueprintOutput, GenerateLookbookRequest, GenderPresentation } from '../types';
 import { GARMENTS } from '../data/culturalKnowledgePack';
@@ -24,7 +25,8 @@ import {
   getFabricLabel,
   getLowerGarmentLabel,
   getFootwearLabel,
-  getAccessoryLabel
+  getAccessoryLabel,
+  PALETTES
 } from '../data/canonicalCatalog';
 import { computeOutfitFingerprint } from '../shared/fingerprint';
 
@@ -45,6 +47,7 @@ interface Section2BlueprintProps {
   onActiveAccessoriesChange?: (accessories: string[]) => void;
   onFingerprintChange?: (fingerprint: string) => void;
   onGenerateLookbook?: (payload: GenerateLookbookRequest) => void;
+  onColorChange?: (paletteId: string) => void;
 }
 
 export const Section2Blueprint: React.FC<Section2BlueprintProps> = ({
@@ -63,12 +66,15 @@ export const Section2Blueprint: React.FC<Section2BlueprintProps> = ({
   activeAccessories: controlledActiveAccessories,
   onActiveAccessoriesChange,
   onFingerprintChange,
-  onGenerateLookbook
+  onGenerateLookbook,
+  onColorChange
 }) => {
   // Local state for removable accessories (Requirement 6)
   const [internalActiveAccessories, setInternalActiveAccessories] = useState<string[]>([]);
   // Progressive disclosure state for cultural evidence in Column 3
   const [isEvidenceOpen, setIsEvidenceOpen] = useState<boolean>(false);
+  // Color picker dropdown state for changing PRIMARY garment color
+  const [isColorPickerOpen, setIsColorPickerOpen] = useState<boolean>(false);
 
   // Effective accessories: controlled prop takes precedence if provided
   const activeAccessories = controlledActiveAccessories !== undefined
@@ -246,10 +252,10 @@ export const Section2Blueprint: React.FC<Section2BlueprintProps> = ({
           <Sparkles className="w-3.5 h-3.5 text-sky-600 animate-pulse" />
           <span>Bước 2 · Bản Phối Thời Trang Đương Đại</span>
         </div>
-        <h2 className="text-xl sm:text-2xl font-semibold text-stone-900 tracking-tight">
+        <h2 className="text-xl sm:text-2xl font-semibold text-[var(--text)] tracking-tight">
           Bản phối cho {garment.canonical_name}
         </h2>
-        <p className="text-xs sm:text-sm text-stone-500 font-normal">
+        <p className="text-xs sm:text-sm text-[var(--text-muted)] font-normal">
           Xem những gì nên giữ, phần nào có thể biến tấu và điểm nào cần cân nhắc trong bản phối này.
         </p>
       </div>
@@ -257,19 +263,19 @@ export const Section2Blueprint: React.FC<Section2BlueprintProps> = ({
       {/* Loading Skeleton or Error State */}
       {isLoading ? (
         <div
-          className="rounded-3xl p-8 border border-stone-200/80 bg-white/70 animate-pulse space-y-6"
+          className="rounded-3xl p-8 border border-[var(--surface-border)] bg-[var(--surface)]/70 animate-pulse space-y-6"
           style={{ backdropFilter: 'blur(20px)' }}
         >
           <div className="flex items-center gap-3">
             <div className="w-5 h-5 rounded-full border-2 border-amber-500 border-t-transparent animate-spin" />
-            <span className="text-sm font-medium text-stone-700">
+            <span className="text-sm font-medium text-[var(--text-secondary)]">
               Đang điều phối bản phối thời trang đương đại cho {garment.canonical_name}...
             </span>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-            <div className="h-52 rounded-3xl bg-stone-100" />
-            <div className="h-52 rounded-3xl bg-stone-100" />
-            <div className="h-52 rounded-3xl bg-stone-100" />
+            <div className="h-52 rounded-3xl bg-[var(--surface-2)]" />
+            <div className="h-52 rounded-3xl bg-[var(--surface-2)]" />
+            <div className="h-52 rounded-3xl bg-[var(--surface-2)]" />
           </div>
         </div>
       ) : error ? (
@@ -294,19 +300,19 @@ export const Section2Blueprint: React.FC<Section2BlueprintProps> = ({
         </div>
       ) : !isBlueprintMatching ? (
         <div
-          className="rounded-3xl p-8 border border-stone-200/80 bg-white/70 animate-pulse space-y-6"
+          className="rounded-3xl p-8 border border-[var(--surface-border)] bg-[var(--surface)]/70 animate-pulse space-y-6"
           style={{ backdropFilter: 'blur(20px)' }}
         >
           <div className="flex items-center gap-3">
             <div className="w-5 h-5 rounded-full border-2 border-amber-500 border-t-transparent animate-spin" />
-            <span className="text-sm font-medium text-stone-700">
+            <span className="text-sm font-medium text-[var(--text-secondary)]">
               Đang điều phối bản phối thời trang đương đại cho {garment.canonical_name}...
             </span>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-            <div className="h-52 rounded-3xl bg-stone-100" />
-            <div className="h-52 rounded-3xl bg-stone-100" />
-            <div className="h-52 rounded-3xl bg-stone-100" />
+            <div className="h-52 rounded-3xl bg-[var(--surface-2)]" />
+            <div className="h-52 rounded-3xl bg-[var(--surface-2)]" />
+            <div className="h-52 rounded-3xl bg-[var(--surface-2)]" />
           </div>
         </div>
       ) : blueprint && isBlueprintMatching ? (
@@ -315,7 +321,7 @@ export const Section2Blueprint: React.FC<Section2BlueprintProps> = ({
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
             {/* CỘT 1 — Giữ nhận diện (100% Knowledge Base) */}
             <div
-              className="rounded-3xl p-5 sm:p-6 bg-white/80 border border-emerald-200/70 shadow-xs flex flex-col justify-between space-y-5"
+              className="rounded-3xl p-5 sm:p-6 bg-[var(--surface)]/80 border border-emerald-200/70 shadow-xs flex flex-col justify-between space-y-5"
               style={{
                 backdropFilter: 'blur(20px)',
                 WebkitBackdropFilter: 'blur(20px)'
@@ -325,7 +331,7 @@ export const Section2Blueprint: React.FC<Section2BlueprintProps> = ({
                 <div className="flex items-center justify-between pb-2 border-b border-emerald-100/70">
                   <div className="flex items-center gap-2">
                     <Shield className="w-4 h-4 text-emerald-600" />
-                    <h3 className="text-sm font-semibold text-stone-900 tracking-tight">
+                    <h3 className="text-sm font-semibold text-[var(--text)] tracking-tight">
                       Giữ cốt lõi
                     </h3>
                   </div>
@@ -336,27 +342,27 @@ export const Section2Blueprint: React.FC<Section2BlueprintProps> = ({
 
                 <div className="space-y-3.5 text-xs sm:text-sm">
                   <div>
-                    <span className="text-xs font-semibold text-stone-700 block mb-1.5">
+                    <span className="text-xs font-semibold text-[var(--text-secondary)] block mb-1.5">
                       Đặc trưng cốt lõi
                     </span>
-                    <ul className="space-y-1.5 text-stone-600">
+                    <ul className="space-y-1.5 text-[var(--text-secondary)]">
                       {conciseTraits.essential.map((trait, idx) => (
                         <li key={idx} className="flex items-start gap-2">
                           <span className="text-emerald-500 font-bold">•</span>
-                          <span className="leading-relaxed font-medium text-stone-800">{trait}</span>
+                          <span className="leading-relaxed font-medium text-[var(--text)]">{trait}</span>
                         </li>
                       ))}
                     </ul>
                   </div>
 
                   <div className="pt-2 border-t border-emerald-100/50">
-                    <span className="text-xs font-semibold text-stone-700 block mb-1.5">
+                    <span className="text-xs font-semibold text-[var(--text-secondary)] block mb-1.5">
                       Nên ưu tiên giữ
                     </span>
-                    <ul className="space-y-1.5 text-stone-600">
+                    <ul className="space-y-1.5 text-[var(--text-secondary)]">
                       {conciseTraits.characteristic.map((trait, idx) => (
                         <li key={idx} className="flex items-start gap-2">
-                          <span className="text-stone-400 font-bold">•</span>
+                          <span className="text-[var(--text-muted)] font-bold">•</span>
                           <span className="leading-relaxed">{trait}</span>
                         </li>
                       ))}
@@ -368,21 +374,21 @@ export const Section2Blueprint: React.FC<Section2BlueprintProps> = ({
 
             {/* CỘT 2 — Gợi ý phối hiện đại (Requirement 1 & Requirement 2: Read-only Cohesive Palette) */}
             <div
-              className="rounded-3xl p-5 sm:p-6 bg-white/95 border border-amber-200/80 shadow-sm flex flex-col justify-between space-y-5"
+              className="rounded-3xl p-5 sm:p-6 bg-[var(--surface)]/95 border border-amber-200/80 shadow-sm flex flex-col justify-between space-y-5"
               style={{
                 backdropFilter: 'blur(24px)',
                 WebkitBackdropFilter: 'blur(24px)'
               }}
             >
               <div className="space-y-4">
-                <div className="flex items-center justify-between pb-2 border-b border-amber-100/80">
+                <div className="flex items-center justify-between pb-2 border-b border-[var(--surface-border)]">
                   <div className="flex items-center gap-2">
-                    <Layers className="w-4 h-4 text-amber-700" />
-                    <h3 className="text-sm font-semibold text-stone-900 tracking-tight">
+                    <Layers className="w-4 h-4 text-[var(--accent)]" />
+                    <h3 className="text-sm font-semibold text-[var(--text)] tracking-tight">
                       Biến tấu an toàn
                     </h3>
                   </div>
-                  <span className="text-[11px] font-medium text-amber-800 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200/80">
+                  <span className="text-[11px] font-medium text-[var(--chip-selected-text)] bg-[var(--chip-selected-bg)] px-2 py-0.5 rounded-full border border-[var(--chip-selected-border)]">
                     Hiện đại
                   </span>
                 </div>
@@ -391,11 +397,67 @@ export const Section2Blueprint: React.FC<Section2BlueprintProps> = ({
                   {/* Bảng màu Hòa sắc 3 màu (Requirement 2: Read-Only, no onClick, no active ring, no selectedColor) */}
                   <div className="space-y-2.5">
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-semibold text-stone-700">Bảng màu gợi ý</span>
-                      <span className="text-[11px] text-stone-500 font-normal">
-                        Chủ đạo · Phối cùng · Điểm nhấn
-                      </span>
+                      <span className="text-xs font-semibold text-[var(--text-secondary)]">Bảng màu gợi ý</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[11px] text-[var(--text-muted)] font-normal hidden sm:inline">
+                          Chủ đạo · Phối cùng · Điểm nhấn
+                        </span>
+                        {onColorChange && (
+                          <button
+                            type="button"
+                            onClick={() => setIsColorPickerOpen(prev => !prev)}
+                            className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-[var(--chip-selected-bg)] text-[var(--chip-selected-text)] border border-[var(--chip-selected-border)] transition-colors cursor-pointer"
+                          >
+                            <Palette className="w-3 h-3 text-[var(--accent)]" />
+                            <span>{isColorPickerOpen ? 'Đóng bảng màu ↑' : 'Đổi màu chủ đạo ↓'}</span>
+                          </button>
+                        )}
+                      </div>
                     </div>
+
+                    {/* Color Picker Swatches Panel */}
+                    {isColorPickerOpen && onColorChange && (
+                      <div className="p-3 rounded-2xl bg-[var(--surface)] border border-amber-200/80 shadow-xs space-y-2 animate-in fade-in duration-150">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[11px] font-semibold text-[var(--text)]">
+                            Chọn màu chủ đạo từ Bảng màu chuẩn mực:
+                          </span>
+                          <span className="text-[10px] text-[var(--text-muted)]">
+                            10 sắc thái truyền thống & đương đại
+                          </span>
+                        </div>
+                        <div className="grid grid-cols-2 sm:grid-cols-5 gap-1.5">
+                          {PALETTES.map(p => {
+                            const isCurrentPrimary = blueprint.remixProposal.palette.some(
+                              c => c.role === 'PRIMARY' && c.id === p.id
+                            );
+                            return (
+                              <button
+                                key={p.id}
+                                type="button"
+                                onClick={() => {
+                                  onColorChange(p.id);
+                                  setIsColorPickerOpen(false);
+                                }}
+                                className={`flex items-center gap-2 p-1.5 rounded-xl border text-left transition-all cursor-pointer ${
+                                  isCurrentPrimary
+                                    ? 'bg-amber-50 border-amber-400 ring-1 ring-amber-400/50'
+                                    : 'bg-[var(--surface-2)] hover:bg-[var(--surface)] border-[var(--surface-border)] hover:border-amber-200'
+                                }`}
+                              >
+                                <span
+                                  className="w-4 h-4 rounded-full border border-black/10 shrink-0 shadow-2xs"
+                                  style={{ backgroundColor: p.hex }}
+                                />
+                                <span className="text-[10px] font-medium text-[var(--text)] truncate">
+                                  {p.name}
+                                </span>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
 
                     <div className="grid grid-cols-3 gap-2">
                       {blueprint.remixProposal.palette.map((color) => {
@@ -410,20 +472,20 @@ export const Section2Blueprint: React.FC<Section2BlueprintProps> = ({
                         return (
                           <div
                             key={color.id}
-                            className="flex flex-col items-center p-2 rounded-2xl bg-white/90 border border-stone-200/80 text-center relative shadow-2xs"
+                            className="flex flex-col items-center p-2 rounded-2xl bg-[var(--surface)]/90 border border-[var(--surface-border)] text-center relative shadow-2xs"
                           >
                             <span
                               className="w-8 h-8 rounded-full shadow-inner border border-black/10 shrink-0 mb-1.5"
                               style={{ backgroundColor: color.hex }}
                             />
-                            <span className="text-[11px] font-semibold text-stone-800 line-clamp-1 leading-tight">
+                            <span className="text-[11px] font-semibold text-[var(--text)] line-clamp-1 leading-tight">
                               {color.name}
                             </span>
                             <span className={`text-[10px] font-medium mt-1 px-1.5 py-0.5 rounded-full border ${
                               color.role === 'PRIMARY'
                                 ? 'bg-amber-50 text-amber-900 border-amber-300'
                                 : color.role === 'SUPPORTING'
-                                ? 'bg-stone-50 text-stone-700 border-stone-200/60'
+                                ? 'bg-[var(--surface-2)] text-[var(--text-secondary)] border-[var(--surface-border)]'
                                 : 'bg-amber-50/70 text-amber-800 border-amber-200/60'
                             }`}>
                               {roleLabel}
@@ -440,32 +502,32 @@ export const Section2Blueprint: React.FC<Section2BlueprintProps> = ({
                   </div>
 
                   {/* Clean Option Rows (Pills bo tròn) */}
-                  <div className="space-y-2 pt-2 border-t border-stone-100">
+                  <div className="space-y-2 pt-2 border-t border-[var(--surface-border)]">
                     <div className="flex items-center justify-between gap-2">
-                      <span className="text-xs text-stone-500 shrink-0">Chất liệu:</span>
-                      <span className="px-3 py-1 rounded-full text-xs font-medium text-stone-800 bg-white/90 border border-stone-200/80 shadow-2xs text-right">
+                      <span className="text-xs text-[var(--text-muted)] shrink-0">Chất liệu:</span>
+                      <span className="px-3 py-1 rounded-full text-xs font-medium text-[var(--text)] bg-[var(--surface)]/90 border border-[var(--surface-border)] shadow-2xs text-right">
                         {getFabricLabel(blueprint.remixProposal.fabricId)}
                       </span>
                     </div>
 
                     <div className="flex items-center justify-between gap-2">
-                      <span className="text-xs text-stone-500 shrink-0">Hạ phục:</span>
-                      <span className="px-3 py-1 rounded-full text-xs font-medium text-stone-800 bg-white/90 border border-stone-200/80 shadow-2xs text-right">
+                      <span className="text-xs text-[var(--text-muted)] shrink-0">Hạ phục:</span>
+                      <span className="px-3 py-1 rounded-full text-xs font-medium text-[var(--text)] bg-[var(--surface)]/90 border border-[var(--surface-border)] shadow-2xs text-right">
                         {getLowerGarmentLabel(blueprint.remixProposal.lowerGarmentId)}
                       </span>
                     </div>
 
                     <div className="flex items-center justify-between gap-2">
-                      <span className="text-xs text-stone-500 shrink-0">Giày:</span>
-                      <span className="px-3 py-1 rounded-full text-xs font-medium text-stone-800 bg-white/90 border border-stone-200/80 shadow-2xs text-right">
+                      <span className="text-xs text-[var(--text-muted)] shrink-0">Giày:</span>
+                      <span className="px-3 py-1 rounded-full text-xs font-medium text-[var(--text)] bg-[var(--surface)]/90 border border-[var(--surface-border)] shadow-2xs text-right">
                         {getFootwearLabel(blueprint.remixProposal.footwearId)}
                       </span>
                     </div>
                   </div>
 
                   {/* Phụ kiện gợi ý (Requirement 6: Heading "Phụ kiện gợi ý", 0-2 items, remove-only) */}
-                  <div className="space-y-2 pt-2 border-t border-stone-100">
-                    <span className="text-xs font-semibold text-stone-700 block">
+                  <div className="space-y-2 pt-2 border-t border-[var(--surface-border)]">
+                    <span className="text-xs font-semibold text-[var(--text-secondary)] block">
                       Phụ kiện gợi ý
                     </span>
                     <div className="flex flex-wrap gap-1.5">
@@ -473,12 +535,12 @@ export const Section2Blueprint: React.FC<Section2BlueprintProps> = ({
                         activeAccessories.map(accId => (
                           <span
                             key={accId}
-                            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs text-stone-800 bg-white/90 border border-stone-200 shadow-2xs group"
+                            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs text-[var(--text)] bg-[var(--surface)]/90 border border-[var(--surface-border)] shadow-2xs group"
                           >
                             <span>{getAccessoryLabel(accId)}</span>
                             <button
                               onClick={() => handleRemoveAccessory(accId)}
-                              className="text-stone-300 group-hover:text-stone-700 hover:text-red-500 transition-colors cursor-pointer p-0.5"
+                              className="text-[var(--text-muted)] group-hover:text-[var(--text-secondary)] hover:text-red-500 transition-colors cursor-pointer p-0.5"
                               title="Bỏ phụ kiện này"
                             >
                               <X className="w-3 h-3" />
@@ -486,7 +548,7 @@ export const Section2Blueprint: React.FC<Section2BlueprintProps> = ({
                           </span>
                         ))
                       ) : (
-                        <span className="text-stone-400 font-normal text-xs">
+                        <span className="text-[var(--text-muted)] font-normal text-xs">
                           Không cần thêm phụ kiện.
                         </span>
                       )}
@@ -495,9 +557,9 @@ export const Section2Blueprint: React.FC<Section2BlueprintProps> = ({
 
                   {/* Đạo cụ bối cảnh (Minimal clean presentation - Requirement 4) */}
                   {blueprint.remixProposal.contextProps && blueprint.remixProposal.contextProps.length > 0 && (
-                    <div className="flex items-center justify-between gap-2 pt-2 border-t border-stone-100">
-                      <span className="text-xs text-stone-500 shrink-0 font-medium">Đạo cụ:</span>
-                      <span className="px-3 py-1 rounded-full text-xs font-medium text-stone-800 bg-white/90 border border-stone-200/80 shadow-2xs text-right capitalize">
+                    <div className="flex items-center justify-between gap-2 pt-2 border-t border-[var(--surface-border)]">
+                      <span className="text-xs text-[var(--text-muted)] shrink-0 font-medium">Đạo cụ:</span>
+                      <span className="px-3 py-1 rounded-full text-xs font-medium text-[var(--text)] bg-[var(--surface)]/90 border border-[var(--surface-border)] shadow-2xs text-right capitalize">
                         {blueprint.remixProposal.contextProps.map(p => p.description).join(' · ')}
                       </span>
                     </div>
@@ -508,21 +570,21 @@ export const Section2Blueprint: React.FC<Section2BlueprintProps> = ({
 
             {/* CỘT 3 — Cần cân nhắc (Amber Accent Tint) */}
             <div
-              className="rounded-3xl p-5 sm:p-6 bg-white/90 border border-amber-200/70 shadow-2xs flex flex-col justify-between space-y-5"
+              className="rounded-3xl p-5 sm:p-6 bg-[var(--surface)]/90 border border-amber-200/70 shadow-2xs flex flex-col justify-between space-y-5"
               style={{
                 backdropFilter: 'blur(20px)',
                 WebkitBackdropFilter: 'blur(20px)'
               }}
             >
               <div className="space-y-4">
-                <div className="flex items-center justify-between pb-2 border-b border-amber-100/70">
+                <div className="flex items-center justify-between pb-2 border-b border-[var(--surface-border)]">
                   <div className="flex items-center gap-2">
-                    <HelpCircle className="w-4 h-4 text-[#B97818]" />
-                    <h3 className="text-sm font-semibold text-stone-900 tracking-tight">
+                    <HelpCircle className="w-4 h-4 text-[var(--accent)]" />
+                    <h3 className="text-sm font-semibold text-[var(--text)] tracking-tight">
                       Cần cân nhắc
                     </h3>
                   </div>
-                  <span className="text-[11px] font-medium text-[#B97818] bg-amber-50/80 px-2 py-0.5 rounded-full border border-amber-200/60">
+                  <span className="text-[11px] font-medium text-[var(--chip-selected-text)] bg-[var(--chip-selected-bg)] px-2 py-0.5 rounded-full border border-[var(--chip-selected-border)]">
                     Bối cảnh
                   </span>
                 </div>
@@ -530,13 +592,13 @@ export const Section2Blueprint: React.FC<Section2BlueprintProps> = ({
                 <div className="space-y-4 text-xs sm:text-sm">
                   {/* Theo bối cảnh bạn chọn */}
                   <div className="space-y-1.5">
-                    <span className="text-xs font-semibold text-stone-700 block">
+                    <span className="text-xs font-semibold text-[var(--text-secondary)] block">
                       Theo bối cảnh bạn chọn
                     </span>
-                    <ul className="space-y-1.5 text-stone-600">
+                    <ul className="space-y-1.5 text-[var(--text-secondary)]">
                       {blueprint.contextCautions.map((caution, idx) => (
                         <li key={idx} className="flex items-start gap-2">
-                          <span className="text-[#B97818] font-bold">•</span>
+                          <span className="text-[var(--accent)] font-bold">•</span>
                           <span className="leading-relaxed">{caution}</span>
                         </li>
                       ))}
@@ -544,19 +606,19 @@ export const Section2Blueprint: React.FC<Section2BlueprintProps> = ({
                   </div>
 
                   {/* Căn cứ văn hóa — Progressive Disclosure */}
-                  <div className="pt-2 border-t border-amber-100/60 space-y-2">
+                  <div className="pt-2 border-t border-[var(--surface-border)] space-y-2">
                     <button
                       type="button"
                       onClick={() => setIsEvidenceOpen(prev => !prev)}
-                      className="text-xs font-semibold text-[#B97818] hover:text-amber-800 flex items-center justify-between w-full cursor-pointer py-0.5 transition-colors"
+                      className="text-xs font-semibold text-[var(--accent)] hover:opacity-90 flex items-center justify-between w-full cursor-pointer py-0.5 transition-colors"
                     >
                       <span>Căn cứ cho gợi ý trên</span>
-                      <span className="text-[11px] font-normal text-stone-400">
+                      <span className="text-[11px] font-normal text-[var(--text-muted)]">
                         {isEvidenceOpen ? 'Thu gọn ↑' : 'Chi tiết →'}
                       </span>
                     </button>
                     {isEvidenceOpen && (
-                      <p className="text-stone-600 leading-relaxed font-normal bg-stone-50/90 p-3 rounded-2xl border border-stone-200/70 text-xs animate-in fade-in duration-150">
+                      <p className="text-[var(--text-secondary)] leading-relaxed font-normal bg-[var(--surface-2)] p-3 rounded-2xl border border-[var(--surface-border)] text-xs animate-in fade-in duration-150">
                         {getEvidenceUncertaintyNote(selectedGarmentId)}
                       </p>
                     )}
@@ -568,18 +630,18 @@ export const Section2Blueprint: React.FC<Section2BlueprintProps> = ({
 
           {/* Action Bar: Dynamic Outfit Summary & Reused Homepage Soft Aurora CTA */}
           <div
-            className="rounded-3xl p-5 sm:p-6 bg-white/85 border border-stone-200/90 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+            className="rounded-3xl p-5 sm:p-6 bg-[var(--surface)]/85 border border-[var(--surface-border)] shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4"
             style={{ backdropFilter: 'blur(24px)' }}
           >
             {/* Left: Dynamic Outfit Summary (Requirement 7: No ellipsis on desktop, all 3 colors, no hash) */}
             <div className="space-y-1 min-w-0 flex-1">
               <div className="flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                <h4 className="text-sm font-semibold text-stone-900 tracking-tight">
+                <h4 className="text-sm font-semibold text-[var(--text)] tracking-tight">
                   Bản phối đã sẵn sàng
                 </h4>
               </div>
-              <p className="text-xs text-stone-600 font-normal leading-relaxed">
+              <p className="text-xs text-[var(--text-secondary)] font-normal leading-relaxed">
                 {getDynamicOutfitSummary()}
               </p>
             </div>
@@ -587,9 +649,9 @@ export const Section2Blueprint: React.FC<Section2BlueprintProps> = ({
             {/* Right: Action CTA & Subject Gender Badge */}
             <div className="relative flex flex-wrap items-center gap-3 shrink-0">
               {/* Gender/Subject Presentation Badge (Single Source of Truth from Section 1) */}
-              <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 border border-amber-200/80 shadow-2xs text-xs font-medium text-amber-900">
-                <span className="text-amber-800/80 font-normal">Người mặc:</span>
-                <span className="font-semibold text-amber-950">
+              <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[var(--chip-selected-bg)] border border-[var(--chip-selected-border)] shadow-2xs text-xs font-medium text-[var(--chip-selected-text)]">
+                <span className="opacity-80 font-normal">Người mặc:</span>
+                <span className="font-semibold">
                   {genderPresentation === 'nu' ? 'Nữ' : genderPresentation === 'neutral' ? 'Không ưu tiên' : 'Nam'}
                 </span>
               </div>
@@ -599,7 +661,7 @@ export const Section2Blueprint: React.FC<Section2BlueprintProps> = ({
                 disabled={isGeneratingLookbook || isLoading || isRecommending || !blueprint}
                 className={`rounded-full px-6 py-2.5 font-medium text-sm tracking-wide transition-all duration-200 flex items-center gap-2 ${
                   isGeneratingLookbook || isLoading || isRecommending || !blueprint
-                    ? 'bg-stone-200 text-stone-500 border border-stone-300 cursor-not-allowed opacity-70'
+                    ? 'bg-stone-200 text-[var(--text-muted)] border border-[var(--surface-border)] cursor-not-allowed opacity-70'
                     : 'bg-[#C26715] hover:bg-[#A85507] text-white shadow-sm shadow-[#C26715]/25 hover:shadow-md active:scale-[0.98] cursor-pointer'
                 }`}
               >

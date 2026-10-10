@@ -104,6 +104,16 @@ export default function App() {
   const [blueprint, setBlueprint] = useState<BlueprintOutput | null>(null);
   const [selectedGarmentId, setSelectedGarmentId] = useState<GarmentId>('ngu_than_chen');
 
+  // Latest state tracking refs (prevents closure race conditions)
+  const blueprintRef = useRef<BlueprintOutput | null>(null);
+  blueprintRef.current = blueprint;
+  const selectedGarmentIdRef = useRef<GarmentId>(selectedGarmentId);
+  selectedGarmentIdRef.current = selectedGarmentId;
+  const activeParamsRef = useRef(activeParams);
+  activeParamsRef.current = activeParams;
+  const draftContextRef = useRef(draftContext);
+  draftContextRef.current = draftContext;
+
   // Active Accessory Overrides Map (cacheKey -> accessoryIds[])
   const activeAccessoryOverridesRef = useRef<Map<string, string[]>>(new Map());
   const [accessoryStateVersion, setAccessoryStateVersion] = useState<number>(0);
@@ -156,14 +166,14 @@ export default function App() {
   const handleApplyAction = async (action: ACChatAction) => {
     if (!blueprint) return;
 
-    // Concurrency guard: calculate current fingerprint using canonical shared builder
+    // Concurrency guard: calculate current fingerprint using canonical shared builder with effective accessories
     const currentFingerprint = computeOutfitFingerprint({
       garmentId: selectedGarmentId,
       palette: blueprint.remixProposal.palette,
       fabricId: blueprint.remixProposal.fabricId,
       lowerGarmentId: blueprint.remixProposal.lowerGarmentId,
       footwearId: blueprint.remixProposal.footwearId,
-      accessoryIds: blueprint.remixProposal.accessoryIds,
+      accessoryIds: effectiveActiveAccessories,
       contextProps: blueprint.remixProposal.contextProps || [],
       occasion: activeParams.selectedOccasion,
       style: activeParams.selectedStyle,
@@ -181,19 +191,29 @@ export default function App() {
           chatSessionId: initialSessionId
         });
 
-        // Client Commit Race Guard: Recheck latest actual Blueprint fingerprint and chatSessionId immediately before committing
+        // Client Commit Race Guard: Recheck latest actual Blueprint fingerprint and chatSessionId via refs
+        const latestBp = blueprintRef.current;
+        const blueprint = latestBp;
+        const latestGarmentId = selectedGarmentIdRef.current;
+        const latestParams = activeParamsRef.current;
+        const latestAccs = latestBp
+          ? (activeAccessoryOverridesRef.current.has(currentBlueprintCacheKey)
+              ? activeAccessoryOverridesRef.current.get(currentBlueprintCacheKey)!
+              : latestBp.remixProposal.accessoryIds)
+          : [];
+
         const latestFingerprint = blueprint ? computeOutfitFingerprint({
-          garmentId: selectedGarmentId,
-          palette: blueprint.remixProposal.palette,
-          fabricId: blueprint.remixProposal.fabricId,
-          lowerGarmentId: blueprint.remixProposal.lowerGarmentId,
-          footwearId: blueprint.remixProposal.footwearId,
-          accessoryIds: blueprint.remixProposal.accessoryIds,
-          contextProps: blueprint.remixProposal.contextProps || [],
-          occasion: activeParams.selectedOccasion,
-          style: activeParams.selectedStyle,
-          traditionalRatio: activeParams.traditionalRatio,
-          genderPresentation: activeParams.genderPresentation || draftContext.genderPresentation || 'nam'
+          garmentId: latestGarmentId,
+          palette: latestBp.remixProposal.palette,
+          fabricId: latestBp.remixProposal.fabricId,
+          lowerGarmentId: latestBp.remixProposal.lowerGarmentId,
+          footwearId: latestBp.remixProposal.footwearId,
+          accessoryIds: latestAccs,
+          contextProps: latestBp.remixProposal.contextProps || [],
+          occasion: latestParams.selectedOccasion,
+          style: latestParams.selectedStyle,
+          traditionalRatio: latestParams.traditionalRatio,
+          genderPresentation: latestParams.genderPresentation || draftContextRef.current.genderPresentation || 'nam'
         }) : '';
 
         if (latestFingerprint !== currentFingerprint || chatSessionIdRef.current !== initialSessionId) {
@@ -204,6 +224,19 @@ export default function App() {
         // Commit nextBlueprint returned directly by server
         setBlueprint(mutateResult.nextBlueprint);
         setCurrentOutfitFingerprint(mutateResult.nextFingerprint);
+
+        // B5(a) & (b): Prime session blueprint cache and sync accessory overrides so F5 preserves mutation
+        primeSessionBlueprintCache([{
+          cacheKey: currentBlueprintCacheKey,
+          blueprint: mutateResult.nextBlueprint
+        }]);
+        if (mutateResult.nextBlueprint.remixProposal.accessoryIds) {
+          activeAccessoryOverridesRef.current.set(
+            currentBlueprintCacheKey,
+            [...mutateResult.nextBlueprint.remixProposal.accessoryIds]
+          );
+          setAccessoryStateVersion(v => v + 1);
+        }
 
         // Lineage Isolation Contract: Generation Snapshot remains immutable!
         // Updating blueprint does NOT mutate prior snapshot, does NOT auto-generate image, does NOT auto-run QA.
@@ -301,11 +334,23 @@ export default function App() {
     }
   };
 
+  const handleColorChange = (paletteId: string) => {
+    if (!blueprint) return;
+    const pal = PALETTES.find(p => p.id === paletteId);
+    if (!pal) return;
+    handleApplyAction({
+      type: 'SET_COLOR',
+      targetValue: paletteId,
+      label: `Đổi màu sang ${pal.name}`,
+      description: `Cập nhật màu chủ đạo của bản phối sang ${pal.name}`
+    });
+  };
+
   const handleTriggerExploration = async (intent: ExplorationIntent) => {
     if (!blueprint) return;
     setIsExploring(prev => ({ ...prev, [intent]: true }));
     try {
-      const parentFp = rootAnchor?.outfitFingerprint || currentOutfitFingerprint;
+      const parentFp = currentOutfitFingerprint;
       const expResult = await generateExplorationBlueprint({
         selectedGarmentId,
         parentBlueprint: blueprint,
@@ -329,6 +374,14 @@ export default function App() {
           retryable: false,
           failedStep: 'CALL_B'
         });
+      } else {
+        setApiError({
+          code: err?.code || 'EXPLORATION_FAILED',
+          message: err?.message || 'Không thể tạo bản phối khám phá lúc này.',
+          retryable: err?.retryable ?? true,
+          failedStep: 'CALL_B',
+          retryAction: () => handleTriggerExploration(intent)
+        });
       }
     } finally {
       setIsExploring(prev => ({ ...prev, [intent]: false }));
@@ -343,7 +396,19 @@ export default function App() {
     };
     const explorationTitle = titles[expResult.explorationIntent] || 'Khám phá';
 
-    // 1. Capture Root Anchor before switching view state if not currently exploring
+    // 1. Client-side divergence guard against root BEFORE setting rootAnchor (B6a)
+    const rootFp = rootAnchor?.outfitFingerprint || currentOutfitFingerprint;
+    if (expResult.resultingOutfitFingerprint === rootFp) {
+      setApiError({
+        code: 'EXPLORATION_NO_DIVERGENCE',
+        message: 'Bản phối khám phá chưa tạo ra khác biệt với bản phối gốc.',
+        retryable: false,
+        failedStep: 'CALL_B'
+      });
+      return;
+    }
+
+    // 2. Capture Root Anchor if not already exploring; update explorationTitle on sibling switch (B6b)
     if (!rootAnchor && blueprint) {
       setRootAnchor({
         blueprint: JSON.parse(JSON.stringify(blueprint)),
@@ -355,18 +420,8 @@ export default function App() {
         explorationTitle,
         explorationIntent: expResult.explorationIntent
       });
-    }
-
-    // 2. Client-side divergence guard against root
-    const rootFp = rootAnchor?.outfitFingerprint || currentOutfitFingerprint;
-    if (expResult.resultingOutfitFingerprint === rootFp) {
-      setApiError({
-        code: 'EXPLORATION_NO_DIVERGENCE',
-        message: 'Bản phối khám phá chưa tạo ra khác biệt với bản phối gốc.',
-        retryable: false,
-        failedStep: 'CALL_B'
-      });
-      return;
+    } else if (rootAnchor) {
+      setRootAnchor(prev => prev ? { ...prev, explorationTitle, explorationIntent: expResult.explorationIntent } : null);
     }
 
     setBlueprint(expResult.blueprint);
@@ -411,11 +466,17 @@ export default function App() {
         : (rootAnchor.activeRevisions.find(r => r.revisionIndex === rootAnchor.activeRevisionIndex)?.generationId || '');
     activeVisualQAGenerationIdRef.current = rootActiveGenId;
 
+    // B7: Reset visualQAState to idle if it was loading to prevent infinite spinner
+    const restoredQA: VisualQAState =
+      rootAnchor.visualQAState.status === 'loading'
+        ? { status: 'idle' }
+        : rootAnchor.visualQAState;
+
     setBlueprint(rootAnchor.blueprint);
     setCurrentOutfitFingerprint(rootAnchor.outfitFingerprint);
     setLookbookState(rootAnchor.lookbookState);
     setActiveRevisionIndex(rootAnchor.activeRevisionIndex);
-    setVisualQAState(rootAnchor.visualQAState);
+    setVisualQAState(restoredQA);
     setActiveRevisions(rootAnchor.activeRevisions);
     setRootAnchor(null);
 
@@ -485,7 +546,8 @@ export default function App() {
               session.committedContext.promptText.trim().toLowerCase(),
               session.committedContext.selectedOccasion,
               session.committedContext.selectedStyle,
-              session.committedContext.traditionalRatio
+              session.committedContext.traditionalRatio,
+              session.committedContext.genderPresentation || 'nam'
             ].join('|');
             const matched = session.blueprintCacheEntries.find(e => e.cacheKey === expectedKey);
             if (matched) {
@@ -500,7 +562,8 @@ export default function App() {
             session.committedContext.promptText.trim().toLowerCase(),
             session.committedContext.selectedOccasion,
             session.committedContext.selectedStyle,
-            session.committedContext.traditionalRatio
+            session.committedContext.traditionalRatio,
+            session.committedContext.genderPresentation || 'nam'
           ].join('|');
           primeSessionRecommendationCache([{ cacheKey: recKey, recommendation: session.recommendation }]);
         }
@@ -619,7 +682,6 @@ export default function App() {
 
   const handleGenderPresentationChange = (gender: GenderPresentation) => {
     setDraftContext(p => ({ ...p, genderPresentation: gender }));
-    setActiveParams(p => ({ ...p, genderPresentation: gender }));
     if (!isWearerGarmentEligible(selectedGarmentId, gender)) {
       setSelectedGarmentId('ngu_than_chen');
       setBlueprint(null);
@@ -727,6 +789,7 @@ export default function App() {
       console.log('[BlueprintUI] RESPONSE_APPLIED', { requestId, garmentId });
       setBlueprint(blueprintData);
       setRootAnchor(null);
+      setApiError(null);
     } catch (err: any) {
       if (
         err?.name === 'AbortError' ||
@@ -779,6 +842,12 @@ export default function App() {
     }
 
     const recRequestId = ++activeRecommendationRequestIdRef.current;
+    // B8: Invalidate and abort previous Call B so late responses cannot apply during Call A
+    activeBlueprintRequestIdRef.current++;
+    if (activeBlueprintAbortControllerRef.current) {
+      activeBlueprintAbortControllerRef.current.abort();
+      activeBlueprintAbortControllerRef.current = null;
+    }
     const effectiveGender = payload.genderPresentation || draftContext.genderPresentation || 'nam';
     const paramsWithGender = {
       ...payload,
@@ -847,6 +916,15 @@ export default function App() {
     setBlueprint(null);
     setRootAnchor(null);
     setApiError(null);
+    setLookbookState({ status: 'idle' });
+    setVisualQAState({ status: 'idle' });
+    setActiveRevisions([]);
+    setActiveRevisionIndex(0);
+    setExplorationResults({
+      MORE_TRADITIONAL: null,
+      MORE_REMIXED: null,
+      ALTERNATIVE: null
+    });
 
     // Call B is triggered with the new garmentId (Session cache avoids redundant API calls)
     executeCallB(garmentId, activeParams);
@@ -1444,7 +1522,7 @@ export default function App() {
   ]);
 
   return (
-    <div className="relative min-h-screen bg-[#F8F9FA] text-[#1F1F1F] selection:bg-stone-900 selection:text-white">
+    <div className="relative min-h-screen bg-[var(--page-bg)] text-[var(--text)] transition-colors duration-200 selection:bg-[var(--accent)] selection:text-[var(--accent-contrast)]">
       {/* Background Ambient Aurora Mesh Blobs */}
       <div className="aurora-mesh-container">
         <div className="aurora-blob-1" />
@@ -1489,33 +1567,23 @@ export default function App() {
         {/* Truthful Runtime Status Banner */}
         {apiError && (
           <div
-            className="rounded-3xl p-5 sm:p-6 bg-white/85 border border-stone-200/90 shadow-sm transition-all duration-300"
+            className="rounded-3xl p-5 sm:p-6 bg-[var(--surface)]/85 border border-[var(--surface-border)] shadow-sm transition-all duration-300"
             style={{ backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)' }}
           >
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="flex items-start gap-3.5">
                 <div
-                  className={`w-9 h-9 rounded-2xl flex items-center justify-center shrink-0 ${
-                    apiError.code === 'GEMINI_QUOTA_EXHAUSTED'
-                      ? 'bg-amber-50 text-amber-600 border border-amber-200/80'
-                      : 'bg-amber-50 text-amber-700 border border-amber-200/80'
-                  }`}
+                  className="w-9 h-9 rounded-2xl flex items-center justify-center shrink-0 bg-[var(--chip-selected-bg)] text-[var(--chip-selected-text)] border border-[var(--chip-selected-border)]"
                 >
                   {apiError.code === 'GEMINI_QUOTA_EXHAUSTED' ? (
-                    <Clock className="w-5 h-5" />
+                    <Clock className="w-5 h-5 text-[var(--accent)]" />
                   ) : (
-                    <AlertCircle className="w-5 h-5" />
+                    <AlertCircle className="w-5 h-5 text-[var(--accent)]" />
                   )}
                 </div>
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
-                    <span
-                      className={`text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full border ${
-                        apiError.code === 'GEMINI_QUOTA_EXHAUSTED'
-                          ? 'bg-amber-100/60 text-amber-800 border-amber-300/80'
-                          : 'bg-amber-100/60 text-amber-900 border-amber-300/80'
-                      }`}
-                    >
+                    <span className="text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full border bg-[var(--chip-selected-bg)] text-[var(--chip-selected-text)] border-[var(--chip-selected-border)]">
                       {apiError.code === 'GEMINI_QUOTA_EXHAUSTED'
                         ? 'Hạn mức AI tạm khóa'
                         : apiError.code === 'GEMINI_TEMPORARILY_UNAVAILABLE'
@@ -1523,10 +1591,10 @@ export default function App() {
                         : 'Thông báo kết nối AI'}
                     </span>
                   </div>
-                  <p className="text-sm font-medium text-stone-900 leading-snug">
+                  <p className="text-sm font-medium text-[var(--text)] leading-snug">
                     {apiError.message}
                   </p>
-                  <p className="text-xs text-stone-500 font-normal">
+                  <p className="text-xs text-[var(--text-muted)] font-normal">
                     {apiError.code === 'GEMINI_QUOTA_EXHAUSTED'
                       ? 'Dữ liệu tri thức lịch sử và các quy chế văn hóa vẫn được bảo toàn nguyên vẹn trong hệ thống.'
                       : 'Vui lòng bấm nút "Thử lại ngay" khi hệ thống sẵn sàng.'}
@@ -1538,9 +1606,9 @@ export default function App() {
               {apiError.retryable && apiError.retryAction && (
                 <button
                   onClick={apiError.retryAction}
-                  className="rounded-full px-5 py-2 text-xs font-medium text-amber-900 bg-amber-50 hover:bg-amber-100/80 border border-amber-300/80 shadow-2xs transition-all duration-200 flex items-center gap-2 shrink-0 cursor-pointer self-start sm:self-center"
+                  className="rounded-full px-5 py-2 text-xs font-medium text-[var(--chip-selected-text)] bg-[var(--chip-selected-bg)] hover:bg-[var(--surface-2)] border border-[var(--chip-selected-border)] shadow-2xs transition-all duration-200 flex items-center gap-2 shrink-0 cursor-pointer self-start sm:self-center"
                 >
-                  <RefreshCw className="w-3.5 h-3.5" />
+                  <RefreshCw className="w-3.5 h-3.5 text-[var(--accent)]" />
                   <span>Thử lại ngay</span>
                 </button>
               )}
@@ -1578,6 +1646,7 @@ export default function App() {
             onActiveAccessoriesChange={handleActiveAccessoriesChange}
             onFingerprintChange={setCurrentOutfitFingerprint}
             onGenerateLookbook={payload => handleGenerateLookbook(payload, false)}
+            onColorChange={handleColorChange}
           />
         )}
 
@@ -1659,6 +1728,7 @@ export default function App() {
             isExploringBranch={Boolean(rootAnchor)}
             explorationTitle={rootAnchor?.explorationTitle}
             onReturnToRoot={handleReturnToRoot}
+            onColorChange={handleColorChange}
           />
         )}
 

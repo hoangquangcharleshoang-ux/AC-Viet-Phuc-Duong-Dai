@@ -153,9 +153,23 @@ export function savePersistedSession(session: PersistedACSessionV1): void {
       lookbookState: sanitizedLookbook
     };
 
-    window.localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(payload));
+    try {
+      window.localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(payload));
+    } catch (err: any) {
+      if (err?.name === 'QuotaExceededError' || err?.code === 22) {
+        console.warn('[SessionPersistence] localStorage quota exceeded, trimming cache entries');
+        payload.blueprintCacheEntries = (payload.blueprintCacheEntries || []).slice(-2);
+        try {
+          window.localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(payload));
+        } catch (_) {
+          // ignore
+        }
+      } else {
+        console.warn('[SessionPersistence] Failed to write session to localStorage:', err);
+      }
+    }
   } catch (err) {
-    console.warn('[SessionPersistence] Failed to write session to localStorage:', err);
+    console.warn('[SessionPersistence] Failed to serialize session:', err);
   }
 }
 
