@@ -44,7 +44,7 @@ export async function requestLookbookGeneration(
         (res.status === 409
           ? 'Bản phối đã thay đổi. Vui lòng tạo ảnh lại từ phiên bản hiện tại.'
           : res.status === 502 || res.status === 503
-          ? 'Dịch vụ tạo ảnh đang tạm thời không khả dụng. Bản phối hiện tại vẫn được giữ lại. Vui lòng thử lại sau.'
+          ? 'Dịch vụ tạo ảnh đang tạm thời không khả dụng. Bản phối hiện tại vẫn được giữ lại. Vui lòng thử lại.'
           : 'Không thể tạo hình ảnh minh họa lúc này. Vui lòng thử lại.');
 
       throw new LookbookError(code, message, res.status);
@@ -61,14 +61,14 @@ export async function requestLookbookGeneration(
     if (err.name === 'AbortError') {
       throw new LookbookError(
         'IMAGE_GENERATION_TIMEOUT',
-        'Quá trình tạo ảnh mất nhiều thời gian hơn dự kiến. Bạn có thể thử lại.',
+        'Quá trình tạo ảnh mất nhiều thời gian hơn dự kiến. Bản phối hiện tại vẫn được giữ lại. Vui lòng thử lại.',
         504
       );
     }
 
     throw new LookbookError(
       'NETWORK_ERROR',
-      'Không thể kết nối đến máy chủ. Vui lòng kiểm tra đường truyền mạng.',
+      'Không thể kết nối đến máy chủ. Vui lòng kiểm tra kết nối và thử lại.',
       0
     );
   }

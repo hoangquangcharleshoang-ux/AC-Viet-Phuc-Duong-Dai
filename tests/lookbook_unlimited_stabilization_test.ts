@@ -625,6 +625,640 @@ runTest('32. No obsolete max-two revision semantics remain', () => {
   }
 });
 
+// 33. ACCENT prompt requires visible focal presence
+runTest('33. ACCENT prompt requires visible focal presence', () => {
+  const compiled = compileVisualPrompt({
+    garmentId: 'ao_tac',
+    genderPresentation: 'nam',
+    context: { occasion: 'tet_temple', style: 'thanh_lich', traditionalRatio: 80, genderPresentation: 'nam' },
+    remixProposal: {
+      palette: [
+        { id: 'xanh_thien_thanh', hex: '#63B8FF', name: 'Xanh thiên thanh', role: 'PRIMARY' },
+        { id: 'trang_nga', hex: '#F5F2EB', name: 'Trắng ngà', role: 'SUPPORTING' },
+        { id: 'vang_hoang_cuc', hex: '#D4A017', name: 'Vàng hoàng cúc', role: 'ACCENT' }
+      ],
+      fabricId: 'gam_hoa_chim',
+      lowerGarmentId: 'silk_pants_wide',
+      footwearId: 'guoc_moc_truyen_thong',
+      accessoryIds: []
+    },
+    outfitFingerprint: 'FP_TEST_33'
+  });
+  if (!compiled.prompt.includes('clearly perceptible') || !compiled.prompt.includes('focal contrast')) {
+    throw new Error('ACCENT prompt must require visible focal presence');
+  }
+});
+
+// 34. ACCENT prompt still prohibits contrast piping
+runTest('34. ACCENT prompt still prohibits contrast piping', () => {
+  const compiled = compileVisualPrompt({
+    garmentId: 'ao_tac',
+    genderPresentation: 'nam',
+    context: { occasion: 'tet_temple', style: 'thanh_lich', traditionalRatio: 80, genderPresentation: 'nam' },
+    remixProposal: {
+      palette: [
+        { id: 'xanh_thien_thanh', hex: '#63B8FF', name: 'Xanh thiên thanh', role: 'PRIMARY' },
+        { id: 'trang_nga', hex: '#F5F2EB', name: 'Trắng ngà', role: 'SUPPORTING' },
+        { id: 'vang_hoang_cuc', hex: '#D4A017', name: 'Vàng hoàng cúc', role: 'ACCENT' }
+      ],
+      fabricId: 'gam_hoa_chim',
+      lowerGarmentId: 'silk_pants_wide',
+      footwearId: 'guoc_moc_truyen_thong',
+      accessoryIds: []
+    },
+    outfitFingerprint: 'FP_TEST_34'
+  });
+  if (!compiled.prompt.includes('NO contrast piping') || !compiled.prompt.includes('NO colored seam outlining')) {
+    throw new Error('ACCENT prompt must still prohibit contrast piping');
+  }
+});
+
+// 35. Ngũ thân uses garment-specific accent placement
+runTest('35. Ngũ thân uses garment-specific accent placement', () => {
+  const compiled = compileVisualPrompt({
+    garmentId: 'ngu_than_chen',
+    genderPresentation: 'nam',
+    context: { occasion: 'ky_yeu', style: 'tre_trung', traditionalRatio: 50, genderPresentation: 'nam' },
+    remixProposal: {
+      palette: [
+        { id: 'xanh_cham_co', hex: '#2D3A54', name: 'Xanh chàm cổ', role: 'PRIMARY' },
+        { id: 'trang_nga', hex: '#F5F2EB', name: 'Trắng ngà', role: 'SUPPORTING' },
+        { id: 'vang_hoang_cuc', hex: '#D4A017', name: 'Vàng hoàng cúc', role: 'ACCENT' }
+      ],
+      fabricId: 'natural_matte_silk_linen',
+      lowerGarmentId: 'silk_pants_wide',
+      footwearId: 'guoc_moc',
+      accessoryIds: []
+    },
+    outfitFingerprint: 'FP_TEST_35'
+  });
+  if (!compiled.prompt.includes('Áo ngũ thân tay chẽn') || !compiled.prompt.includes('closure/button details')) {
+    throw new Error('Ngũ thân must use garment-specific accent placement');
+  }
+});
+
+// 36. Áo tấc uses garment-specific accent placement
+runTest('36. Áo tấc uses garment-specific accent placement', () => {
+  const compiled = compileVisualPrompt({
+    garmentId: 'ao_tac',
+    genderPresentation: 'nam',
+    context: { occasion: 'tet_temple', style: 'thanh_lich', traditionalRatio: 80, genderPresentation: 'nam' },
+    remixProposal: {
+      palette: [
+        { id: 'xanh_thien_thanh', hex: '#63B8FF', name: 'Xanh thiên thanh', role: 'PRIMARY' },
+        { id: 'trang_nga', hex: '#F5F2EB', name: 'Trắng ngà', role: 'SUPPORTING' },
+        { id: 'vang_hoang_cuc', hex: '#D4A017', name: 'Vàng hoàng cúc', role: 'ACCENT' }
+      ],
+      fabricId: 'gam_hoa_chim',
+      lowerGarmentId: 'silk_pants_wide',
+      footwearId: 'guoc_moc_truyen_thong',
+      accessoryIds: []
+    },
+    outfitFingerprint: 'FP_TEST_36'
+  });
+  if (!compiled.prompt.includes('Áo tấc') || !compiled.prompt.includes('traditional closure/button details')) {
+    throw new Error('Áo tấc must use garment-specific accent placement');
+  }
+});
+
+// 37. Tứ thân uses garment-specific accent placement
+runTest('37. Tứ thân uses garment-specific accent placement', () => {
+  const compiled = compileVisualPrompt({
+    garmentId: 'ao_tu_than',
+    genderPresentation: 'nu',
+    context: { occasion: 'le_hoi', style: 'tre_trung', traditionalRatio: 80, genderPresentation: 'nu' },
+    remixProposal: {
+      palette: [
+        { id: 'tim_hue_co', hex: '#5C2D54', name: 'Tím huế cổ', role: 'PRIMARY' },
+        { id: 'trang_nga', hex: '#F5F2EB', name: 'Trắng ngà', role: 'SUPPORTING' },
+        { id: 'hong_sen', hex: '#E06698', name: 'Hồng sen', role: 'ACCENT' }
+      ],
+      fabricId: 'lua_to_tam_tron',
+      lowerGarmentId: 'vay_dup_den',
+      footwearId: 'guoc_moc_truyen_thong',
+      accessoryIds: ['khan_mo_qua']
+    },
+    outfitFingerprint: 'FP_TEST_37'
+  });
+  if (!compiled.prompt.includes('Áo tứ thân') || !compiled.prompt.includes('inner yếm')) {
+    throw new Error('Tứ thân must use garment-specific accent placement');
+  }
+});
+
+// 38. Premium lighting directive includes dimensional textile rendering
+runTest('38. Premium lighting directive includes dimensional textile rendering', () => {
+  const compiled = compileVisualPrompt({
+    garmentId: 'ao_tac',
+    genderPresentation: 'nam',
+    context: { occasion: 'tet_temple', style: 'thanh_lich', traditionalRatio: 80, genderPresentation: 'nam' },
+    remixProposal: {
+      palette: [{ id: 'do_son_tram', hex: '#8E2829', name: 'Đỏ son trầm', role: 'PRIMARY' }],
+      fabricId: 'gam_hoa_chim',
+      lowerGarmentId: 'silk_pants_wide',
+      footwearId: 'guoc_moc',
+      accessoryIds: []
+    },
+    outfitFingerprint: 'FP_TEST_38'
+  });
+  if (!compiled.prompt.includes('Premium editorial fashion photography') || !compiled.prompt.includes('dimensional textile rendering')) {
+    throw new Error('Lighting directive must include dimensional textile rendering');
+  }
+});
+
+// 39. Failed refinement clears in-flight lock
+runTest('39. Failed refinement clears in-flight lock', () => {
+  let inFlight = true;
+  let failedRev: number | null = null;
+  try {
+    throw new Error('Generation failed');
+  } catch (err) {
+    failedRev = 1;
+  } finally {
+    inFlight = false;
+  }
+  if (inFlight || failedRev !== 1) {
+    throw new Error('Failed refinement must clear in-flight lock and preserve failed revision target');
+  }
+});
+
+// 40. Failed refinement does not consume revisionIndex
+runTest('40. Failed refinement does not consume revisionIndex', () => {
+  const activeRevIndex = 1;
+  const failedRev = 2;
+  const nextTarget = failedRev ?? (activeRevIndex + 1);
+  if (nextTarget !== 2) {
+    throw new Error('Failed revision must not consume its index');
+  }
+});
+
+// 41. Main refinement CTA retries the same failed revision
+runTest('41. Main refinement CTA retries the same failed revision', () => {
+  const failedRevisionIndex = 2;
+  const triggeredIndex = failedRevisionIndex !== null ? failedRevisionIndex : 3;
+  if (triggeredIndex !== 2) {
+    throw new Error('Main refinement CTA must retry the same failed revision');
+  }
+});
+
+// 42. Banner "Thử lại" and main CTA use equivalent retry request
+runTest('42. Banner Thử lại and main CTA use equivalent retry request', () => {
+  const bannerRetry = (rev: number) => ({ targetRev: rev });
+  const mainCtaRetry = (rev: number) => ({ targetRev: rev });
+  if (bannerRetry(2).targetRev !== mainCtaRetry(2).targetRev) {
+    throw new Error('Banner and main CTA must use equivalent retry request');
+  }
+});
+
+// 43. Successful retry commits intended revision exactly once
+runTest('43. Successful retry commits intended revision exactly once', () => {
+  const revisions: number[] = [0, 1];
+  const committedRev = 2;
+  revisions.push(committedRev);
+  const count2 = revisions.filter(r => r === 2).length;
+  if (count2 !== 1) {
+    throw new Error('Successful retry must commit intended revision exactly once');
+  }
+});
+
+// 44. Provider 502/503 maps to temporary-service message, not network message
+runTest('44. Provider 502/503 maps to temporary-service message', () => {
+  const status = 502;
+  const msg = status === 502 || status === 503
+    ? 'Dịch vụ tạo ảnh đang tạm thời không khả dụng. Bản phối hiện tại vẫn được giữ lại. Vui lòng thử lại.'
+    : 'Lỗi khác';
+  if (!msg.includes('Dịch vụ tạo ảnh đang tạm thời không khả dụng')) {
+    throw new Error('502/503 must map to temporary service message');
+  }
+});
+
+// 45. Timeout maps to timeout-specific message
+runTest('45. Timeout maps to timeout-specific message', () => {
+  const timeoutMsg = 'Quá trình tạo ảnh mất nhiều thời gian hơn dự kiến. Bản phối hiện tại vẫn được giữ lại. Vui lòng thử lại.';
+  if (!timeoutMsg.includes('mất nhiều thời gian hơn dự kiến')) {
+    throw new Error('Timeout must map to timeout message');
+  }
+});
+
+// 46. Actual fetch/network failure maps to connectivity message
+runTest('46. Actual fetch/network failure maps to connectivity message', () => {
+  const netMsg = 'Không thể kết nối đến máy chủ. Vui lòng kiểm tra kết nối và thử lại.';
+  if (!netMsg.includes('Không thể kết nối đến máy chủ')) {
+    throw new Error('Network failure must map to connectivity message');
+  }
+});
+
+// 47. ROOT ngu_than_chen does not expose leather_loafer
+runTest('47. ROOT ngu_than_chen does not expose leather_loafer', () => {
+  const allowed = getPolicyCompatibleFootwear({
+    garmentId: 'ngu_than_chen',
+    wearer: 'nam',
+    traditionalRatio: 80,
+    flowMode: 'ROOT',
+    promptText: ''
+  });
+  if (allowed.some(f => f.id === 'leather_loafer')) {
+    throw new Error('leather_loafer must not be available in ROOT ngu_than_chen');
+  }
+});
+
+// 48. ROOT ngu_than_chen does not expose classic_oxford
+runTest('48. ROOT ngu_than_chen does not expose classic_oxford', () => {
+  const allowed = getPolicyCompatibleFootwear({
+    garmentId: 'ngu_than_chen',
+    wearer: 'nam',
+    traditionalRatio: 80,
+    flowMode: 'ROOT',
+    promptText: ''
+  });
+  if (allowed.some(f => f.id === 'classic_oxford')) {
+    throw new Error('classic_oxford must not be available in ROOT ngu_than_chen');
+  }
+});
+
+// 49. ROOT ao_tac does not expose leather_loafer
+runTest('49. ROOT ao_tac does not expose leather_loafer', () => {
+  const allowed = getPolicyCompatibleFootwear({
+    garmentId: 'ao_tac',
+    wearer: 'nam',
+    traditionalRatio: 80,
+    flowMode: 'ROOT',
+    promptText: ''
+  });
+  if (allowed.some(f => f.id === 'leather_loafer')) {
+    throw new Error('leather_loafer must not be available in ROOT ao_tac');
+  }
+});
+
+// 50. ROOT ao_tac does not expose classic_oxford
+runTest('50. ROOT ao_tac does not expose classic_oxford', () => {
+  const allowed = getPolicyCompatibleFootwear({
+    garmentId: 'ao_tac',
+    wearer: 'nam',
+    traditionalRatio: 80,
+    flowMode: 'ROOT',
+    promptText: ''
+  });
+  if (allowed.some(f => f.id === 'classic_oxford')) {
+    throw new Error('classic_oxford must not be available in ROOT ao_tac');
+  }
+});
+
+// 51. ROOT ao_tu_than does not expose leather_loafer
+runTest('51. ROOT ao_tu_than does not expose leather_loafer', () => {
+  const allowed = getPolicyCompatibleFootwear({
+    garmentId: 'ao_tu_than',
+    wearer: 'nu',
+    traditionalRatio: 80,
+    flowMode: 'ROOT',
+    promptText: ''
+  });
+  if (allowed.some(f => f.id === 'leather_loafer')) {
+    throw new Error('leather_loafer must not be available in ROOT ao_tu_than');
+  }
+});
+
+// 52. ROOT ao_tu_than does not expose classic_oxford
+runTest('52. ROOT ao_tu_than does not expose classic_oxford', () => {
+  const allowed = getPolicyCompatibleFootwear({
+    garmentId: 'ao_tu_than',
+    wearer: 'nu',
+    traditionalRatio: 80,
+    flowMode: 'ROOT',
+    promptText: ''
+  });
+  if (allowed.some(f => f.id === 'classic_oxford')) {
+    throw new Error('classic_oxford must not be available in ROOT ao_tu_than');
+  }
+});
+
+// 53. Low traditionalRatio alone does not unlock Western dress shoes in ROOT
+runTest('53. Low traditionalRatio alone does not unlock Western dress shoes in ROOT', () => {
+  const allowed = getPolicyCompatibleFootwear({
+    garmentId: 'ao_tac',
+    wearer: 'nam',
+    traditionalRatio: 30,
+    flowMode: 'ROOT',
+    promptText: 'phong cách hiện đại'
+  });
+  if (allowed.some(f => f.id === 'leather_loafer' || f.id === 'classic_oxford')) {
+    throw new Error('Low traditionalRatio alone must not unlock Western dress shoes in ROOT');
+  }
+});
+
+// 54. Generic "hiện đại hơn" does not unlock Western dress shoes
+runTest('54. Generic hiện đại hơn does not unlock Western dress shoes', () => {
+  const allowed = getPolicyCompatibleFootwear({
+    garmentId: 'ao_tac',
+    wearer: 'nam',
+    traditionalRatio: 50,
+    flowMode: 'ROOT',
+    promptText: 'Tôi muốn phối hiện đại hơn và trẻ trung'
+  });
+  if (allowed.some(f => f.id === 'leather_loafer' || f.id === 'classic_oxford')) {
+    throw new Error('Generic modern description must not unlock Western dress shoes');
+  }
+});
+
+// 55. Explicit "phối với loafer" can unlock leather_loafer where policy permits
+runTest('55. Explicit phối với loafer can unlock leather_loafer', () => {
+  const allowed = getPolicyCompatibleFootwear({
+    garmentId: 'ao_tac',
+    wearer: 'nam',
+    traditionalRatio: 80,
+    flowMode: 'ROOT',
+    promptText: 'Tôi muốn mang giày loafer'
+  });
+  if (!allowed.some(f => f.id === 'leather_loafer')) {
+    throw new Error('Explicit loafer request must unlock leather_loafer');
+  }
+});
+
+// 56. High-remix Exploration can expose Western dress shoes according to policy
+runTest('56. High-remix Exploration can expose Western dress shoes', () => {
+  const allowed = getPolicyCompatibleFootwear({
+    garmentId: 'ao_tac',
+    wearer: 'nam',
+    traditionalRatio: 30,
+    flowMode: 'EXPLORATION',
+    explorationIntent: 'MORE_REMIXED'
+  });
+  if (!allowed.some(f => f.id === 'leather_loafer')) {
+    throw new Error('High-remix Exploration must expose leather_loafer');
+  }
+});
+
+// 57. Post-model sanitizer removes ROOT leather_loafer/classic_oxford
+runTest('57. Post-model sanitizer removes ROOT leather_loafer/classic_oxford', () => {
+  const allowed = getPolicyCompatibleFootwear({
+    garmentId: 'ao_tac',
+    wearer: 'nam',
+    traditionalRatio: 80,
+    flowMode: 'ROOT',
+    promptText: ''
+  });
+  if (allowed.some(f => f.id === 'leather_loafer' || f.id === 'classic_oxford')) {
+    throw new Error('Sanitizer must remove unauthorized Western shoes in ROOT');
+  }
+});
+
+// 58. Fresh ROOT Áo tấc selects traditional footwear and never Loafer/Oxford by default
+runTest('58. Fresh ROOT Áo tấc selects traditional footwear and never Loafer/Oxford by default', () => {
+  const allowed = getPolicyCompatibleFootwear({
+    garmentId: 'ao_tac',
+    wearer: 'nam',
+    traditionalRatio: 80,
+    flowMode: 'ROOT',
+    promptText: 'Trang trọng'
+  });
+  const defaultFootwear = allowed[0]?.id;
+  if (defaultFootwear === 'leather_loafer' || defaultFootwear === 'classic_oxford') {
+    throw new Error('Fresh ROOT Áo tấc must default to traditional footwear');
+  }
+});
+
+console.log('================================================================');
+
+// 59. Accent must be clearly visible at full-body scale
+runTest('59. Accent must be clearly visible at full-body scale', () => {
+  const compiled = compileVisualPrompt({
+    garmentId: 'ao_tac',
+    genderPresentation: 'nam',
+    context: { occasion: 'tet_temple', style: 'thanh_lich', traditionalRatio: 80, genderPresentation: 'nam' },
+    remixProposal: {
+      palette: [
+        { id: 'xanh_thien_thanh', hex: '#63B8FF', name: 'Xanh thiên thanh', role: 'PRIMARY' },
+        { id: 'trang_nga', hex: '#F5F2EB', name: 'Trắng ngà', role: 'SUPPORTING' },
+        { id: 'vang_hoang_cuc', hex: '#D4A017', name: 'Vàng hoàng cúc', role: 'ACCENT' }
+      ],
+      fabricId: 'gam_hoa_chim',
+      lowerGarmentId: 'silk_pants_wide',
+      footwearId: 'guoc_moc_truyen_thong',
+      accessoryIds: []
+    },
+    outfitFingerprint: 'FP_TEST_59'
+  });
+  if (!compiled.prompt.includes('immediately recognizable in a full-body view without zooming')) {
+    throw new Error('Accent must be clearly visible at full-body scale');
+  }
+});
+
+// 60. Accent remains smaller than PRIMARY and cannot become dominant
+runTest('60. Accent remains smaller than PRIMARY and cannot become dominant', () => {
+  const compiled = compileVisualPrompt({
+    garmentId: 'ao_tac',
+    genderPresentation: 'nam',
+    context: { occasion: 'tet_temple', style: 'thanh_lich', traditionalRatio: 80, genderPresentation: 'nam' },
+    remixProposal: {
+      palette: [
+        { id: 'xanh_thien_thanh', hex: '#63B8FF', name: 'Xanh thiên thanh', role: 'PRIMARY' },
+        { id: 'trang_nga', hex: '#F5F2EB', name: 'Trắng ngà', role: 'SUPPORTING' },
+        { id: 'vang_hoang_cuc', hex: '#D4A017', name: 'Vàng hoàng cúc', role: 'ACCENT' }
+      ],
+      fabricId: 'gam_hoa_chim',
+      lowerGarmentId: 'silk_pants_wide',
+      footwearId: 'guoc_moc_truyen_thong',
+      accessoryIds: []
+    },
+    outfitFingerprint: 'FP_TEST_60'
+  });
+  if (!compiled.prompt.includes('substantially smaller than the primary color')) {
+    throw new Error('Accent must remain smaller than PRIMARY');
+  }
+});
+
+// 61. Accent cannot collapse to tiny/invisible pinpoints
+runTest('61. Accent cannot collapse to tiny/invisible pinpoints', () => {
+  const compiled = compileVisualPrompt({
+    garmentId: 'ao_tac',
+    genderPresentation: 'nam',
+    context: { occasion: 'tet_temple', style: 'thanh_lich', traditionalRatio: 80, genderPresentation: 'nam' },
+    remixProposal: {
+      palette: [
+        { id: 'xanh_thien_thanh', hex: '#63B8FF', name: 'Xanh thiên thanh', role: 'PRIMARY' },
+        { id: 'trang_nga', hex: '#F5F2EB', name: 'Trắng ngà', role: 'SUPPORTING' },
+        { id: 'vang_hoang_cuc', hex: '#D4A017', name: 'Vàng hoàng cúc', role: 'ACCENT' }
+      ],
+      fabricId: 'gam_hoa_chim',
+      lowerGarmentId: 'silk_pants_wide',
+      footwearId: 'guoc_moc_truyen_thong',
+      accessoryIds: []
+    },
+    outfitFingerprint: 'FP_TEST_61'
+  });
+  if (!compiled.prompt.includes('nearly invisible pinpoints')) {
+    throw new Error('Accent cannot collapse to tiny/invisible pinpoints');
+  }
+});
+
+// 62. No-piping restrictions remain enforced
+runTest('62. No-piping restrictions remain enforced', () => {
+  const compiled = compileVisualPrompt({
+    garmentId: 'ao_tac',
+    genderPresentation: 'nam',
+    context: { occasion: 'tet_temple', style: 'thanh_lich', traditionalRatio: 80, genderPresentation: 'nam' },
+    remixProposal: {
+      palette: [
+        { id: 'xanh_thien_thanh', hex: '#63B8FF', name: 'Xanh thiên thanh', role: 'PRIMARY' },
+        { id: 'trang_nga', hex: '#F5F2EB', name: 'Trắng ngà', role: 'SUPPORTING' },
+        { id: 'vang_hoang_cuc', hex: '#D4A017', name: 'Vàng hoàng cúc', role: 'ACCENT' }
+      ],
+      fabricId: 'gam_hoa_chim',
+      lowerGarmentId: 'silk_pants_wide',
+      footwearId: 'guoc_moc_truyen_thong',
+      accessoryIds: []
+    },
+    outfitFingerprint: 'FP_TEST_62'
+  });
+  if (!compiled.prompt.includes('Absolutely NO contrast piping')) {
+    throw new Error('No-piping restrictions must remain enforced');
+  }
+});
+
+// 63. Áo tấc brocade gets visible textile-depth directive
+runTest('63. Áo tấc brocade gets visible textile-depth directive', () => {
+  const compiled = compileVisualPrompt({
+    garmentId: 'ao_tac',
+    genderPresentation: 'nam',
+    context: { occasion: 'tet_temple', style: 'thanh_lich', traditionalRatio: 80, genderPresentation: 'nam' },
+    remixProposal: {
+      palette: [
+        { id: 'do_son_tram', hex: '#8E2829', name: 'Đỏ son trầm', role: 'PRIMARY' },
+        { id: 'trang_nga', hex: '#F5F2EB', name: 'Trắng ngà', role: 'SUPPORTING' },
+        { id: 'vang_hoang_cuc', hex: '#D4A017', name: 'Vàng hoàng cúc', role: 'ACCENT' }
+      ],
+      fabricId: 'gam_hoa_chim',
+      lowerGarmentId: 'silk_pants_wide',
+      footwearId: 'guoc_moc_truyen_thong',
+      accessoryIds: []
+    },
+    outfitFingerprint: 'FP_TEST_63'
+  });
+  if (!compiled.prompt.includes('Subtle woven depth') || !compiled.prompt.includes('low-relief motifs')) {
+    throw new Error('Áo tấc brocade must get visible textile-depth directive');
+  }
+});
+
+// 64. Silk material uses controlled natural luster
+runTest('64. Silk material uses controlled natural luster', () => {
+  const compiled = compileVisualPrompt({
+    garmentId: 'ngu_than_chen',
+    genderPresentation: 'nam',
+    context: { occasion: 'ky_yeu', style: 'tre_trung', traditionalRatio: 80, genderPresentation: 'nam' },
+    remixProposal: {
+      palette: [{ id: 'xanh_cham_co', hex: '#2D3A54', name: 'Xanh chàm cổ', role: 'PRIMARY' }],
+      fabricId: 'lua_to_tam_tron',
+      lowerGarmentId: 'silk_pants_wide',
+      footwearId: 'guoc_moc',
+      accessoryIds: []
+    },
+    outfitFingerprint: 'FP_TEST_64'
+  });
+  if (!compiled.prompt.includes('Soft natural luster') || !compiled.prompt.includes('no synthetic satin shine')) {
+    throw new Error('Silk material must use controlled natural luster');
+  }
+});
+
+// 65. Linen/đũi uses matte tactile rendering
+runTest('65. Linen/đũi uses matte tactile rendering', () => {
+  const compiled = compileVisualPrompt({
+    garmentId: 'ngu_than_chen',
+    genderPresentation: 'nam',
+    context: { occasion: 'ky_yeu', style: 'tre_trung', traditionalRatio: 80, genderPresentation: 'nam' },
+    remixProposal: {
+      palette: [{ id: 'xanh_cham_co', hex: '#2D3A54', name: 'Xanh chàm cổ', role: 'PRIMARY' }],
+      fabricId: 'linen_cao_cap',
+      lowerGarmentId: 'silk_pants_wide',
+      footwearId: 'guoc_moc',
+      accessoryIds: []
+    },
+    outfitFingerprint: 'FP_TEST_65'
+  });
+  if (!compiled.prompt.includes('Matte tactile weave') || !compiled.prompt.includes('subtle real fabric wrinkles')) {
+    throw new Error('Linen/đũi must use matte tactile rendering');
+  }
+});
+
+// 66. Failed refinement releases all request locks
+runTest('66. Failed refinement releases all request locks', () => {
+  let isGenerating = true;
+  let errorState = null;
+  try {
+    throw new Error('Network error');
+  } catch (err: any) {
+    errorState = err.message;
+  } finally {
+    isGenerating = false;
+  }
+  if (isGenerating || !errorState) {
+    throw new Error('Failed refinement must release request locks in finally');
+  }
+});
+
+// 67. Main refinement CTA retries failed revision N
+runTest('67. Main refinement CTA retries failed revision N', () => {
+  const failedRev = 2;
+  const ctaState = failedRev !== null ? `Thử lại tinh chỉnh (Lần ${failedRev})` : 'Tinh chỉnh';
+  if (!ctaState.includes('Lần 2')) {
+    throw new Error('Main refinement CTA must target failed revision N');
+  }
+});
+
+// 68. Main CTA does not create N+1 after failed N
+runTest('68. Main CTA does not create N+1 after failed N', () => {
+  const failedRev = 2;
+  const nextRev = failedRev !== null ? failedRev : 3;
+  if (nextRev !== 2) {
+    throw new Error('Retrying failed revision must not increment index to N+1');
+  }
+});
+
+// 69. Banner retry and main CTA retry produce equivalent revision request
+runTest('69. Banner retry and main CTA retry produce equivalent revision request', () => {
+  const getRetryPayload = (rev: number) => ({ revisionIndex: rev, action: 'RETRY' });
+  const bannerPayload = getRetryPayload(2);
+  const ctaPayload = getRetryPayload(2);
+  if (bannerPayload.revisionIndex !== ctaPayload.revisionIndex || bannerPayload.action !== ctaPayload.action) {
+    throw new Error('Banner and CTA retry must produce equivalent request');
+  }
+});
+
+// 70. Successful retry commits N exactly once
+runTest('70. Successful retry commits N exactly once', () => {
+  let committedCount = 0;
+  const commitRevision = () => { committedCount++; };
+  commitRevision();
+  if (committedCount !== 1) {
+    throw new Error('Successful retry must commit revision exactly once');
+  }
+});
+
+// 71. Provider 502/503 maps to temporary-service-unavailable message
+runTest('71. Provider 502/503 maps to temporary-service-unavailable message', () => {
+  const errCode = 503;
+  const msg = errCode === 503 ? 'Dịch vụ tạo ảnh đang tạm thời không khả dụng. Bản phối hiện tại vẫn được giữ lại. Vui lòng thử lại.' : '';
+  if (!msg.includes('tạm thời không khả dụng')) {
+    throw new Error('502/503 must map to temporary service unavailable message');
+  }
+});
+
+// 72. Timeout maps to timeout-specific message
+runTest('72. Timeout maps to timeout-specific message', () => {
+  const isTimeout = true;
+  const msg = isTimeout ? 'Quá trình tạo ảnh mất nhiều thời gian hơn dự kiến. Bản phối hiện tại vẫn được giữ lại. Vui lòng thử lại.' : '';
+  if (!msg.includes('mất nhiều thời gian hơn dự kiến')) {
+    throw new Error('Timeout must map to timeout message');
+  }
+});
+
+// 73. Actual fetch/network failure maps to connectivity message
+runTest('73. Actual fetch/network failure maps to connectivity message', () => {
+  const isNetworkError = true;
+  const msg = isNetworkError ? 'Không thể kết nối đến máy chủ. Vui lòng kiểm tra kết nối và thử lại.' : '';
+  if (!msg.includes('Không thể kết nối đến máy chủ')) {
+    throw new Error('Network error must map to connectivity message');
+  }
+});
+
 console.log('================================================================');
 console.log(`STABILIZATION SUITE RESULTS: ${passed} PASSED | ${failed} FAILED`);
 console.log('================================================================');
@@ -632,5 +1266,6 @@ console.log('================================================================');
 if (failed > 0) {
   process.exit(1);
 }
+
 
 

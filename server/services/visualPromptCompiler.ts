@@ -77,9 +77,9 @@ export const ACCESSORY_VISUAL_MAP: Record<string, string> = {
 };
 
 /**
- * Compile cohesive 3-color palette into natural descriptive prose with strict accent piping policy
+ * Compile cohesive 3-color palette into natural descriptive prose with garment-aware accent placement and high perceptual visibility
  */
-function compilePaletteProse(palette: PaletteItem[]): string {
+function compilePaletteProse(palette: PaletteItem[], garmentId: GarmentId): string {
   if (!Array.isArray(palette) || palette.length === 0) {
     return 'The outfit utilizes a cohesive natural palette with harmonious heritage tones.';
   }
@@ -88,7 +88,18 @@ function compilePaletteProse(palette: PaletteItem[]): string {
   const supporting = palette.find(p => p.role === 'SUPPORTING') || palette[1] || primary;
   const accent = palette.find(p => p.role === 'ACCENT') || palette[2] || supporting;
 
-  return `The outfit uses a cohesive three-color palette: ${primary.name} (${primary.hex}) as the primary dominant color of the main body, ${supporting.name} (${supporting.hex}) as the harmonious supporting tone for complementary garments, and ${accent.name} (${accent.hex}) as a restrained, localized accent highlight. The accent color is strictly secondary and localized: it may appear only in small traditional closure-button details, subtle woven motifs, a deliberately selected accessory, or a restrained non-structural textile detail. Do NOT outline the collar, front closure, body edges, side seams, cuffs, or hem with contrasting color or piping. Absolutely NO contrast piping, NO colored seam outlining, NO pajama-style edge trim, and NO decorative tracing along the asymmetrical closure.`;
+  let accentPlacement = '';
+  if (garmentId === 'ngu_than_chen') {
+    accentPlacement = 'For this Áo ngũ thân tay chẽn, concentrate the accent into clearly visible traditional closure/button details, a restrained small woven motif cluster, or secondary textile details where Blueprint permits.';
+  } else if (garmentId === 'ao_tac') {
+    accentPlacement = 'For this Áo tấc, concentrate the accent into clearly visible traditional closure/button details, restrained woven or brocade motif clusters, or a validated Blueprint accessory detail if that accessory already exists in the validated Blueprint.';
+  } else if (garmentId === 'ao_tu_than') {
+    accentPlacement = 'For this Áo tứ thân, the accent may be more visibly expressed through a validated inner yếm, waist sash, or compatible accessory already selected in Blueprint.';
+  } else {
+    accentPlacement = 'Concentrate the accent into one or two culturally appropriate, visually meaningful areas rather than scattering it across the outfit.';
+  }
+
+  return `The outfit uses a cohesive three-color palette: ${primary.name} (${primary.hex}) as the primary dominant color of the main body, ${supporting.name} (${supporting.hex}) as the harmonious supporting tone for complementary garments, and ${accent.name} (${accent.hex}) as an intentional focal contrast highlight with clear focal contrast. The accent color remains clearly perceptible and secondary to the primary garment color, but it must be immediately recognizable in a full-body view without zooming. Use one concentrated focal accent zone or a small repeated motif cluster with enough saturation, contrast, and visible area to register clearly at first glance. The accent should remain substantially smaller than the primary color, but it must NOT be reduced to nearly invisible pinpoints. Target: small area, high perceptual visibility. ${accentPlacement} The accent must NOT become contrast piping, colored seam outlining, collar outlining, front closure outlining, cuff outlining, hem outlining, or decorative edge borders. Absolutely NO contrast piping, NO colored seam outlining, NO pajama-style edge trim, and NO decorative tracing along the asymmetrical closure.`;
 }
 
 /**
@@ -150,18 +161,32 @@ export function compileVisualPrompt(request: GenerateLookbookRequest): CompiledV
     modelProfile += ' Context: University graduation yearbook lookbook, youthful, celebratory, student-appropriate.';
   }
 
-  // 3. BACKGROUND & LIGHTING (CLEAN MINIMAL EDITORIAL STUDIO)
+  // 3. BACKGROUND & LIGHTING (PREMIUM EDITORIAL TEXTILE DEPTH)
   const backgroundAndLighting =
-    'STUDIO & LIGHTING: Clean, bright, minimal editorial studio with a plain, seamless warm-ivory or soft-cream backdrop. Visually quiet, uncluttered, flat, bright, making the subject stand out clearly. Soft, bright, even editorial studio lighting with flattering facial illumination, crisp exposure, gentle contrast, and realistic floor shadow. Strictly NO architectural backdrops, columns, arches, hallways, stairs, temple structures, furniture, plants, or room interiors.';
+    'STUDIO & LIGHTING: Premium editorial fashion photography with visible material depth at full-body scale and dimensional textile rendering. Clean, bright, minimal editorial studio with a plain, seamless warm-ivory or soft-cream backdrop. Use soft directional key light from approximately 30–45 degrees with gentle fill and controlled contrast. Preserve natural skin tones while clearly revealing fabric weave, folds, textile weight, natural drape, subtle raised woven texture, restrained material sheen, and depth between overlapping garment layers. Avoid flat ecommerce lighting. The fabric surface should remain readable even from full-body framing. Strictly NO dark, theatrical, cinematic, or high-drama lighting. Strictly NO architectural backdrops, columns, arches, hallways, stairs, temple structures, furniture, plants, or room interiors.';
 
   // 4. Cohesive Palette & Accent Piping Policy
-  const paletteProse = compilePaletteProse(remixProposal.palette);
+  const paletteProse = compilePaletteProse(remixProposal.palette, garmentId);
 
-  // 5. Fabric & Material
+  // 5. Fabric & Material with material-specific rendering & textile depth
   const fabricVisual =
     FABRIC_VISUAL_MAP[remixProposal.fabricId] ||
     'quality traditional textile fabric';
-  const fabricProse = `FABRIC: Tailored from ${fabricVisual}, accentuating clean lines and natural structural drape.`;
+  let materialSpecificDetail = '';
+  const fId = remixProposal.fabricId || '';
+  if (fId.includes('silk') || fId.includes('lua') || fId.includes('to_tam') || fId.includes('sa_to')) {
+    materialSpecificDetail = ' MATERIAL DETAIL: Soft natural luster, fine visible weave, fluid drape, controlled highlights, and no synthetic satin shine.';
+  } else if (fId.includes('gam')) {
+    let brocadeExtra = '';
+    if (garmentId === 'ao_tac') {
+      brocadeExtra = ' The brocade surface should show subtle woven motif depth through directional light and tonal variation. Motifs remain refined and restrained, but should be visible enough to give the garment a premium ceremonial texture.';
+    }
+    materialSpecificDetail = ` MATERIAL DETAIL: Subtle woven depth, low-relief motifs visible through light, restrained tonal patterning, dimensional woven surface, no costume-like metallic shine.${brocadeExtra}`;
+  } else if (fId.includes('linen') || fId.includes('dui') || fId.includes('natural_matte_silk_linen')) {
+    materialSpecificDetail = ' MATERIAL DETAIL: Matte tactile weave, subtle natural wrinkles, believable textile weight, and organic surface variation.';
+  }
+
+  const fabricProse = `FABRIC: Tailored from ${fabricVisual}, accentuating clean lines and natural structural drape.${materialSpecificDetail}`;
 
   // 6. Lower Garment
   const lowerVisual =
@@ -325,4 +350,3 @@ export function compileRevisionVisualPrompt(
 ): CompiledVisualPrompt {
   return compileVisualPrompt(request);
 }
-

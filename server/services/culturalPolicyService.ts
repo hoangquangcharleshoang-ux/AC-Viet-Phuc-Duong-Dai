@@ -79,6 +79,19 @@ export function isSneakerRequestedExplicitly(promptText?: string): boolean {
   return p.includes('sneaker') || p.includes('giày thể thao') || p.includes('chunky');
 }
 
+export function isLoaferOrOxfordRequestedExplicitly(promptText?: string): boolean {
+  if (!promptText) return false;
+  const p = promptText.toLowerCase();
+  return (
+    p.includes('loafer') ||
+    p.includes('giày loafer') ||
+    p.includes('oxford') ||
+    p.includes('giày oxford') ||
+    p.includes('giày tây') ||
+    p.includes('dress shoes')
+  );
+}
+
 export function isSunglassesRequestedExplicitly(promptText?: string): boolean {
   if (!promptText) return false;
   const p = promptText.toLowerCase();
@@ -430,25 +443,11 @@ export function getPolicyCompatibleFootwear(params: PolicyFilterParams): Catalog
         break;
 
       case 'leather_loafer':
-        if (garmentId === 'ngu_than_chen' || garmentId === 'ao_tac') {
-          if (traditionalRatio <= 69 || isExploration) {
-            allowed = true;
-          }
+      case 'classic_oxford':
+        if (isExploration || isLoaferOrOxfordRequestedExplicitly(promptText)) {
+          allowed = true;
         }
         break;
-
-      case 'classic_oxford': {
-        const oxfordExplicit = promptText && (
-          promptText.toLowerCase().includes('oxford') ||
-          promptText.toLowerCase().includes('giày tây')
-        );
-        if (garmentId === 'ao_tac' || garmentId === 'ngu_than_chen') {
-          if (oxfordExplicit || isExploration || traditionalRatio <= 69) {
-            allowed = true;
-          }
-        }
-        break;
-      }
 
       case 'mule_minimalist':
         if (wearer === 'nu' || wearer === 'neutral') {
