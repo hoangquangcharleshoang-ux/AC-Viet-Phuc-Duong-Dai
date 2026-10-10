@@ -466,7 +466,7 @@ function getFallbackLinterResult(garment_base: any, interaction_event: any, cont
     context_impact: 'Phù hợp với bối cảnh giao lưu và giữ được nét lịch thiệp, đĩnh đạc.',
     evidence_status: 'VERIFIED',
     evidence_anchors: ['SRC-04', 'SRC-05'],
-    creative_suggestion: 'Phối màu đơn sắc giữa quần và giày giúp tôn lên đường nét của tà áo chính.',
+    creative_suggestion: 'Phối màu đồng điệu giữa quần và giày giúp làm nổi bật phom dáng của tà áo chính.',
     alternative_action: null,
     uncertainty_note: null
   };
@@ -1899,11 +1899,11 @@ function getDeterministicGarmentRecommendation(
     return {
       primary: {
         garmentId: 'ngu_than_chen' as const,
-        rationale: 'Áo ngũ thân tay chẽn gọn gàng, tôn dáng đĩnh đạc và tối ưu cho việc di chuyển nhận bằng cũng như chụp ảnh kỷ niệm năng động.'
+        rationale: 'Áo ngũ thân tay chẽn có dáng gọn, dễ di chuyển trong lễ nhận bằng và thuận tiện khi chụp ảnh.'
       },
       alternative: {
         garmentId: 'ao_tac' as const,
-        rationale: 'Áo tấc mang lại vẻ trang trọng uy nghi, tạo điểm nhấn ấn tượng trong các bức ảnh kỷ yếu tập thể.'
+        rationale: 'Nếu muốn trang trọng hơn trong lễ nhận bằng và ảnh kỷ yếu, bạn có thể cân nhắc Áo tấc.'
       }
     };
   }
@@ -2069,8 +2069,8 @@ function getDeterministicBlueprint(
       footwearId = 'leather_loafer';
       accessoryIds = isNoAccessories ? [] : ['tui_coton_theu_tay', 'kinh_ram_gong_tron'];
       contextCautions.push(
-        'Ống tay thụng hình chữ nhật của Áo tấc buông dài quá bàn tay; khi dạo phố hoặc ngồi cà phê cần chú ý gấp nhẹ cổ tay áo để tránh vướng víu.',
-        'Kết hợp quần tây ống đứng mang lại hơi thở đương đại nhưng vẫn tôn trọng cấu trúc 5 thân cổ đứng của áo.'
+        'Tay thụng rộng tạo dáng lễ phục rõ hơn, nhưng cần chú ý khi di chuyển hoặc tham gia hoạt động nhiều.',
+        'Với bối cảnh dạo phố, nên ưu tiên hạ phục và phụ kiện gọn để dễ di chuyển và không lấn át dáng áo.'
       );
     }
   } else if (garmentId === 'ao_tu_than') {

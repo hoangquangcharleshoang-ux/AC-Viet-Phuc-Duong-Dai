@@ -188,8 +188,8 @@ export const GARMENTS: Record<GarmentId, GarmentKnowledge> = {
       accessories: 'accessories_none'
     },
     cultural_narrative: {
-      short_definition: 'Áo ngũ thân tay chẽn là dạng thường phục và tiện phục truyền thống phổ biến thời Nguyễn dành cho cả nam và nữ, có cấu trúc 5 thân ghép dọc, cổ đứng lập lĩnh, cài khuy nách phải và ống tay bóp hẹp dần về cổ tay.',
-      origin_context: 'Gắn với các mốc cải cách y phục từ năm 1744 đến các quy định năm 1827 và 1837 thời Nguyễn. Áo được sử dụng như thường phục/tiện phục trong công sở, học tập, buôn bán và sinh hoạt hằng ngày, đồng thời có thể làm lớp mặc trong khi sử dụng các loại lễ phục lớn.',
+      short_definition: 'Áo ngũ thân tay chẽn là dạng thường phục và tiện phục phổ biến thời Nguyễn dành cho cả nam và nữ. Áo có cấu trúc năm thân, cổ đứng lập lĩnh, cài vạt sang nách phải và tay áo thu hẹp dần từ nách xuống cổ tay.',
+      origin_context: 'Gắn với các mốc cải cách y phục từ năm 1744 đến các quy định năm 1827 và 1837 thời Nguyễn. Áo được sử dụng trong công sở, học tập, buôn bán và sinh hoạt hằng ngày, đồng thời có thể làm lớp mặc trong khi sử dụng các loại lễ phục lớn.',
       cultural_meaning: 'Áo ngũ thân tay chẽn gắn với thường phục và tiện phục trong đời sống thời Nguyễn. Dáng tay thu gọn hỗ trợ sinh hoạt và vận động, tạo nên sự cân bằng giữa vẻ chỉnh tề và tính thực dụng.',
       form_function: 'Ống tay thu hẹp dần từ nách xuống cổ tay giúp thao tác và vận động gọn hơn. Thân áo giữ phom suông, không chiết eo; cấu trúc năm thân có vạt con bên trong là một đặc điểm nhận diện mạnh của hệ ngũ thân.',
       quick_recognition: [
@@ -199,7 +199,7 @@ export const GARMENTS: Record<GarmentId, GarmentKnowledge> = {
         'Phom dáng suông buông tự nhiên 5 thân'
       ],
       wearing_experience: 'Ống tay thu gọn hỗ trợ di chuyển và thao tác tay thuận tiện trong sinh hoạt hằng ngày; phom dáng suông buông tự nhiên tạo sự chỉn chu mà vẫn linh hoạt khi cử động.',
-      contemporary_use: 'Phù hợp cho dịp lễ Tết gia tộc, chụp ảnh kỷ yếu, sự kiện văn hóa và dạo phố khi kết hợp giữa vẻ chỉn chu truyền thống với tính thực dụng hiện đại.',
+      contemporary_use: 'Phù hợp cho dịp lễ Tết, chụp ảnh kỷ yếu, sự kiện văn hóa và dạo phố nhờ sự cân bằng giữa nét trang nhã truyền thống và tính tiện dụng hiện đại.',
       uncertainties: 'Các diễn giải biểu tượng như 5 khuy tượng trưng cho ngũ thường/ngũ luân hay vạt con tượng trưng cho sự khiêm nhường là các diễn giải dân gian hoặc đương đại lan truyền về sau; thư tịch chính thống không ghi nhận các triết lý biểu trưng này. Thông số kích thước chi tiết cũng biến thiên theo từng vóc dáng và giai đoạn.'
     }
   },
@@ -236,7 +236,7 @@ export const GARMENTS: Record<GarmentId, GarmentKnowledge> = {
         'Chất liệu gấm, lụa, sa trơn hoặc thêu dệt hoa văn'
       ]
     },
-    sources: ['SRC-04', 'SRC-05', 'SRC-07'],
+    sources: ['SRC-04', 'SRC-05'],
     defaults: {
       silhouette: 'natural_straight',
       sleeves: 'khoan_tu_wide_box',
@@ -249,8 +249,8 @@ export const GARMENTS: Record<GarmentId, GarmentKnowledge> = {
       accessories: 'accessories_none'
     },
     cultural_narrative: {
-      short_definition: 'Áo tấc (hay Áo ngũ thân tay thụng) là lễ phục phổ thông truyền thống thời Nguyễn dành cho cả nam và nữ, có cấu trúc 5 thân, cổ đứng lập lĩnh và ống tay may thụng rộng hình chữ nhật buông quá đầu ngón tay.',
-      origin_context: 'Là dạng lễ phục gắn với đời sống nghi lễ thời Nguyễn, được sử dụng trong các dịp cúng tế, lễ Tết gia tộc, nghi thức hỉ sự và sự kiện trang trọng của cộng đồng.',
+      short_definition: 'Áo tấc, còn gọi là Áo ngũ thân tay thụng, là một dạng lễ phục phổ biến thời Nguyễn dành cho cả nam và nữ. Áo có cấu trúc năm thân, cổ đứng lập lĩnh và tay thụng rộng hình chữ nhật, buông quá đầu ngón tay.',
+      origin_context: 'Trong thời Nguyễn, Áo tấc được dùng trong nhiều bối cảnh nghi lễ như cúng tế, lễ Tết gia tộc, hỉ sự và các dịp trang trọng của cộng đồng.',
       cultural_meaning: 'Áo tấc gắn với tính trang nghiêm và chuẩn mực của không gian nghi lễ. Một số diễn giải nghiên cứu liên hệ dáng tay thụng và tư thế chắp tay với vẻ khiêm cung, điềm đạm và trang trọng khi hành lễ.',
       form_function: 'Ống tay thụng rộng hình chữ nhật (khoán tụ) tạo nên diện mạo trang trọng đặc trưng của lễ phục. Thiết kế tay áo rộng không phục vụ lao động chân tay mà hướng tới tư thế hành lễ điềm đạc và khoan thai.',
       quick_recognition: [
@@ -261,7 +261,7 @@ export const GARMENTS: Record<GarmentId, GarmentKnowledge> = {
         'Phom rộng, mang dáng lễ phục'
       ],
       wearing_experience: 'Ống tay rộng và tà dài đòi hỏi tư thế di chuyển đĩnh đạc, phù hợp với không gian nghi lễ và sự kiện trang trọng.',
-      contemporary_use: 'Phù hợp cho lễ cưới truyền thống, nghi thức cúng tế gia tộc, lễ hội di sản, sự kiện văn hóa và chụp ảnh kỷ yếu phong cách cổ truyền.',
+      contemporary_use: 'Phù hợp cho đám cưới truyền thống, lễ Tết gia tộc, lễ hội di sản, sự kiện văn hóa và chụp ảnh kỷ niệm.',
       uncertainties: 'Nguồn gốc tên gọi "Áo tấc" chưa được xác định chắc chắn. Trong tư liệu thời Nguyễn, dạng tay rộng được mô tả bằng thuật ngữ "khoán tụ"; đây là thuật ngữ chỉ hình thái tay áo, không phải tên gọi lịch sử của riêng chiếc Áo tấc. Các cách giải thích tên "tấc" liên quan đến viền tà hoặc phần tay thừa ra một tấc hiện vẫn chủ yếu là diễn giải dân gian.'
     }
   },
@@ -312,8 +312,8 @@ export const GARMENTS: Record<GarmentId, GarmentKnowledge> = {
       accessories: 'accessories_none'
     },
     cultural_narrative: {
-      short_definition: 'Áo tứ thân là trang phục truyền thống tiêu biểu của phụ nữ vùng đồng bằng Bắc Bộ, có cấu trúc từ 4 thân vải: 2 thân sau may liền theo sống lưng và 2 thân trước tách rời thành hai tà mở. Áo làm lớp khoác ngoài duyên dáng kết hợp cùng áo yếm bên trong; hai tà trước có thể buông thả ngực hoặc buộc vạt trước bụng tùy bối cảnh sinh hoạt hay lễ hội.',
-      origin_context: 'Gắn liền với đời sống lao động và sinh hoạt của phụ nữ vùng đồng bằng Bắc Bộ (đặc biệt là vùng Kinh Bắc và đồng bằng sông Hồng). Áo được sử dụng làm thường phục lao động và được biến tấu thành trang phục hội hè khi mặc lồng nhiều lớp (mớ ba mớ bảy).',
+      short_definition: 'Áo tứ thân là trang phục truyền thống tiêu biểu của phụ nữ vùng đồng bằng Bắc Bộ. Áo gồm bốn thân vải: hai thân sau may liền theo sống lưng và hai thân trước tách rời thành hai tà mở; thường mặc cùng áo yếm và dải thắt lưng.',
+      origin_context: 'Áo tứ thân gắn với đời sống lao động và sinh hoạt của phụ nữ vùng đồng bằng Bắc Bộ, đặc biệt là Kinh Bắc và đồng bằng sông Hồng. Áo được dùng làm thường phục và có thể mặc nhiều lớp (mớ ba mớ bảy) trong hội hè.',
       cultural_meaning: 'Áo tứ thân gắn với đời sống lao động và sinh hoạt của phụ nữ đồng bằng Bắc Bộ. Cấu trúc 4 thân với hai tà trước mở cho phép buông, buộc hoặc túm gọn tùy hoạt động, tạo tính linh hoạt trong lao động và sinh hoạt. Trong hội hè, trang phục có thể được mặc nhiều lớp (mớ ba mớ bảy) với chất liệu và màu sắc phong phú hơn. Về sau, Áo tứ thân trở thành hình ảnh di sản gắn mạnh với Kinh Bắc, lễ hội và nghệ thuật dân gian.',
       form_function: 'Cấu trúc 4 thân với hai tà trước mở cho phép người mặc buông, buộc hoặc túm gọn tùy hoạt động. Áo mặc cùng áo yếm; dải thắt lưng cố định ngang eo và trong một số cách mặc có thể kết hợp cùng ruột tượng.',
       quick_recognition: [

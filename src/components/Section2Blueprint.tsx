@@ -247,10 +247,10 @@ export const Section2Blueprint: React.FC<Section2BlueprintProps> = ({
           <span>Bước 2 · Bản Phối Thời Trang Đương Đại</span>
         </div>
         <h2 className="text-xl sm:text-2xl font-semibold text-stone-900 tracking-tight">
-          Bản Phối Cho {garment.canonical_name}
+          Bản phối cho {garment.canonical_name}
         </h2>
         <p className="text-xs sm:text-sm text-stone-500 font-normal">
-          Phân định rõ ràng giữa yếu tố giữ gìn bản sắc và các gợi ý phối đồ đương đại.
+          Xem những gì nên giữ, phần nào có thể biến tấu và điểm nào cần cân nhắc trong bản phối này.
         </p>
       </div>
 
@@ -391,7 +391,7 @@ export const Section2Blueprint: React.FC<Section2BlueprintProps> = ({
                   {/* Bảng màu Hòa sắc 3 màu (Requirement 2: Read-Only, no onClick, no active ring, no selectedColor) */}
                   <div className="space-y-2.5">
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-semibold text-stone-700">Bộ hòa sắc 3 màu</span>
+                      <span className="text-xs font-semibold text-stone-700">Bảng màu gợi ý</span>
                       <span className="text-[11px] text-stone-500 font-normal">
                         Chủ đạo · Phối cùng · Điểm nhấn
                       </span>
@@ -486,8 +486,8 @@ export const Section2Blueprint: React.FC<Section2BlueprintProps> = ({
                           </span>
                         ))
                       ) : (
-                        <span className="text-stone-400 italic text-xs">
-                          Không sử dụng phụ kiện đi kèm
+                        <span className="text-stone-400 font-normal text-xs">
+                          Không cần thêm phụ kiện.
                         </span>
                       )}
                     </div>

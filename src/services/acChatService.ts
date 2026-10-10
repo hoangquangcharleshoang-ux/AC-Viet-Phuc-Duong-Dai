@@ -62,7 +62,7 @@ export async function sendACChatMessage(
       throw new ACChatServiceError(
         502,
         'INVALID_API_TRANSPORT',
-        'Phản hồi từ máy chủ không hợp lệ.',
+        'Máy chủ trả về phản hồi không thể xử lý. Vui lòng thử lại.',
         true
       );
     }
@@ -127,7 +127,7 @@ export async function applyACChatMutation(
       throw new ACChatServiceError(
         502,
         'INVALID_API_TRANSPORT',
-        'Phản hồi từ máy chủ không hợp lệ.',
+        'Máy chủ trả về phản hồi không thể xử lý. Vui lòng thử lại.',
         false
       );
     }

@@ -357,15 +357,15 @@ export const CulturalQACard: React.FC<CulturalQACardProps> = ({
                     <div className="space-y-1">
                       <div className="flex flex-wrap items-center gap-2">
                         <span className="text-xs font-bold text-stone-900 tracking-tight">
-                          AC STYLIST ĐÁNH GIÁ · Kiểm tra nhận diện văn hóa
+                          AC đánh giá bản phối · Đối chiếu đặc trưng Việt phục
                         </span>
                         <span className="text-stone-300">•</span>
                         <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-stone-100 text-stone-700 border border-stone-200/80">
                           {revisionIndex === 0
-                            ? 'Bản gốc · V0'
+                            ? 'Bản gốc'
                             : revisionIndex === 1
-                            ? 'Tinh chỉnh 1 · V1'
-                            : `Tinh chỉnh ${revisionIndex} · V${revisionIndex}`}
+                            ? 'Bản tinh chỉnh 1'
+                            : `Bản tinh chỉnh ${revisionIndex}`}
                         </span>
                         <span className="text-stone-300">•</span>
                         <span
@@ -382,18 +382,18 @@ export const CulturalQACard: React.FC<CulturalQACardProps> = ({
                       <div className="flex flex-wrap items-center gap-2 pt-1 text-[11px]">
                         <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full font-medium bg-emerald-50 text-emerald-800 border border-emerald-200/60">
                           <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
-                          <span>{passedCount} đặc trưng rõ</span>
+                          <span>Đặc trưng thể hiện rõ ({passedCount})</span>
                         </span>
                         {unconfirmedCount > 0 && (
                           <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full font-medium bg-stone-100 text-stone-700 border border-stone-200/70">
                             <span className="w-1.5 h-1.5 rounded-full bg-stone-400" />
-                            <span>{unconfirmedCount} chưa thể xác nhận từ ảnh</span>
+                            <span>Chưa xác nhận được từ ảnh ({unconfirmedCount})</span>
                           </span>
                         )}
                         {actionableCount > 0 && (
                           <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full font-medium bg-amber-50 text-amber-800 border border-amber-200/70">
                             <span className="w-1.5 h-1.5 rounded-full bg-amber-600" />
-                            <span>{actionableCount} cần tinh chỉnh</span>
+                            <span>Cần tinh chỉnh ({actionableCount})</span>
                           </span>
                         )}
                       </div>
@@ -423,14 +423,14 @@ export const CulturalQACard: React.FC<CulturalQACardProps> = ({
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <div className="flex items-center gap-2 font-semibold">
                         <RotateCw className="w-4 h-4 text-rose-600 shrink-0" />
-                        <span>Phát hiện sai lệch cấu trúc / hình thái ở Lần {revisionIndex}</span>
+                        <span>Phát hiện sai lệch phom dáng ở Lần {revisionIndex}</span>
                       </div>
                       <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-rose-100 text-rose-800">
-                        Thử lại Lần {revisionIndex} (không phát sinh V{revisionIndex + 1})
+                        Thử lại Lần {revisionIndex}
                       </span>
                     </div>
                     <p className="text-[11px] text-rose-800 leading-relaxed font-normal">
-                      Hình ảnh V{revisionIndex} ghi nhận sai lệch cấu trúc hình thái. Bạn có thể thử lại Lần {revisionIndex} để hệ thống dựng lại ảnh mà giữ nguyên số lượt tinh chỉnh đã dùng.
+                      Hình ảnh Lần {revisionIndex} ghi nhận sai lệch phom dáng trang phục. Bạn có thể thử lại Lần {revisionIndex} để hệ thống dựng lại ảnh mà giữ nguyên số lượt tinh chỉnh đã dùng.
                     </p>
                     <div className="pt-1">
                       <button
@@ -473,7 +473,7 @@ export const CulturalQACard: React.FC<CulturalQACardProps> = ({
             // Natural summary sentence
             let overallSummary = 'Bản phối này nhìn tổng thể khá gọn gàng và hài hòa với bối cảnh đã chọn.';
             if (qaState.result.culturalIdentity.overallStatus === 'PRESERVES_IDENTITY') {
-              overallSummary = 'Bản phối này thể hiện rất tốt phom dáng và các chi tiết cổ truyền, phù hợp với tiêu chí đối chiếu hiện tại.';
+              overallSummary = 'Bản phối giữ rõ các đặc trưng chính mà AC đang đối chiếu.';
             } else if (qaState.result.culturalIdentity.overallStatus === 'CONTEXT_SENSITIVE') {
               overallSummary = 'Bản phối dung hòa hài hòa giữa vẻ trang nhã cổ phong và nét phóng khoáng của thời trang đương đại. Các phụ kiện hoặc biến tấu phối thuộc lớp thẩm mỹ hiện đại, không phải căn cứ lịch sử bắt buộc.';
             } else if (qaState.result.culturalIdentity.overallStatus === 'WEAKENS_RECOGNIZABILITY') {
@@ -506,7 +506,7 @@ export const CulturalQACard: React.FC<CulturalQACardProps> = ({
                     <div className="p-3 rounded-xl bg-white border border-stone-200/70 space-y-1.5">
                       <div className="flex items-center gap-1.5 text-emerald-800 font-semibold text-[11px]">
                         <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                        <span>Điểm đang ổn ({passedTraits.length})</span>
+                        <span>Đặc trưng thể hiện rõ ({passedTraits.length})</span>
                       </div>
                       <p className="text-[11px] text-stone-600 leading-relaxed">
                         {passedTraits.slice(0, 3).map(t => t.traitNameVi).join('; ')}
@@ -537,7 +537,7 @@ export const CulturalQACard: React.FC<CulturalQACardProps> = ({
                     <div className="p-3 rounded-xl bg-white border border-stone-200/70 space-y-1.5">
                       <div className="flex items-center gap-1.5 text-stone-700 font-semibold text-[11px]">
                         <Eye className="w-3.5 h-3.5 text-stone-500" />
-                        <span>Chưa thể xác nhận từ ảnh này ({unconfirmedTraits.length})</span>
+                        <span>Chưa xác nhận được từ ảnh ({unconfirmedTraits.length})</span>
                       </div>
                       <p className="text-[11px] text-stone-500 leading-relaxed">
                         {unconfirmedTraits.slice(0, 2).map(t => t.traitNameVi).join('; ')}
@@ -656,10 +656,10 @@ export const CulturalQACard: React.FC<CulturalQACardProps> = ({
                 </div>
                 <div className="space-y-0.5 min-w-0">
                   <span className="text-xs font-semibold text-emerald-950 block">
-                    Không có điểm cần tinh chỉnh theo đánh giá
+                    Chưa cần chỉnh thêm về đặc trưng văn hóa
                   </span>
                   <p className="text-[11px] text-emerald-800/90 font-normal leading-relaxed">
-                    Tất cả đặc trưng quan sát được đều phù hợp với tiêu chí đối chiếu hiện tại; các yếu tố không đánh giá được (nếu có) không được coi là lỗi.
+                    Các đặc trưng nhìn thấy trong ảnh đều phù hợp; những chi tiết bị khuất hoặc chưa thể xác nhận không bị tính là lỗi.
                   </p>
                 </div>
               </div>
@@ -672,7 +672,7 @@ export const CulturalQACard: React.FC<CulturalQACardProps> = ({
             <div className="p-4 sm:p-5 rounded-2xl bg-white border border-[#E8E3DC] shadow-2xs space-y-2.5">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div className="space-y-0.5">
-                  <h4 className="text-xs font-bold text-stone-900">Muốn điều chỉnh thêm?</h4>
+                  <h4 className="text-xs font-bold text-stone-900">Muốn chỉnh thêm theo ý bạn?</h4>
                   <p className="text-[11px] text-stone-500 font-normal">
                     Thay đổi ánh sáng, bố cục, độ rủ hoặc phong thái mà không thay cấu trúc bản phối.
                   </p>
@@ -683,11 +683,11 @@ export const CulturalQACard: React.FC<CulturalQACardProps> = ({
                     onClick={() => setIsRefinementOpen(true)}
                     className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-medium text-amber-900 bg-amber-50/60 hover:bg-amber-100/70 border border-amber-300 transition-colors cursor-pointer self-start sm:self-center"
                   >
-                    <span>Tự mô tả điều bạn muốn thay đổi ↓</span>
+                    <span>Mô tả điều bạn muốn chỉnh ↓</span>
                   </button>
                 ) : (
                   <span className="text-[11px] text-stone-400 italic">
-                    Đã dùng hết 2 lượt tinh chỉnh
+                    Đã dùng 2/2 lượt tinh chỉnh
                   </span>
                 )}
               </div>
@@ -703,7 +703,7 @@ export const CulturalQACard: React.FC<CulturalQACardProps> = ({
                   <div>
                     <h4 className="text-xs font-bold text-stone-900">Tinh chỉnh theo ý tôi</h4>
                     <p className="text-[11px] text-stone-500 font-normal">
-                      Tự mô tả điều bạn muốn thay đổi: ánh sáng, bố cục, độ rủ vải hoặc dáng đứng (V0 → V1 → V2).
+                      Tự mô tả điều bạn muốn thay đổi: ánh sáng, bố cục, độ rủ vải hoặc dáng đứng.
                     </p>
                   </div>
                 </div>
@@ -727,7 +727,7 @@ export const CulturalQACard: React.FC<CulturalQACardProps> = ({
                     /* STAGE 2: PREVIEW & CONFIRMATION / BLOCKING */
                     <div className="p-3.5 rounded-xl bg-white border border-amber-200/80 space-y-3 text-xs shadow-2xs animate-in fade-in duration-200">
                       <div className="flex items-center justify-between border-b border-amber-100 pb-2">
-                        <span className="font-semibold text-amber-950">{previewAnalysis.title}</span>
+                        <span className="font-semibold text-amber-950">Phương án tinh chỉnh đã sẵn sàng</span>
                         <span
                           className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${
                             previewAnalysis.allowed
@@ -738,7 +738,7 @@ export const CulturalQACard: React.FC<CulturalQACardProps> = ({
                           }`}
                         >
                           {previewAnalysis.allowed
-                            ? `Sẵn sàng tạo V${revisionIndex + 1}`
+                            ? `Sẵn sàng tạo bản tinh chỉnh ${revisionIndex + 1}`
                             : `Từ chối - ${
                                 previewAnalysis.category === 'STRUCTURAL_CONTRADICTION'
                                   ? 'Xung đột cấu trúc'
@@ -749,7 +749,7 @@ export const CulturalQACard: React.FC<CulturalQACardProps> = ({
 
                       <div className="space-y-2 text-[11px]">
                         <div>
-                          <span className="font-semibold text-stone-700 block mb-0.5">Yêu cầu đã ghi nhận:</span>
+                          <span className="font-semibold text-stone-700 block mb-0.5">Bạn muốn:</span>
                           <p className="text-stone-900 bg-stone-50 p-2 rounded-lg border border-stone-200/70 italic">
                             "{userRefinementInput}"
                           </p>
@@ -758,7 +758,7 @@ export const CulturalQACard: React.FC<CulturalQACardProps> = ({
                         {previewAnalysis.allowed ? (
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
                             <div className="p-2 rounded-lg bg-emerald-50/70 border border-emerald-200/60 text-emerald-900 space-y-0.5">
-                              <span className="font-semibold block">Thay đổi hình ảnh:</span>
+                              <span className="font-semibold block">Sẽ thay đổi:</span>
                               <ul className="list-disc list-inside pl-1 space-y-0.5 text-[10px]">
                                 {(previewAnalysis.changes || [userRefinementInput]).map((c, idx) => (
                                   <li key={idx}>{c}</li>
@@ -766,7 +766,7 @@ export const CulturalQACard: React.FC<CulturalQACardProps> = ({
                               </ul>
                             </div>
                             <div className="p-2 rounded-lg bg-amber-50/70 border border-amber-200/60 text-amber-900 space-y-0.5">
-                              <span className="font-semibold block">Yếu tố bảo toàn (Khóa):</span>
+                              <span className="font-semibold block">Giữ nguyên:</span>
                               <ul className="list-disc list-inside pl-1 space-y-0.5 text-[10px]">
                                 {(previewAnalysis.preserved || []).map((p, idx) => (
                                   <li key={idx}>{p}</li>
@@ -828,12 +828,12 @@ export const CulturalQACard: React.FC<CulturalQACardProps> = ({
                             {isGeneratingLookbook ? (
                               <>
                                 <div className="w-3.5 h-3.5 rounded-full border-2 border-white border-t-transparent animate-spin" />
-                                <span>Đang tạo V{revisionIndex + 1}...</span>
+                                <span>Đang tạo bản tinh chỉnh...</span>
                               </>
                             ) : (
                               <>
                                 <Sparkles className="w-3.5 h-3.5" />
-                                <span>Xác nhận và tạo V{revisionIndex + 1}</span>
+                                <span>Xác nhận và tạo bản tinh chỉnh</span>
                               </>
                             )}
                           </button>
@@ -857,7 +857,7 @@ export const CulturalQACard: React.FC<CulturalQACardProps> = ({
                               title="Yêu cầu bị khóa do vi phạm cấu trúc hoặc thuộc phạm vi Bản phối"
                             >
                               <Lock className="w-3.5 h-3.5" />
-                              <span>Khóa tạo V{revisionIndex + 1}</span>
+                              <span>Khóa tạo tinh chỉnh</span>
                             </button>
                           </div>
                         )}
@@ -922,15 +922,15 @@ export const CulturalQACard: React.FC<CulturalQACardProps> = ({
                       </div>
 
                       <div className="flex items-center justify-between pt-1">
-                        <span className="text-[10px] text-stone-400 italic">
-                          Tối đa 2 lần tinh chỉnh (V0 → V1 → V2).
+                        <span className="text-[10px] text-stone-400 font-normal">
+                          Đã dùng {revisionIndex}/2 lượt tinh chỉnh
                         </span>
                         <button
                           type="button"
                           onClick={() => {
                             const text = userRefinementInput.trim();
                             if (!text || text.length < 3) {
-                              setRefinementError('Vui lòng nhập mô tả tinh chỉnh hợp lệ (tối thiểu 3 ký tự).');
+                              setRefinementError('Vui lòng mô tả điều bạn muốn chỉnh bằng ít nhất 3 ký tự.');
                               return;
                             }
                             setRefinementError(null);
@@ -952,7 +952,7 @@ export const CulturalQACard: React.FC<CulturalQACardProps> = ({
                           ) : (
                             <>
                               <Sparkles className="w-3.5 h-3.5" />
-                              <span>Xem phương án tinh chỉnh</span>
+                              <span>Xem trước phương án chỉnh</span>
                             </>
                           )}
                         </button>

@@ -169,7 +169,7 @@ export const HeroHomepage: React.FC<HeroHomepageProps> = ({
         </h1>
 
         <p className="text-base sm:text-lg text-[#6F6B66] leading-[1.6] max-w-2xl mx-auto font-normal">
-          Chọn dịp và phong cách của bạn. AC sẽ gợi ý dáng áo phù hợp, chỉ rõ điều nên giữ, phần có thể biến tấu và giúp bạn hình dung bản phối.
+          Chọn dịp và phong cách. AC sẽ gợi ý dáng áo phù hợp, cho biết điểm nào nên giữ, phần nào có thể biến tấu và giúp bạn hình dung bản phối.
         </p>
       </div>
 
@@ -194,7 +194,7 @@ export const HeroHomepage: React.FC<HeroHomepageProps> = ({
                 rows={2}
                 value={promptText}
                 onChange={e => onPromptChange(e.target.value)}
-                placeholder="Ví dụ: Mình cần một bộ Việt phục dự lễ tốt nghiệp đại học, phong thái trẻ trung với tone đỏ chủ đạo..."
+                placeholder="Ví dụ: Tôi muốn một bộ Việt phục trẻ trung để dự lễ tốt nghiệp đại học."
                 className="w-full bg-transparent border-none text-base text-stone-900 placeholder:text-stone-400 focus:outline-none leading-relaxed font-normal resize-none h-[54px] p-0"
               />
             </div>

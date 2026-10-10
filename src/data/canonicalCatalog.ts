@@ -32,6 +32,7 @@ export const PALETTES: PaletteOption[] = [
 
 // 2. FABRICS: Chất liệu truyền thống và tiếp biến tự nhiên
 export const FABRICS: CatalogItem[] = [
+  { id: 'natural_matte_silk_linen', label: 'Chất liệu lụa, đũi hoặc tơ tự nhiên bề mặt mộc mờ' },
   { id: 'to_tam_ha_dong', label: 'Tơ tằm Hà Đông dệt thủ công' },
   { id: 'gam_hoa_chim', label: 'Gấm dệt hoa văn chìm mực thước' },
   { id: 'sa_to_mong', label: 'Sa tơ mỏng nhẹ thoáng khí' },
@@ -43,34 +44,37 @@ export const FABRICS: CatalogItem[] = [
 
 // 3. LOWER_GARMENTS: Hạ phục truyền thống và âu phục giao thoa
 export const LOWER_GARMENTS: CatalogItem[] = [
-  { id: 'silk_pants_wide', label: 'Quần lụa trắng ống rộng truyền thống' },
-  { id: 'silk_pants_black', label: 'Quần lụa đen ống rộng mực thước' },
-  { id: 'tailored_trousers_straight', label: 'Quần tây ống đứng âu phục tối giản' },
-  { id: 'vay_dup_den', label: 'Váy đụp lụa đen truyền thống Bắc Bộ' },
-  { id: 'pleated_skirt_long', label: 'Chân váy xếp ly dáng dài thanh lịch' },
+  { id: 'silk_pants_wide', label: 'Quần lụa trắng ống rộng' },
+  { id: 'silk_pants_black', label: 'Quần lụa đen ống rộng' },
+  { id: 'tailored_trousers_straight', label: 'Quần tây ống đứng' },
+  { id: 'vay_dup_den', label: 'Váy đụp lụa đen truyền thống' },
+  { id: 'pleated_skirt_long', label: 'Chân váy xếp ly dáng dài' },
   { id: 'culottes_linen', label: 'Quần lửng culottes ống suông vải đũi' }
 ];
 
 // 4. FOOTWEAR: Giày dép từ cổ truyền tới thời trang đương đại
 export const FOOTWEAR: CatalogItem[] = [
-  { id: 'leather_loafer', label: 'Giày da loafer tối giản thanh lịch' },
-  { id: 'guoc_moc_truyen_thong', label: 'Guốc mộc quai nhung truyền thống' },
-  { id: 'chunky_sneaker', label: 'Giày sneaker đế thô phá cách' },
-  { id: 'classic_oxford', label: 'Giày da Oxford cổ điển trang trọng' },
-  { id: 'mule_minimalist', label: 'Dép mule / sục gót thấp thanh thoát' },
-  { id: 'strappy_sandals', label: 'Sandals quai mảnh tối giản' }
+  { id: 'leather_loafer', label: 'Loafer da tối giản' },
+  { id: 'guoc_moc', label: 'Guốc mộc' },
+  { id: 'guoc_moc_truyen_thong', label: 'Guốc mộc' },
+  { id: 'chunky_sneaker', label: 'Giày sneaker đế thô' },
+  { id: 'classic_oxford', label: 'Giày da Oxford cổ điển' },
+  { id: 'mule_minimalist', label: 'Dép mule gót thấp' },
+  { id: 'strappy_sandals', label: 'Sandals quai mảnh' }
 ];
 
 // 5. ACCESSORIES: Phụ kiện điểm nhấn văn hóa
 export const ACCESSORIES: CatalogItem[] = [
-  { id: 'khan_dong_truyen_thong', label: 'Khăn đóng / khăn xếp truyền thống' },
-  { id: 'khan_mo_qua', label: 'Khăn mỏ quạ chít nếp nhọn Bắc Bộ' },
-  { id: 'non_thung_quai_thao', label: 'Nón thúng quai thao truyền thống' },
-  { id: 'tui_coton_theu_tay', label: 'Túi tote linen thêu họa tiết chỉ tơ' },
-  { id: 'quat_giay_tram_huong', label: 'Quạt giấy nan tre hương trầm' },
-  { id: 'chuoi_ngoc_trai_co', label: 'Chuỗi ngọc trai cổ điển thanh lịch' },
-  { id: 'kinh_ram_gong_tron', label: 'Kính râm gọng tròn retro đương đại' },
-  { id: 'vong_bac_cham_hoa', label: 'Kiềng bạc / vòng bạc chạm hoa văn cổ' },
+  { id: 'accessories_none', label: 'Không sử dụng thêm phụ kiện' },
+  { id: 'khan_dong', label: 'Khăn đóng' },
+  { id: 'khan_dong_truyen_thong', label: 'Khăn đóng' },
+  { id: 'khan_mo_qua', label: 'Khăn mỏ quạ' },
+  { id: 'non_thung_quai_thao', label: 'Nón thúng quai thao' },
+  { id: 'tui_coton_theu_tay', label: 'Túi tote linen thêu tay' },
+  { id: 'quat_giay_tram_huong', label: 'Quạt giấy nan tre' },
+  { id: 'chuoi_ngoc_trai_co', label: 'Chuỗi ngọc trai cổ điển' },
+  { id: 'kinh_ram_gong_tron', label: 'Kính râm gọng tròn' },
+  { id: 'vong_bac_cham_hoa', label: 'Kiềng bạc chạm hoa văn cổ' },
   { id: 'tram_cai_toc_toi_gian', label: 'Trâm cài tóc tối giản' }
 ];
 
@@ -80,17 +84,23 @@ export function getPaletteById(id: string): PaletteOption {
 }
 
 export function getFabricLabel(id: string): string {
+  if (id === 'natural_matte_silk_linen') return 'Chất liệu lụa, đũi hoặc tơ tự nhiên bề mặt mộc mờ';
   return FABRICS.find(f => f.id === id)?.label || id;
 }
 
 export function getLowerGarmentLabel(id: string): string {
+  if (id === 'silk_pants_wide') return 'Quần lụa trắng ống rộng';
   return LOWER_GARMENTS.find(l => l.id === id)?.label || id;
 }
 
 export function getFootwearLabel(id: string): string {
+  if (id === 'leather_loafer') return 'Loafer da tối giản';
+  if (id === 'guoc_moc' || id === 'guoc_moc_truyen_thong') return 'Guốc mộc';
   return FOOTWEAR.find(f => f.id === id)?.label || id;
 }
 
 export function getAccessoryLabel(id: string): string {
+  if (id === 'accessories_none') return 'Không sử dụng thêm phụ kiện';
+  if (id === 'khan_dong' || id === 'khan_dong_truyen_thong') return 'Khăn đóng';
   return ACCESSORIES.find(a => a.id === id)?.label || id;
 }

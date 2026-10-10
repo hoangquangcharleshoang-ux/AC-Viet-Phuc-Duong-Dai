@@ -200,7 +200,7 @@ export const Section3Lookbook: React.FC<Section3LookbookProps> = ({
           <span>Bước 3 · Hình Ảnh Minh Họa</span>
         </div>
         <h2 className="text-xl sm:text-2xl font-semibold text-stone-900 tracking-tight">
-          Nhìn Bản Phối Thành Hình
+          Nhìn bản phối thành hình
         </h2>
         <p className="text-xs sm:text-sm text-stone-500 font-normal">
           Ảnh minh họa được dựng từ bản phối để bạn hình dung phom dáng, bảng màu và cách phối tổng thể.
@@ -303,16 +303,16 @@ export const Section3Lookbook: React.FC<Section3LookbookProps> = ({
                   <div className="w-5 h-5 rounded-full border-2 border-[#C26715] border-t-transparent animate-spin" />
                 </div>
                 <span className="text-xs font-semibold text-stone-700 tracking-tight">
-                  Đang dựng bản phối…
+                  Đang tạo ảnh...
                 </span>
               </div>
             </div>
             <div className="space-y-1 max-w-md">
               <h3 className="text-base font-semibold text-stone-900">
-                AC đang dựng hình ảnh minh họa từ bản phối
+                AC đang dựng bản phối của bạn
               </h3>
               <p className="text-xs text-stone-500 font-normal leading-relaxed">
-                Đang đối chiếu bảng màu hòa sắc và cấu trúc hình thái của {garment.canonical_name}.
+                Đang đối chiếu bảng màu và các đặc trưng cốt lõi của {selectedGarmentId === 'ngu_than_chen' ? 'Áo ngũ thân tay chẽn' : selectedGarmentId === 'ao_tac' ? 'Áo tấc' : 'Áo tứ thân'}.
               </p>
             </div>
           </div>

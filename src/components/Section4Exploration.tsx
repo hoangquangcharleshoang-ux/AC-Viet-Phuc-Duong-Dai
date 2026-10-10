@@ -71,7 +71,7 @@ export const Section4Exploration: React.FC<Section4ExplorationProps> = ({
     {
       intent: 'MORE_TRADITIONAL',
       title: 'Gần truyền thống hơn',
-      subtitle: 'Đưa tổng thể về gần phom dáng và chất liệu truyền thống hơn.',
+      subtitle: 'Ưu tiên phom dáng và chất liệu gần với cách mặc truyền thống.',
       icon: ShieldCheck,
       accentBg: 'bg-amber-50/80 hover:bg-amber-50',
       accentBorder: 'border-amber-200/80',
@@ -81,7 +81,7 @@ export const Section4Exploration: React.FC<Section4ExplorationProps> = ({
     {
       intent: 'MORE_REMIXED',
       title: 'Biến tấu hơn',
-      subtitle: 'Biến tấu đương đại mạnh mẽ ở bảng màu, chất liệu và phụ kiện.',
+      subtitle: 'Thử bảng màu, chất liệu hoặc phụ kiện hiện đại hơn nhưng vẫn giữ các đặc trưng cốt lõi.',
       icon: Sparkles,
       accentBg: 'bg-orange-50/60 hover:bg-orange-50/80',
       accentBorder: 'border-orange-200/70',
@@ -91,7 +91,7 @@ export const Section4Exploration: React.FC<Section4ExplorationProps> = ({
     {
       intent: 'ALTERNATIVE',
       title: 'Phối khác cùng tinh thần',
-      subtitle: 'Gợi ý phối đồ mới mẻ, bất ngờ nhưng vẫn tương thích văn hóa.',
+      subtitle: 'Thử một cách phối mới nhưng vẫn giữ tinh thần của trang phục gốc.',
       icon: Compass,
       accentBg: 'bg-stone-50 hover:bg-stone-100/70',
       accentBorder: 'border-stone-200/80',
@@ -117,7 +117,7 @@ export const Section4Exploration: React.FC<Section4ExplorationProps> = ({
           </h3>
         </div>
         <p className="text-xs sm:text-sm text-stone-600 font-normal">
-          Thử một hướng phối khác từ cùng nhu cầu của bạn mà không làm thay đổi bản phối gốc.
+          Khám phá một cách phối khác từ cùng nhu cầu, trong khi bản phối gốc vẫn được giữ nguyên.
         </p>
       </div>
 

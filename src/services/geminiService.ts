@@ -36,7 +36,7 @@ const linterCache = new Map<string, LinterEvaluationResult>([
       impacted_trait: 'Quần âu thụng đứng',
       trait_level: null,
       cultural_impact: 'Việc kết hợp Áo tấc với quần âu thụng đứng thuộc styling space đương đại, không can thiệp vào các đặc trưng thiết yếu (essential traits) như cổ đứng lập lĩnh hay ống tay thụng rộng. Phom dáng buông suông trang nhã của quần âu vẫn giữ được sự đoan chính, mực thước của lễ phục.',
-      context_impact: 'Bảo toàn sự trang nghiêm trong không gian tế tự gia tộc, mang lại vẻ ngoài lịch thiệp giao thoa đương đại.',
+      context_impact: 'Bảo toàn sự trang nghiêm trong không gian tế tự gia tộc, tạo diện mạo lịch thiệp hài hòa với tinh thần đương đại.',
       evidence_status: 'VERIFIED',
       evidence_anchors: ['SRC-04', 'SRC-05'],
       creative_suggestion: 'Nên chọn quần âu gam màu trung tính (trắng, kem, be hoặc đen) có độ rủ mềm mại để hài hòa cùng độ rủ của tà áo tấc.',

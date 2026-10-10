@@ -33,7 +33,7 @@ export function classifyRefinementInput(
       category: 'IMAGE_ONLY_ALLOWED',
       allowed: false,
       title: 'Mô tả quá ngắn',
-      reason: 'Vui lòng nhập mô tả tinh chỉnh hợp lệ (tối thiểu 3 ký tự).',
+      reason: 'Vui lòng mô tả điều bạn muốn chỉnh bằng ít nhất 3 ký tự.',
       guidance: 'Hãy nhập mô tả về ánh sáng, góc chụp, dáng đứng hoặc phong thái.'
     };
   }

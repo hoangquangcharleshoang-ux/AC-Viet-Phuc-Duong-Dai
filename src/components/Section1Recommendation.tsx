@@ -85,10 +85,10 @@ export const Section1Recommendation: React.FC<Section1RecommendationProps> = ({
           <span>Bước 1 · Dáng Áo Nền Tảng</span>
         </div>
         <h2 className="text-xl sm:text-2xl font-semibold text-stone-900 tracking-tight">
-          Gợi Ý Dáng Áo Phù Hợp
+          Gợi ý dáng áo phù hợp
         </h2>
         <p className="text-xs sm:text-sm text-stone-500 font-normal">
-          Lựa chọn dựa trên công năng và không gian bối cảnh xuất hiện của bạn.
+          Gợi ý dựa trên dịp sử dụng, phong cách và mức độ trang trọng bạn đã chọn.
         </p>
       </div>
 
@@ -115,7 +115,7 @@ export const Section1Recommendation: React.FC<Section1RecommendationProps> = ({
               </span>
               {selectedGarmentId === recommendation.primary.garmentId && (
                 <span className="text-[11px] font-medium text-amber-900 bg-amber-100/80 px-2.5 py-0.5 rounded-full border border-amber-300/80">
-                  Đang chọn
+                  Đã chọn
                 </span>
               )}
             </div>
@@ -175,7 +175,7 @@ export const Section1Recommendation: React.FC<Section1RecommendationProps> = ({
                 </span>
                 {selectedGarmentId === recommendation.alternative.garmentId && (
                   <span className="text-[11px] font-medium text-amber-900 bg-amber-100/80 px-2.5 py-0.5 rounded-full border border-amber-300/80">
-                    Đang chọn
+                    Đã chọn
                   </span>
                 )}
               </div>
@@ -242,17 +242,17 @@ export const Section1Recommendation: React.FC<Section1RecommendationProps> = ({
             </div>
           </div>
           <div className="flex items-center gap-1.5 text-xs font-medium text-[#C26715] shrink-0 self-end sm:self-auto">
-            <span>{isAccordionOpen ? 'Thu gọn' : 'Xem đặc trưng & căn cứ lịch sử'}</span>
+            <span>{isAccordionOpen ? 'Thu gọn' : 'Xem đặc trưng và nguồn đối chiếu'}</span>
             {isAccordionOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
           </div>
         </button>
 
-                {isAccordionOpen && (
+        {isAccordionOpen && (
           <div className="px-5 sm:px-6 pb-6 pt-3 space-y-6 border-t border-stone-100 text-xs sm:text-sm">
             {/* 1. Top Definition / Overview */}
             <div className="bg-amber-50/60 p-4 rounded-2xl border border-amber-200/60 space-y-1.5">
               <span className="text-[11px] font-semibold text-amber-900 uppercase tracking-wider block">
-                Tổng quan định danh
+                Áo này là gì?
               </span>
               <p className="text-stone-800 leading-relaxed font-medium">
                 {currentGarment.cultural_narrative?.short_definition || currentGarment.definition}
@@ -263,7 +263,7 @@ export const Section1Recommendation: React.FC<Section1RecommendationProps> = ({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="bg-stone-50/70 p-4 rounded-2xl border border-stone-100 space-y-1.5">
                 <span className="text-[11px] font-semibold text-stone-400 uppercase tracking-wider block">
-                  Nguồn gốc & Bối cảnh lịch sử
+                  Nguồn gốc & Bối cảnh
                 </span>
                 <p className="text-stone-700 leading-relaxed font-normal">
                   {currentGarment.cultural_narrative?.origin_context || currentGarment.definition}
@@ -283,7 +283,7 @@ export const Section1Recommendation: React.FC<Section1RecommendationProps> = ({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="bg-stone-50/70 p-4 rounded-2xl border border-stone-100 space-y-1.5">
                 <span className="text-[11px] font-semibold text-stone-400 uppercase tracking-wider block">
-                  Vì sao áo có hình dáng này? (Hình thái & Công năng)
+                  Hình thái & Công năng
                 </span>
                 <p className="text-stone-700 leading-relaxed font-normal">
                   {currentGarment.cultural_narrative?.form_function || 'Cấu trúc thiết kế tối ưu hóa cho công năng và bối cảnh sử dụng.'}
@@ -291,7 +291,7 @@ export const Section1Recommendation: React.FC<Section1RecommendationProps> = ({
               </div>
               <div className="bg-stone-50/70 p-4 rounded-2xl border border-stone-100 space-y-1.5">
                 <span className="text-[11px] font-semibold text-stone-400 uppercase tracking-wider block">
-                  Trải nghiệm khi mặc & Tính thực dụng
+                  Trải nghiệm khi mặc
                 </span>
                 <p className="text-stone-700 leading-relaxed font-normal">
                   {currentGarment.cultural_narrative?.wearing_experience || 'Đảm bảo sự thoải mái, linh hoạt và phù hợp với vóc dáng người mặc đương đại.'}
@@ -303,7 +303,7 @@ export const Section1Recommendation: React.FC<Section1RecommendationProps> = ({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="bg-white p-4 rounded-2xl border border-stone-200/80 space-y-2">
                 <span className="text-[11px] font-semibold text-amber-900 uppercase tracking-wider block">
-                  Nhận diện nhanh đặc trưng cốt lõi
+                  Nhận diện nhanh
                 </span>
                 <ul className="space-y-1 pl-2 text-xs text-stone-700">
                   {(currentGarment.cultural_narrative?.quick_recognition || currentGarment.traits.essential).map((t, idx) => (
@@ -316,7 +316,7 @@ export const Section1Recommendation: React.FC<Section1RecommendationProps> = ({
               </div>
               <div className="bg-white p-4 rounded-2xl border border-stone-200/80 space-y-2">
                 <span className="text-[11px] font-semibold text-amber-900 uppercase tracking-wider block">
-                  Ứng dụng trong đời sống ngày nay
+                  Ứng dụng ngày nay
                 </span>
                 <p className="text-stone-700 leading-relaxed font-normal">
                   {currentGarment.cultural_narrative?.contemporary_use || 'Được ứng dụng linh hoạt trong các dịp lễ hội, kỷ yếu, sự kiện văn hóa và đời sống.'}
@@ -328,7 +328,7 @@ export const Section1Recommendation: React.FC<Section1RecommendationProps> = ({
             {currentGarment.cultural_narrative?.uncertainties && (
               <div className="bg-stone-100/80 p-3.5 rounded-xl border border-stone-200 text-stone-600 text-[11px] space-y-1">
                 <span className="font-semibold text-stone-700 uppercase tracking-wider block">
-                  Điểm lưu ý học thuật & Giới hạn tư liệu
+                  Lưu ý về tư liệu
                 </span>
                 <p>{currentGarment.cultural_narrative.uncertainties}</p>
               </div>
@@ -338,7 +338,7 @@ export const Section1Recommendation: React.FC<Section1RecommendationProps> = ({
             <div className="pt-2 border-t border-stone-100">
               <div className="flex items-center justify-between flex-wrap gap-2">
                 <span className="text-xs text-stone-500 font-normal">
-                  Căn cứ tư liệu · {sourceCount} nguồn đã đối chiếu chính thức
+                  Nguồn đối chiếu · {sourceCount} nguồn
                 </span>
                 <button
                   onClick={() => setShowSourcesDetail(!showSourcesDetail)}
