@@ -43,8 +43,8 @@ export async function requestLookbookGeneration(
         data.message ||
         (res.status === 409
           ? 'Bản phối đã thay đổi. Vui lòng tạo ảnh lại từ phiên bản hiện tại.'
-          : res.status === 503
-          ? 'Dịch vụ tạo ảnh đang tạm thời không khả dụng. Vui lòng thử lại sau.'
+          : res.status === 502 || res.status === 503
+          ? 'Dịch vụ tạo ảnh đang tạm thời không khả dụng. Bản phối hiện tại vẫn được giữ lại. Vui lòng thử lại sau.'
           : 'Không thể tạo hình ảnh minh họa lúc này. Vui lòng thử lại.');
 
       throw new LookbookError(code, message, res.status);

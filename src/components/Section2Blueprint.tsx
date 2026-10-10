@@ -189,6 +189,57 @@ export const Section2Blueprint: React.FC<Section2BlueprintProps> = ({
     return `${paletteSummary} · ${fabricName} · ${lowerName} · ${footwearName} · ${accText}${propText}`;
   };
 
+  // User-facing presentation deduplication for Blueprint Column 1 (Giữ cốt lõi)
+  const getConciseBlueprintTraits = (garmentId: GarmentId) => {
+    if (garmentId === 'ngu_than_chen') {
+      return {
+        essential: [
+          'Lập lĩnh',
+          'Cài vạt phải',
+          'Tay chẽn / trách tụ',
+          'Cấu trúc ngũ thân'
+        ],
+        characteristic: [
+          'Hàng 5 khuy cài',
+          'Phom suông tự nhiên'
+        ]
+      };
+    }
+    if (garmentId === 'ao_tac') {
+      return {
+        essential: [
+          'Lập lĩnh',
+          'Cài vạt phải',
+          'Tay thụng / khoán tụ',
+          'Cấu trúc ngũ thân'
+        ],
+        characteristic: [
+          'Hàng 5 khuy cài',
+          'Phom rộng dáng lễ phục'
+        ]
+      };
+    }
+    if (garmentId === 'ao_tu_than') {
+      return {
+        essential: [
+          'Cấu trúc 4 thân',
+          'Mở vạt trước',
+          'Kết hợp áo yếm'
+        ],
+        characteristic: [
+          'Dải thắt lưng ngang eo',
+          'Buông thả hoặc buộc vạt'
+        ]
+      };
+    }
+    return {
+      essential: garment.traits.essential,
+      characteristic: garment.traits.strongly_characteristic
+    };
+  };
+
+  const conciseTraits = getConciseBlueprintTraits(selectedGarmentId);
+
   return (
     <section id="section-blueprint" className="space-y-6 pt-4 scroll-mt-20">
       {/* Section Header */}
@@ -291,10 +342,10 @@ export const Section2Blueprint: React.FC<Section2BlueprintProps> = ({
                       Đặc trưng cốt lõi
                     </span>
                     <ul className="space-y-1.5 text-stone-600">
-                      {garment.traits.essential.map((trait, idx) => (
+                      {conciseTraits.essential.map((trait, idx) => (
                         <li key={idx} className="flex items-start gap-2">
                           <span className="text-emerald-500 font-bold">•</span>
-                          <span className="leading-relaxed">{trait}</span>
+                          <span className="leading-relaxed font-medium text-stone-800">{trait}</span>
                         </li>
                       ))}
                     </ul>
@@ -305,7 +356,7 @@ export const Section2Blueprint: React.FC<Section2BlueprintProps> = ({
                       Nên ưu tiên giữ
                     </span>
                     <ul className="space-y-1.5 text-stone-600">
-                      {garment.traits.strongly_characteristic.map((trait, idx) => (
+                      {conciseTraits.characteristic.map((trait, idx) => (
                         <li key={idx} className="flex items-start gap-2">
                           <span className="text-stone-400 font-bold">•</span>
                           <span className="leading-relaxed">{trait}</span>

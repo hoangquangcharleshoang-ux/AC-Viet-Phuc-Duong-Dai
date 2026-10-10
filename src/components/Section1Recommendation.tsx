@@ -11,7 +11,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { ChevronDown, ChevronUp, Sparkles, BookOpen, ArrowRight } from 'lucide-react';
-import { GarmentId, GarmentRecommendationOutput } from '../types';
+import { GarmentId, GarmentRecommendationOutput, GenderPresentation } from '../types';
 import { GARMENTS, SOURCES_CATALOG } from '../data/culturalKnowledgePack';
 
 interface Section1RecommendationProps {
@@ -19,13 +19,15 @@ interface Section1RecommendationProps {
   selectedGarmentId: GarmentId;
   onSelectGarment: (garmentId: GarmentId) => void;
   isLoadingBlueprint?: boolean;
+  genderPresentation?: GenderPresentation;
 }
 
 export const Section1Recommendation: React.FC<Section1RecommendationProps> = ({
   recommendation,
   selectedGarmentId,
   onSelectGarment,
-  isLoadingBlueprint
+  isLoadingBlueprint,
+  genderPresentation = 'nam'
 }) => {
   // Accordion lifecycle: Default collapsed, resets to collapsed when selectedGarmentId changes
   const [isAccordionOpen, setIsAccordionOpen] = useState<boolean>(false);
@@ -44,11 +46,22 @@ export const Section1Recommendation: React.FC<Section1RecommendationProps> = ({
   // Active knowledge is strictly tied to selectedGarmentId
   const currentGarment = GARMENTS[selectedGarmentId] || primaryGarment;
 
-  // Image assets mapping
-  const lookbookImages: Record<GarmentId, string> = {
-    ngu_than_chen: '/assets/ao-ngu-than-tay-chen.png',
-    ao_tac: '/assets/ao-tac.png',
-    ao_tu_than: '/assets/ao-tu-than.png'
+  // Wearer-matched recommendation image asset resolution
+  const getRecommendationAsset = (garmentId: GarmentId): string => {
+    if (genderPresentation === 'nam') {
+      if (garmentId === 'ngu_than_chen') return '/assets/ao-ngu-than-tay-chen-nam.png';
+      if (garmentId === 'ao_tac') return '/assets/ao-tac-nam.png';
+      return '/assets/ao-tu-than.png'; // Tứ thân remains female-only under grounded policy
+    }
+    if (genderPresentation === 'nu') {
+      if (garmentId === 'ngu_than_chen') return '/assets/ao-ngu-than-tay-chen.png';
+      if (garmentId === 'ao_tac') return '/assets/ao-tac.png';
+      return '/assets/ao-tu-than.png';
+    }
+    // Neutral / khong_uu_tien
+    if (garmentId === 'ngu_than_chen') return '/assets/ao-ngu-than-tay-chen-nam.png';
+    if (garmentId === 'ao_tac') return '/assets/ao-tac.png';
+    return '/assets/ao-tu-than.png';
   };
 
   // Curated short preview for collapsed bar (Requirement 8)
@@ -111,7 +124,7 @@ export const Section1Recommendation: React.FC<Section1RecommendationProps> = ({
               {/* Fashion-first Image (28-32% desktop width target, aspect 3:4) */}
               <div className="w-[30%] sm:w-[32%] shrink-0 max-w-[140px] min-w-[95px] aspect-[3/4] rounded-2xl overflow-hidden bg-stone-100 shadow-inner">
                 <img
-                  src={lookbookImages[recommendation.primary.garmentId]}
+                  src={getRecommendationAsset(recommendation.primary.garmentId)}
                   alt={primaryGarment.canonical_name}
                   className="w-full h-full object-cover object-center group-hover:scale-103 transition-transform duration-500"
                 />
@@ -171,7 +184,7 @@ export const Section1Recommendation: React.FC<Section1RecommendationProps> = ({
                 {/* Fashion-first Image (28-32% desktop width target, aspect 3:4) */}
                 <div className="w-[30%] sm:w-[32%] shrink-0 max-w-[140px] min-w-[95px] aspect-[3/4] rounded-2xl overflow-hidden bg-stone-100 shadow-inner">
                   <img
-                    src={lookbookImages[recommendation.alternative.garmentId]}
+                    src={getRecommendationAsset(recommendation.alternative.garmentId)}
                     alt={altGarment.canonical_name}
                     className="w-full h-full object-cover object-center group-hover:scale-103 transition-transform duration-500"
                   />

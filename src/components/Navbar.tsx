@@ -37,30 +37,58 @@ export const Navbar: React.FC<NavbarProps> = ({
 }) => {
   const [activeStageId, setActiveStageId] = useState<string>('section-context');
 
-  // IntersectionObserver to highlight active workflow stage as user scrolls
+  // Active section scroll tracking
   useEffect(() => {
-    const observerOptions: IntersectionObserverInit = {
-      root: null,
-      rootMargin: '-20% 0px -60% 0px',
-      threshold: 0
-    };
+    const updateActiveSection = () => {
+      const activationLine = 160; // top offset in px (navbar height + buffer)
+      let currentActive = WORKFLOW_STAGES[0].id;
+      let minDistance = Infinity;
 
-    const handleIntersect: IntersectionObserverCallback = (entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          setActiveStageId(entry.target.id);
+      WORKFLOW_STAGES.forEach(stage => {
+        const el = document.getElementById(stage.id);
+        if (el) {
+          const rect = el.getBoundingClientRect();
+          if (rect.top <= activationLine) {
+            const dist = Math.abs(rect.top - activationLine);
+            if (dist < minDistance || rect.bottom > activationLine) {
+              currentActive = stage.id;
+              minDistance = dist;
+            }
+          }
         }
       });
+
+      // Special case: if at/near bottom of page, highlight last stage
+      if (
+        window.innerHeight + window.scrollY >=
+        document.documentElement.scrollHeight - 50
+      ) {
+        currentActive = WORKFLOW_STAGES[WORKFLOW_STAGES.length - 1].id;
+      }
+
+      setActiveStageId(currentActive);
     };
 
-    const observer = new IntersectionObserver(handleIntersect, observerOptions);
+    updateActiveSection();
 
-    WORKFLOW_STAGES.forEach(stage => {
-      const el = document.getElementById(stage.id);
-      if (el) observer.observe(el);
-    });
+    let ticking = false;
+    const handleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          updateActiveSection();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
 
-    return () => observer.disconnect();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('resize', handleScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleScroll);
+    };
   }, []);
 
   const handleStageClick = (stageId: string) => {

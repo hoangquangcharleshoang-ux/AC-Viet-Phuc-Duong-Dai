@@ -299,21 +299,36 @@ export const HeroHomepage: React.FC<HeroHomepageProps> = ({
             {/* HÀNG ĐÁY — GỘP THANH TRƯỢT GỌN GÀNG (~35%) VÀ NÚT CTA CÙNG MỘT HÀNG */}
             <div className="pt-3 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-t border-stone-100">
               {/* Bên trái: Cụm thanh trượt thu gọn chiếm ~35% - 40% bề ngang */}
-              <div className="w-full sm:w-80 max-w-[320px] space-y-2">
+              <div className="w-full sm:w-80 max-w-[320px] space-y-1.5">
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-[11px] font-bold text-stone-700 uppercase tracking-wider">Mức biến tấu</span>
-                  <span className="text-xs font-semibold text-amber-900 bg-amber-100 px-2.5 py-0.5 rounded-full border border-amber-300 shadow-2xs">
-                    {getSliderLabel(sliderValue)}
-                  </span>
                 </div>
 
-                <div className="relative flex items-center">
+                <div className="relative pt-6 pb-1">
+                  {/* Floating Thumb-Tracking Numeric Badge */}
+                  <div
+                    className="absolute top-0 pointer-events-none transition-all duration-75"
+                    style={{
+                      left: `clamp(18px, ${sliderValue}%, calc(100% - 18px))`,
+                      transform: 'translateX(-50%)'
+                    }}
+                  >
+                    <span className="inline-block px-2 py-0.5 rounded-full text-[11px] font-bold text-amber-950 bg-amber-100 border border-amber-300/90 shadow-2xs text-center min-w-[28px]">
+                      {sliderValue}
+                    </span>
+                  </div>
+
                   <input
                     type="range"
                     min="0"
                     max="100"
                     step="1"
                     value={sliderValue}
+                    aria-label="Mức biến tấu"
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                    aria-valuenow={sliderValue}
+                    aria-valuetext={`${sliderValue} trên 100, giữa gần nguyên bản và đương đại hơn`}
                     onChange={e => {
                       const val = parseInt(e.target.value, 10);
                       if (onSliderValueChange) {

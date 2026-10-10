@@ -1557,6 +1557,7 @@ export default function App() {
             selectedGarmentId={selectedGarmentId}
             onSelectGarment={handleSelectGarmentFromRecommendation}
             isLoadingBlueprint={isLoadingBlueprint}
+            genderPresentation={draftContext.genderPresentation || activeParams.genderPresentation || 'nam'}
           />
         )}
 
