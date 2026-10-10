@@ -150,8 +150,8 @@ export const HeroHomepage: React.FC<HeroHomepageProps> = ({
       id: 'ao_tu_than' as GarmentId,
       name: 'Áo tứ thân',
       description:
-        'Trang phục truyền thống bốn thân buông hoặc buộc vạt trước, thường mặc cùng yếm đào và khăn mỏ quạ.',
-      images: ['/assets/ao-tu-than.png']
+        'Trang phục truyền thống bốn thân với hai tà trước mở, thường mặc cùng áo yếm và dải thắt lưng; các phụ kiện như khăn mỏ quạ tùy bối cảnh.',
+      images: ['/assets/ao-tu-than.png', '/assets/ao-tu-than-2.png']
     }
   ];
 
