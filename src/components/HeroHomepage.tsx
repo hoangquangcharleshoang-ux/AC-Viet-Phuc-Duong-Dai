@@ -165,7 +165,7 @@ export const HeroHomepage: React.FC<HeroHomepageProps> = ({
         </div>
 
         <h1 className="text-3xl sm:text-4xl md:text-[50px] font-bold text-[#242321] tracking-tight leading-[1.14]">
-          Phối Việt phục cho hôm nay, giữ đúng nét cốt lõi.
+          Hôm nay, bạn muốn mặc Việt phục thế nào?
         </h1>
 
         <p className="text-base sm:text-lg text-[#6F6B66] leading-[1.6] max-w-2xl mx-auto font-normal">
