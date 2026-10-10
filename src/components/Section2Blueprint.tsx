@@ -190,7 +190,7 @@ export const Section2Blueprint: React.FC<Section2BlueprintProps> = ({
   };
 
   return (
-    <section id="section-2-blueprint" className="space-y-6 pt-4 scroll-mt-20">
+    <section id="section-blueprint" className="space-y-6 pt-4 scroll-mt-20">
       {/* Section Header */}
       <div className="space-y-1.5">
         <div className="inline-flex items-center gap-2 px-3 py-0.5 rounded-full text-xs font-semibold tracking-wider text-sky-700 bg-sky-50 border border-sky-200/60 uppercase shadow-2xs">

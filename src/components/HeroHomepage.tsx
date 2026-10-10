@@ -13,6 +13,7 @@
 import React, { useRef, useState } from 'react';
 import { Sparkles, ArrowRight } from 'lucide-react';
 import { GarmentId, OccasionId, RemixIntent } from '../types';
+import { GarmentImageRotator } from './GarmentImageRotator';
 
 interface HeroHomepageProps {
   promptText: string;
@@ -136,26 +137,26 @@ export const HeroHomepage: React.FC<HeroHomepageProps> = ({
       name: 'Áo ngũ thân tay chẽn',
       description:
         'Thường phục nam nữ gọn gàng, cổ đứng lập lĩnh, ống tay bó sát cổ tay thuận tiện sinh hoạt và làm việc.',
-      imageUrl: '/assets/ao-ngu-than-tay-chen.png'
+      images: ['/assets/ao-ngu-than-tay-chen.png', '/assets/ao-ngu-than-tay-chen-nam.png']
     },
     {
       id: 'ao_tac' as GarmentId,
       name: 'Áo tấc (Ngũ thân tay thụng)',
       description:
         'Lễ phục phổ thông cổ đứng năm thân, ống tay thụng hình chữ nhật buông dài quá ngón tay mực thước, trang trọng.',
-      imageUrl: '/assets/ao-tac.png'
+      images: ['/assets/ao-tac.png', '/assets/ao-tac-nam.png']
     },
     {
       id: 'ao_tu_than' as GarmentId,
       name: 'Áo tứ thân',
       description:
         'Trang phục truyền thống bốn thân buông hoặc buộc vạt trước, thường mặc cùng yếm đào và khăn mỏ quạ.',
-      imageUrl: '/assets/ao-tu-than.png'
+      images: ['/assets/ao-tu-than.png']
     }
   ];
 
   return (
-    <section className="space-y-10 sm:space-y-12 pt-0 sm:pt-2">
+    <section id="section-context" className="space-y-10 sm:space-y-12 pt-0 sm:pt-2 scroll-mt-20">
       {/* 1. Hero Typography (Unboxed, airy, optical-centered) */}
       <div className="text-center space-y-4 max-w-[860px] mx-auto px-2">
         <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-semibold tracking-wider text-[#4285F4] bg-white/70 backdrop-blur-md border border-[#4285F4]/20 shadow-2xs uppercase">
@@ -405,11 +406,11 @@ export const HeroHomepage: React.FC<HeroHomepageProps> = ({
             >
               {/* 1. Khung ảnh trơn: Bo góc rounded-2xl, tỷ lệ aspect-[3/4], ảnh phủ tràn mép sắc nét, hoàn toàn sạch chữ */}
               <div className="relative aspect-[3/4] w-full rounded-2xl overflow-hidden bg-stone-100/50 shadow-2xs">
-                <img
-                  src={garment.imageUrl}
+                <GarmentImageRotator
+                  images={garment.images}
                   alt={garment.name}
+                  intervalMs={5000}
                   className="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-103"
-                  loading="lazy"
                 />
               </div>
 
@@ -418,11 +419,6 @@ export const HeroHomepage: React.FC<HeroHomepageProps> = ({
                 <h3 className="text-lg font-semibold text-stone-900 tracking-tight">
                   {garment.name}
                 </h3>
-                {garment.id === 'ao_tu_than' && genderPresentation === 'nam' && (
-                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-amber-50 text-amber-800 border border-amber-200/80">
-                    Hồ sơ: Nữ
-                  </span>
-                )}
               </div>
 
               {/* 3. Mô tả ngắn */}

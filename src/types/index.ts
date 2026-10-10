@@ -97,6 +97,17 @@ export interface RemixIntentInfo {
   badgeColor: string;
 }
 
+export interface GarmentNarrative {
+  short_definition: string;
+  origin_context: string;
+  cultural_meaning: string;
+  form_function: string;
+  quick_recognition: string[];
+  wearing_experience: string;
+  contemporary_use: string;
+  uncertainties: string;
+}
+
 export interface GarmentKnowledge {
   id: GarmentId;
   canonical_name: string;
@@ -128,6 +139,7 @@ export interface GarmentKnowledge {
     outerwear: string;
     accessories: string;
   };
+  cultural_narrative?: GarmentNarrative;
 }
 
 export interface LinterEvaluationResult {

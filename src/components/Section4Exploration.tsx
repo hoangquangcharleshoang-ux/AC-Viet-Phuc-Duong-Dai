@@ -105,7 +105,7 @@ export const Section4Exploration: React.FC<Section4ExplorationProps> = ({
   const isLoadingActive = activeIntentTab ? isExploring[activeIntentTab] : false;
 
   return (
-    <section className="rounded-3xl p-6 sm:p-8 bg-white/90 border border-stone-200/90 shadow-sm space-y-6 transition-all duration-300">
+    <section id="section-exploration" className="rounded-3xl p-6 sm:p-8 bg-white/90 border border-stone-200/90 shadow-sm space-y-6 transition-all duration-300 scroll-mt-20">
       {/* Header */}
       <div className="space-y-1">
         <div className="flex items-center gap-2">

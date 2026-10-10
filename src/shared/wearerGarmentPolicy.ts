@@ -22,7 +22,7 @@ export function getWearerIncompatibilityMessage(
   wearer: GenderPresentation
 ): string {
   if (garmentId === 'ao_tu_than' && wearer === 'nam') {
-    return 'Trong phạm vi tư liệu lịch sử AC đang sử dụng, Áo tứ thân Bắc Bộ được ghi nhận là trang phục truyền thống của phụ nữ. Với người mặc nam, AC sẽ ưu tiên một dáng áo khác phù hợp hơn với căn cứ lịch sử.';
+    return 'Trong phạm vi tư liệu lịch sử AC đang sử dụng, Áo tứ thân Bắc Bộ được ghi nhận là trang phục truyền thống của phụ nữ đồng bằng Bắc Bộ. Vì vậy, grounded MVP của AC chỉ hỗ trợ cấu hình người mặc nữ cho Áo tứ thân.';
   }
   return 'Dáng áo và cấu hình người mặc tương thích.';
 }

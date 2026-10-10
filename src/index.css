@@ -171,4 +171,60 @@ input[type='range'].slider-amber::-moz-range-thumb {
   box-shadow: 0 2px 8px rgba(217, 119, 6, 0.45);
 }
 
+/* Subtle Motion & Reveal Animations */
+@keyframes section-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes lookbook-image-reveal {
+  from {
+    opacity: 0;
+    filter: blur(4px);
+    transform: scale(0.995);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: scale(1);
+  }
+}
+
+.animate-section-reveal {
+  animation: section-reveal 450ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-lookbook-reveal {
+  animation: lookbook-image-reveal 600ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Reduced Motion Overrides */
+@media (prefers-reduced-motion: reduce) {
+  .aurora-blob-1,
+  .aurora-blob-2,
+  .aurora-blob-3,
+  .aurora-blob-4 {
+    animation: none !important;
+  }
+
+  .animate-section-reveal,
+  .animate-lookbook-reveal {
+    animation: none !important;
+    opacity: 1 !important;
+    filter: none !important;
+    transform: none !important;
+  }
+
+  *, ::before, ::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
+
 
