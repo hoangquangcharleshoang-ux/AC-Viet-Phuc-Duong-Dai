@@ -54,8 +54,10 @@ export const LOWER_GARMENT_VISUAL_MAP: Record<string, string> = {
 // 3. Visual Footwear Descriptions
 export const FOOTWEAR_VISUAL_MAP: Record<string, string> = {
   leather_loafer: 'minimalist black polished leather penny loafers with a refined contemporary edge',
-  guoc_moc: 'traditional sculpted wooden clogs (guoc moc) with dark velvet foot straps',
-  guoc_moc_truyen_thong: 'traditional sculpted wooden clogs (guoc moc) with dark velvet foot straps',
+  guoc_moc: 'simple traditional Vietnamese wooden clogs (guoc moc), with a low-profile continuous wooden sole, restrained traditional construction, plain and visually lightweight. Reject: Japanese geta, raised wooden teeth, two-block geta sole, platform sandal, chunky wooden sole, exaggerated heel',
+  guoc_moc_truyen_thong: 'simple traditional Vietnamese wooden clogs (guoc moc), with a low-profile continuous wooden sole, restrained traditional construction, plain and visually lightweight. Reject: Japanese geta, raised wooden teeth, two-block geta sole, platform sandal, chunky wooden sole, exaggerated heel',
+  hai_vai_truyen_thong: 'simple traditional Vietnamese cloth shoes, low-profile and lightweight, with a closed textile upper and restrained flat sole, plain, refined and proportionate to traditional Vietnamese dress. Negative: no loafer, no Oxford, no sneaker, no ballet flat, no high heel, no fantasy imperial shoe, no Chinese opera shoe',
+  hai_theu_truyen_thong: 'refined traditional Vietnamese embroidered ceremonial shoes, low-profile with a closed textile upper, restrained hand-embroidered detailing, flat or very low traditional sole, elegant and proportionate to formal Vietnamese ceremonial dress. Negative: no high heel, no Western loafer/Oxford shape, no Chinese imperial boot, no fantasy court slipper, no pointed elf-like toe, no heavy metallic ornament, no dragons, no phoenixes, no rank insignia, no imperial symbols',
   chunky_sneaker: 'contemporary clean structured chunky sneakers blending modern streetwear with heritage',
   classic_oxford: 'classic formal black leather Oxford dress shoes with subtle stitch detailing',
   mule_minimalist: 'sleek low-heeled minimalist leather mules offering an airy contemporary cadence',

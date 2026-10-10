@@ -427,55 +427,105 @@ export function getPolicyCompatibleLowerGarments(params: PolicyFilterParams): Ca
  * Returns policy-compatible footwear based on garment, wearer, occasion, style, traditionality band
  */
 export function getPolicyCompatibleFootwear(params: PolicyFilterParams): CatalogItem[] {
-  const { garmentId, wearer, traditionalRatio, promptText, flowMode, explorationIntent } = params;
+  const { garmentId, wearer, traditionalRatio, promptText, flowMode, explorationIntent, occasion } = params;
   const isExploration = flowMode === 'EXPLORATION';
   const explicitSneaker = isSneakerRequestedExplicitly(promptText);
+  const explicitLoaferOxford = isLoaferOrOxfordRequestedExplicitly(promptText);
+  const p = (promptText || '').toLowerCase();
+  const occ = (occasion || '').toLowerCase();
+  const effectiveWearer = wearer || 'nam';
 
-  const compatible: CatalogItem[] = [];
+  const compatibleMap: Map<string, CatalogItem> = new Map();
 
-  for (const item of FOOTWEAR) {
-    let allowed = false;
+  const isFormal = occ.includes('formal') || occ.includes('trang_trong') || occ.includes('nghi_le') || occ.includes('le_tet') || traditionalRatio >= 60 || p.includes('trang trọng') || p.includes('lễ') || p.includes('tết') || p.includes('formal');
+  const isElegantOrPhoto = occ.includes('thanh_lich') || occ.includes('chup_anh') || occ.includes('tot_nghiep') || p.includes('thanh lịch') || p.includes('chụp ảnh') || p.includes('tốt nghiệp');
 
-    switch (item.id) {
-      case 'guoc_moc':
-      case 'guoc_moc_truyen_thong':
-        allowed = true;
-        break;
+  const guocMocItem = FOOTWEAR.find(f => f.id === 'guoc_moc');
+  const guocMocTruyenThongItem = FOOTWEAR.find(f => f.id === 'guoc_moc_truyen_thong');
+  const haiVaiItem = FOOTWEAR.find(f => f.id === 'hai_vai_truyen_thong');
+  const haiTheuItem = FOOTWEAR.find(f => f.id === 'hai_theu_truyen_thong');
+  const muleItem = FOOTWEAR.find(f => f.id === 'mule_minimalist');
+  const sandalItem = FOOTWEAR.find(f => f.id === 'strappy_sandals');
+  const sneakerItem = FOOTWEAR.find(f => f.id === 'chunky_sneaker');
+  const loaferItem = FOOTWEAR.find(f => f.id === 'leather_loafer');
+  const oxfordItem = FOOTWEAR.find(f => f.id === 'classic_oxford');
 
-      case 'leather_loafer':
-      case 'classic_oxford':
-        if (isExploration || isLoaferOrOxfordRequestedExplicitly(promptText)) {
-          allowed = true;
-        }
-        break;
-
-      case 'mule_minimalist':
-        if (wearer === 'nu' || wearer === 'neutral') {
-          if (traditionalRatio <= 60 || isExploration) {
-            allowed = true;
-          }
-        }
-        break;
-
-      case 'chunky_sneaker':
-        if (explicitSneaker || (isExploration && explorationIntent === 'MORE_REMIXED' && traditionalRatio <= 39)) {
-          allowed = true;
-        }
-        break;
-
-      case 'strappy_sandals':
-        if ((wearer === 'nu' || wearer === 'neutral') && (isExploration || traditionalRatio <= 40)) {
-          allowed = true;
-        }
-        break;
+  if (garmentId === 'ao_tac') {
+    if (effectiveWearer === 'nu') {
+      if (isFormal) {
+        if (haiTheuItem) compatibleMap.set(haiTheuItem.id, haiTheuItem);
+        if (haiVaiItem) compatibleMap.set(haiVaiItem.id, haiVaiItem);
+        if (guocMocTruyenThongItem) compatibleMap.set(guocMocTruyenThongItem.id, guocMocTruyenThongItem);
+        if (guocMocItem) compatibleMap.set(guocMocItem.id, guocMocItem);
+      } else {
+        if (haiVaiItem) compatibleMap.set(haiVaiItem.id, haiVaiItem);
+        if (haiTheuItem) compatibleMap.set(haiTheuItem.id, haiTheuItem);
+        if (guocMocItem) compatibleMap.set(guocMocItem.id, guocMocItem);
+        if (guocMocTruyenThongItem) compatibleMap.set(guocMocTruyenThongItem.id, guocMocTruyenThongItem);
+      }
+    } else {
+      if (isFormal) {
+        if (haiTheuItem) compatibleMap.set(haiTheuItem.id, haiTheuItem);
+        if (guocMocTruyenThongItem) compatibleMap.set(guocMocTruyenThongItem.id, guocMocTruyenThongItem);
+        if (guocMocItem) compatibleMap.set(guocMocItem.id, guocMocItem);
+        if (haiVaiItem) compatibleMap.set(haiVaiItem.id, haiVaiItem);
+      } else {
+        if (haiVaiItem) compatibleMap.set(haiVaiItem.id, haiVaiItem);
+        if (guocMocItem) compatibleMap.set(guocMocItem.id, guocMocItem);
+        if (guocMocTruyenThongItem) compatibleMap.set(guocMocTruyenThongItem.id, guocMocTruyenThongItem);
+        if (haiTheuItem) compatibleMap.set(haiTheuItem.id, haiTheuItem);
+      }
     }
+  } else if (garmentId === 'ngu_than_chen') {
+    if (effectiveWearer === 'nu') {
+      if (isElegantOrPhoto || isFormal) {
+        if (haiVaiItem) compatibleMap.set(haiVaiItem.id, haiVaiItem);
+        if (haiTheuItem) compatibleMap.set(haiTheuItem.id, haiTheuItem);
+        if (guocMocItem) compatibleMap.set(guocMocItem.id, guocMocItem);
+        if (guocMocTruyenThongItem) compatibleMap.set(guocMocTruyenThongItem.id, guocMocTruyenThongItem);
+      } else {
+        if (haiVaiItem) compatibleMap.set(haiVaiItem.id, haiVaiItem);
+        if (guocMocItem) compatibleMap.set(guocMocItem.id, guocMocItem);
+        if (guocMocTruyenThongItem) compatibleMap.set(guocMocTruyenThongItem.id, guocMocTruyenThongItem);
+        if (haiTheuItem) compatibleMap.set(haiTheuItem.id, haiTheuItem);
+      }
+    } else {
+      if (guocMocItem) compatibleMap.set(guocMocItem.id, guocMocItem);
+      if (guocMocTruyenThongItem) compatibleMap.set(guocMocTruyenThongItem.id, guocMocTruyenThongItem);
+      if (haiVaiItem) compatibleMap.set(haiVaiItem.id, haiVaiItem);
+      if (haiTheuItem) compatibleMap.set(haiTheuItem.id, haiTheuItem);
+    }
+  } else if (garmentId === 'ao_tu_than') {
+    if (guocMocItem) compatibleMap.set(guocMocItem.id, guocMocItem);
+    if (guocMocTruyenThongItem) compatibleMap.set(guocMocTruyenThongItem.id, guocMocTruyenThongItem);
+    if (haiVaiItem) compatibleMap.set(haiVaiItem.id, haiVaiItem);
+  }
 
-    if (allowed) {
-      compatible.push(item);
+  if (guocMocItem) compatibleMap.set(guocMocItem.id, guocMocItem);
+  if (guocMocTruyenThongItem) compatibleMap.set(guocMocTruyenThongItem.id, guocMocTruyenThongItem);
+  if (haiVaiItem) compatibleMap.set(haiVaiItem.id, haiVaiItem);
+  if (haiTheuItem) compatibleMap.set(haiTheuItem.id, haiTheuItem);
+
+  if (effectiveWearer === 'nu' || effectiveWearer === 'neutral') {
+    if ((traditionalRatio <= 60 || isExploration) && muleItem) {
+      compatibleMap.set(muleItem.id, muleItem);
+    }
+    if ((traditionalRatio <= 40 || isExploration) && sandalItem) {
+      compatibleMap.set(sandalItem.id, sandalItem);
     }
   }
 
-  return compatible.length > 0 ? compatible : [FOOTWEAR[0]];
+  if ((explicitSneaker || (isExploration && explorationIntent === 'MORE_REMIXED' && traditionalRatio <= 39)) && sneakerItem) {
+    compatibleMap.set(sneakerItem.id, sneakerItem);
+  }
+
+  if (isExploration || explicitLoaferOxford) {
+    if (loaferItem) compatibleMap.set(loaferItem.id, loaferItem);
+    if (oxfordItem) compatibleMap.set(oxfordItem.id, oxfordItem);
+  }
+
+  const result = Array.from(compatibleMap.values());
+  return result.length > 0 ? result : [guocMocItem || FOOTWEAR[0]];
 }
 
 /**

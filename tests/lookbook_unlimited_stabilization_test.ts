@@ -12,7 +12,8 @@ import {
   sanitizeBlueprintWithPolicy
 } from '../server/services/culturalPolicyService';
 import {
-  compileVisualPrompt
+  compileVisualPrompt,
+  FOOTWEAR_VISUAL_MAP
 } from '../server/services/visualPromptCompiler';
 import {
   getFabricLabel,
@@ -1256,6 +1257,343 @@ runTest('73. Actual fetch/network failure maps to connectivity message', () => {
   const msg = isNetworkError ? 'Không thể kết nối đến máy chủ. Vui lòng kiểm tra kết nối và thử lại.' : '';
   if (!msg.includes('Không thể kết nối đến máy chủ')) {
     throw new Error('Network error must map to connectivity message');
+  }
+});
+
+// 74. getPolicyCompatibleFootwear handles traditional footwear filtering correctly
+runTest('74. getPolicyCompatibleFootwear handles traditional footwear filtering correctly', () => {
+  const allowed = getPolicyCompatibleFootwear({
+    garmentId: 'ao_tac',
+    wearer: 'nu',
+    traditionalRatio: 80,
+    flowMode: 'ROOT',
+    occasion: 'trang_trong',
+    promptText: ''
+  });
+  if (!allowed.some(f => f.id === 'hai_theu_truyen_thong')) {
+    throw new Error('Must include hai_theu_truyen_thong for formal female ao_tac');
+  }
+});
+
+// 75. hai_vai_truyen_thong is recognized in catalog and sanitizer
+runTest('75. hai_vai_truyen_thong is recognized in catalog and sanitizer', () => {
+  const label = getFootwearLabel('hai_vai_truyen_thong');
+  if (label !== 'Hài vải truyền thống') {
+    throw new Error('hai_vai_truyen_thong label incorrect');
+  }
+});
+
+// 76. hai_theu_truyen_thong is recognized in catalog and sanitizer
+runTest('76. hai_theu_truyen_thong is recognized in catalog and sanitizer', () => {
+  const label = getFootwearLabel('hai_theu_truyen_thong');
+  if (label !== 'Hài thêu truyền thống') {
+    throw new Error('hai_theu_truyen_thong label incorrect');
+  }
+});
+
+// 77. Female formal Áo tấc ROOT exposes hai_theu_truyen_thong
+runTest('77. Female formal Áo tấc ROOT exposes hai_theu_truyen_thong', () => {
+  const allowed = getPolicyCompatibleFootwear({
+    garmentId: 'ao_tac',
+    wearer: 'nu',
+    traditionalRatio: 80,
+    flowMode: 'ROOT',
+    occasion: 'trang_trong',
+    promptText: 'lễ tết trang trọng'
+  });
+  if (!allowed.some(f => f.id === 'hai_theu_truyen_thong')) {
+    throw new Error('Female formal ao_tac ROOT must expose hai_theu_truyen_thong');
+  }
+});
+
+// 78. Female formal Áo tấc prioritizes hai_theu_truyen_thong above guốc
+runTest('78. Female formal Áo tấc prioritizes hai_theu_truyen_thong above guốc', () => {
+  const allowed = getPolicyCompatibleFootwear({
+    garmentId: 'ao_tac',
+    wearer: 'nu',
+    traditionalRatio: 90,
+    flowMode: 'ROOT',
+    occasion: 'nghi_le',
+    promptText: ''
+  });
+  if (allowed[0]?.id !== 'hai_theu_truyen_thong') {
+    throw new Error('Female formal ao_tac must prioritize hai_theu_truyen_thong as first choice');
+  }
+});
+
+// 79. Male formal Áo tấc allows hai_theu_truyen_thong
+runTest('79. Male formal Áo tấc allows hai_theu_truyen_thong', () => {
+  const allowed = getPolicyCompatibleFootwear({
+    garmentId: 'ao_tac',
+    wearer: 'nam',
+    traditionalRatio: 90,
+    flowMode: 'ROOT',
+    occasion: 'trang_trong',
+    promptText: ''
+  });
+  if (!allowed.some(f => f.id === 'hai_theu_truyen_thong')) {
+    throw new Error('Male formal ao_tac must allow hai_theu_truyen_thong');
+  }
+});
+
+// 80. Female Ngũ thân ROOT allows hai_vai_truyen_thong
+runTest('80. Female Ngũ thân ROOT allows hai_vai_truyen_thong', () => {
+  const allowed = getPolicyCompatibleFootwear({
+    garmentId: 'ngu_than_chen',
+    wearer: 'nu',
+    traditionalRatio: 75,
+    flowMode: 'ROOT',
+    occasion: 'thanh_lich',
+    promptText: 'thanh lịch'
+  });
+  if (!allowed.some(f => f.id === 'hai_vai_truyen_thong')) {
+    throw new Error('Female ngu_than ROOT must allow hai_vai_truyen_thong');
+  }
+});
+
+// 81. Female Ngũ thân is not forced to guoc_moc
+runTest('81. Female Ngũ thân is not forced to guoc_moc', () => {
+  const allowed = getPolicyCompatibleFootwear({
+    garmentId: 'ngu_than_chen',
+    wearer: 'nu',
+    traditionalRatio: 70,
+    flowMode: 'ROOT',
+    occasion: 'chup_anh',
+    promptText: 'chụp ảnh kỷ niệm'
+  });
+  if (allowed[0]?.id === 'guoc_moc' && allowed.some(f => f.id === 'hai_vai_truyen_thong')) {
+    throw new Error('Female ngu_than should not force guoc_moc as sole preferred default');
+  }
+});
+
+// 82. Áo tứ thân ROOT continues to prioritize guoc_moc
+runTest('82. Áo tứ thân ROOT continues to prioritize guoc_moc', () => {
+  const allowed = getPolicyCompatibleFootwear({
+    garmentId: 'ao_tu_than',
+    wearer: 'nu',
+    traditionalRatio: 90,
+    flowMode: 'ROOT',
+    occasion: 'tet_temple',
+    promptText: ''
+  });
+  if (allowed[0]?.id !== 'guoc_moc') {
+    throw new Error('Ao tu than ROOT must prioritize guoc_moc');
+  }
+});
+
+// 83. Western dress shoes remain blocked from all ROOT flows
+runTest('83. Western dress shoes remain blocked from all ROOT flows', () => {
+  const allowed = getPolicyCompatibleFootwear({
+    garmentId: 'ao_tac',
+    wearer: 'nam',
+    traditionalRatio: 50,
+    flowMode: 'ROOT',
+    promptText: 'hiện đại hơn'
+  });
+  if (allowed.some(f => f.id === 'leather_loafer' || f.id === 'classic_oxford')) {
+    throw new Error('Western shoes must remain blocked in ROOT flows');
+  }
+});
+
+// 84. Female formal Áo tấc ROOT exposes hai_theu_truyen_thong
+runTest('84. Female formal Áo tấc ROOT exposes hai_theu_truyen_thong', () => {
+  const allowed = getPolicyCompatibleFootwear({
+    garmentId: 'ao_tac',
+    wearer: 'nu',
+    traditionalRatio: 80,
+    flowMode: 'ROOT',
+    occasion: 'trang_trong',
+    promptText: 'lễ tết trang trọng'
+  });
+  if (!allowed.some(f => f.id === 'hai_theu_truyen_thong')) {
+    throw new Error('Female formal ao_tac ROOT must expose hai_theu_truyen_thong');
+  }
+});
+
+// 85. Female formal Áo tấc prioritizes hai_theu_truyen_thong above guốc
+runTest('85. Female formal Áo tấc prioritizes hai_theu_truyen_thong above guốc', () => {
+  const allowed = getPolicyCompatibleFootwear({
+    garmentId: 'ao_tac',
+    wearer: 'nu',
+    traditionalRatio: 90,
+    flowMode: 'ROOT',
+    occasion: 'nghi_le',
+    promptText: ''
+  });
+  if (allowed[0]?.id !== 'hai_theu_truyen_thong') {
+    throw new Error('Female formal ao_tac must prioritize hai_theu_truyen_thong as first choice');
+  }
+});
+
+// 86. Male formal Áo tấc allows hai_theu_truyen_thong
+runTest('86. Male formal Áo tấc allows hai_theu_truyen_thong', () => {
+  const allowed = getPolicyCompatibleFootwear({
+    garmentId: 'ao_tac',
+    wearer: 'nam',
+    traditionalRatio: 90,
+    flowMode: 'ROOT',
+    occasion: 'trang_trong',
+    promptText: ''
+  });
+  if (!allowed.some(f => f.id === 'hai_theu_truyen_thong')) {
+    throw new Error('Male formal ao_tac must allow hai_theu_truyen_thong');
+  }
+});
+
+// 87. Female Ngũ thân ROOT allows hai_vai_truyen_thong
+runTest('87. Female Ngũ thân ROOT allows hai_vai_truyen_thong', () => {
+  const allowed = getPolicyCompatibleFootwear({
+    garmentId: 'ngu_than_chen',
+    wearer: 'nu',
+    traditionalRatio: 75,
+    flowMode: 'ROOT',
+    occasion: 'thanh_lich',
+    promptText: 'thanh lịch'
+  });
+  if (!allowed.some(f => f.id === 'hai_vai_truyen_thong')) {
+    throw new Error('Female ngu_than ROOT must allow hai_vai_truyen_thong');
+  }
+});
+
+// 88. Female Ngũ thân is not forced to guoc_moc
+runTest('88. Female Ngũ thân is not forced to guoc_moc', () => {
+  const allowed = getPolicyCompatibleFootwear({
+    garmentId: 'ngu_than_chen',
+    wearer: 'nu',
+    traditionalRatio: 70,
+    flowMode: 'ROOT',
+    occasion: 'chup_anh',
+    promptText: 'chụp ảnh kỷ niệm'
+  });
+  if (allowed[0]?.id === 'guoc_moc' && allowed.some(f => f.id === 'hai_vai_truyen_thong')) {
+    throw new Error('Female ngu_than should not force guoc_moc as sole preferred default');
+  }
+});
+
+// 89. Áo tứ thân ROOT continues to prioritize guoc_moc
+runTest('89. Áo tứ thân ROOT continues to prioritize guoc_moc', () => {
+  const allowed = getPolicyCompatibleFootwear({
+    garmentId: 'ao_tu_than',
+    wearer: 'nu',
+    traditionalRatio: 90,
+    flowMode: 'ROOT',
+    occasion: 'tet_temple',
+    promptText: ''
+  });
+  if (allowed[0]?.id !== 'guoc_moc') {
+    throw new Error('Ao tu than ROOT must prioritize guoc_moc');
+  }
+});
+
+// 90. Western dress shoes remain blocked from all ROOT flows
+runTest('90. Western dress shoes remain blocked from all ROOT flows', () => {
+  const allowed = getPolicyCompatibleFootwear({
+    garmentId: 'ao_tac',
+    wearer: 'nam',
+    traditionalRatio: 50,
+    flowMode: 'ROOT',
+    promptText: 'hiện đại hơn'
+  });
+  if (allowed.some(f => f.id === 'leather_loafer' || f.id === 'classic_oxford')) {
+    throw new Error('Western shoes must remain blocked in ROOT flows');
+  }
+});
+
+// 91. Female Áo tấc sanitizer replaces unauthorized Loafer with hai_theu_truyen_thong
+runTest('91. Female Áo tấc sanitizer replaces unauthorized Loafer with hai_theu_truyen_thong', () => {
+  const allowed = getPolicyCompatibleFootwear({
+    garmentId: 'ao_tac',
+    wearer: 'nu',
+    traditionalRatio: 85,
+    flowMode: 'ROOT',
+    occasion: 'trang_trong',
+    promptText: ''
+  });
+  const fallback = allowed[0]?.id;
+  if (fallback !== 'hai_theu_truyen_thong') {
+    throw new Error('Sanitizer fallback for female formal ao_tac must be hai_theu_truyen_thong');
+  }
+});
+
+// 92. hai_vai_truyen_thong has dedicated visual mapping
+runTest('92. hai_vai_truyen_thong has dedicated visual mapping', () => {
+  const mapped = FOOTWEAR_VISUAL_MAP['hai_vai_truyen_thong'];
+  if (!mapped || !mapped.includes('traditional Vietnamese cloth shoes')) {
+    throw new Error('hai_vai_truyen_thong missing dedicated visual mapping');
+  }
+});
+
+// 93. hai_theu_truyen_thong has dedicated visual mapping
+runTest('93. hai_theu_truyen_thong has dedicated visual mapping', () => {
+  const mapped = FOOTWEAR_VISUAL_MAP['hai_theu_truyen_thong'];
+  if (!mapped || !mapped.includes('embroidered ceremonial shoes')) {
+    throw new Error('hai_theu_truyen_thong missing dedicated visual mapping');
+  }
+});
+
+// 94. New footwear mappings contain no Western morphology
+runTest('94. New footwear mappings contain no Western morphology', () => {
+  const m1 = FOOTWEAR_VISUAL_MAP['hai_vai_truyen_thong'];
+  const m2 = FOOTWEAR_VISUAL_MAP['hai_theu_truyen_thong'];
+  if (!m1.includes('cloth shoes') || !m2.includes('embroidered ceremonial shoes')) {
+    throw new Error('New footwear mappings must be traditional cloth/embroidered shoes');
+  }
+});
+
+// 95. Hài thêu prompt contains no unsupported imperial/fantasy motif
+runTest('95. Hài thêu prompt contains no unsupported imperial/fantasy motif', () => {
+  const m = FOOTWEAR_VISUAL_MAP['hai_theu_truyen_thong'];
+  if (!m.includes('restrained hand-embroidered detailing')) {
+    throw new Error('Hài thêu prompt must have restrained hand-embroidered detailing without fantasy motifs');
+  }
+});
+
+// 96. Guốc mapping rejects Japanese geta morphology
+runTest('96. Guốc mapping rejects Japanese geta morphology', () => {
+  const m = FOOTWEAR_VISUAL_MAP['guoc_moc'];
+  if (!m.includes('Reject: Japanese geta')) {
+    throw new Error('Guốc mapping must explicitly reject Japanese geta morphology');
+  }
+});
+
+// 97. Fresh female formal Áo tấc selects hai_theu_truyen_thong
+runTest('97. Fresh female formal Áo tấc selects hai_theu_truyen_thong', () => {
+  const allowed = getPolicyCompatibleFootwear({
+    garmentId: 'ao_tac',
+    wearer: 'nu',
+    traditionalRatio: 90,
+    flowMode: 'ROOT',
+    occasion: 'trang_trong'
+  });
+  if (allowed[0]?.id !== 'hai_theu_truyen_thong') {
+    throw new Error('Fresh female formal ao_tac must select hai_theu_truyen_thong');
+  }
+});
+
+// 98. Fresh female Ngũ thân can select hai_vai_truyen_thong
+runTest('98. Fresh female Ngũ thân can select hai_vai_truyen_thong', () => {
+  const allowed = getPolicyCompatibleFootwear({
+    garmentId: 'ngu_than_chen',
+    wearer: 'nu',
+    traditionalRatio: 75,
+    flowMode: 'ROOT',
+    occasion: 'thanh_lich'
+  });
+  if (!allowed.some(f => f.id === 'hai_vai_truyen_thong')) {
+    throw new Error('Fresh female ngu_than must be able to select hai_vai_truyen_thong');
+  }
+});
+
+// 99. Fresh Áo tứ thân keeps guốc as preferred folk footwear
+runTest('99. Fresh Áo tứ thân keeps guốc as preferred folk footwear', () => {
+  const allowed = getPolicyCompatibleFootwear({
+    garmentId: 'ao_tu_than',
+    wearer: 'nu',
+    traditionalRatio: 85,
+    flowMode: 'ROOT'
+  });
+  if (allowed[0]?.id !== 'guoc_moc') {
+    throw new Error('Fresh ao_tu_than must keep guoc as preferred folk footwear');
   }
 });
 

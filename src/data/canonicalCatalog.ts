@@ -57,6 +57,8 @@ export const FOOTWEAR: CatalogItem[] = [
   { id: 'leather_loafer', label: 'Loafer da tối giản' },
   { id: 'guoc_moc', label: 'Guốc mộc' },
   { id: 'guoc_moc_truyen_thong', label: 'Guốc mộc' },
+  { id: 'hai_vai_truyen_thong', label: 'Hài vải truyền thống' },
+  { id: 'hai_theu_truyen_thong', label: 'Hài thêu truyền thống' },
   { id: 'chunky_sneaker', label: 'Giày sneaker đế thô' },
   { id: 'classic_oxford', label: 'Giày da Oxford cổ điển' },
   { id: 'mule_minimalist', label: 'Dép mule gót thấp' },
@@ -96,6 +98,8 @@ export function getLowerGarmentLabel(id: string): string {
 export function getFootwearLabel(id: string): string {
   if (id === 'leather_loafer') return 'Loafer da tối giản';
   if (id === 'guoc_moc' || id === 'guoc_moc_truyen_thong') return 'Guốc mộc';
+  if (id === 'hai_vai_truyen_thong') return 'Hài vải truyền thống';
+  if (id === 'hai_theu_truyen_thong') return 'Hài thêu truyền thống';
   return FOOTWEAR.find(f => f.id === id)?.label || id;
 }
 
