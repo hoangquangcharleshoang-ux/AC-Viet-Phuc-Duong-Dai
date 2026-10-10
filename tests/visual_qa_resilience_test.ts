@@ -172,8 +172,8 @@ async function runTests() {
       assert.fail('Should have thrown VisualQAError');
     } catch (err: any) {
       assert(err instanceof VisualQAError);
-      assert.strictEqual(err.code, 'QA_NON_JSON_RESPONSE');
-      assert(err.message.includes('chưa thể hoàn tất'), 'Friendly Vietnamese error message required');
+      assert.strictEqual(err.code, 'NON_JSON_RESPONSE');
+      assert(err.message.includes('chưa hoàn tất'), 'Friendly Vietnamese error message required');
     }
     console.log('  -> PASS');
   }

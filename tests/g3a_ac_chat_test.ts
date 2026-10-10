@@ -196,7 +196,7 @@ async function runTestSuite() {
   // TEST 8 — Explicit-only assistant guard
   // ----------------------------------------------------
   const t8Pass =
-    AC_CHAT_SYSTEM_INSTRUCTION.includes('Vòng chuỗi ngọc trai và quạt cầm tay: Thuộc diện EXPLICIT_ONLY') &&
+    AC_CHAT_SYSTEM_INSTRUCTION.includes('Vòng chuỗi ngọc trai và quạt cầm tay: Thuộc diện chỉ dùng khi người dùng yêu cầu rõ') &&
     AC_CHAT_SYSTEM_INSTRUCTION.includes('Trợ lý KHÔNG TỰ ĐỘNG gợi ý chúng nếu người dùng không chủ động nhắc đến') &&
     chatServiceTs.includes('Trợ lý TUYỆT ĐỐI KHÔNG tự động gợi ý vòng ngọc trai hay quạt cầm tay');
 

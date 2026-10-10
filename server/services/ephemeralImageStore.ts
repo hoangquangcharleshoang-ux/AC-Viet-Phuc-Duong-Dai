@@ -56,11 +56,6 @@ export class MemoryEphemeralImageStore implements EphemeralImageStore {
   public async get(generationId: string): Promise<EphemeralImageRecord | null> {
     const record = this.records.get(generationId);
     if (!record) return null;
-
-    if (Date.now() > record.expiresAt) {
-      await this.delete(generationId);
-      return null;
-    }
     return record;
   }
 
@@ -80,13 +75,7 @@ export class MemoryEphemeralImageStore implements EphemeralImageStore {
   }
 
   public purgeExpired(): void {
-    const now = Date.now();
-    for (const [genId, rec] of this.records.entries()) {
-      if (now > rec.expiresAt) {
-        this.fingerprintIndex.delete(rec.outfitFingerprint);
-        this.records.delete(genId);
-      }
-    }
+    // Non-auto-expiration requirement: active lookbook records do not expire by time.
   }
 
   public createRecord(
@@ -106,7 +95,7 @@ export class MemoryEphemeralImageStore implements EphemeralImageStore {
       bytes,
       mimeType,
       createdAt: now,
-      expiresAt: now + this.defaultTtlMs,
+      expiresAt: Number.MAX_SAFE_INTEGER,
       effectiveBlueprintSnapshot: snapshot,
       revisionIndex: typeof revisionIndex === 'number' ? revisionIndex : 0,
       parentGenerationId

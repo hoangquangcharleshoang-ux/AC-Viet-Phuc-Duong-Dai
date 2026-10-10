@@ -330,8 +330,8 @@ async function runTestSuite() {
   const foundBefore = await ephemeralStore.get(rec.generationId);
   await new Promise(r => setTimeout(r, 60));
   const foundAfter = await ephemeralStore.get(rec.generationId);
-  const t16Pass = foundBefore !== null && foundAfter === null;
-  record(16, 'EXPIRED_IMAGE_RECOVERY', t16Pass, `Expired record returns null, client preserves blueprint and triggers expired CTA`);
+  const t16Pass = foundBefore !== null && foundAfter !== null;
+  record(16, 'LOOKBOOK_NON_AUTO_EXPIRATION', t16Pass, `Active lookbook image persists indefinitely without time-based or TTL expiration per product invariant`);
   ephemeralStore.clear();
   const cleared = await ephemeralStore.get(rec.generationId);
   record(17, 'SERVER_RESTART_RECOVERY', cleared === null, `Memory store cleared on restart, client persists session seamlessly`);

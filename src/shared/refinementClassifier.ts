@@ -53,8 +53,12 @@ export function classifyRefinementInput(
   let sleeveContradiction = false;
   let sleeveReason = '';
   if (garmentId === 'ngu_than_chen') {
-    // Áo ngũ thân tay chẽn must preserve tay chẽn
-    if (/(tay\s*thụng|tay\s*rộng|xóa\s*tay\s*chẽn|bỏ\s*tay\s*chẽn|mở\s*rộng\s*ống\s*tay|chuyển\s*thành\s*tay\s*thụng|thành\s*tay\s*thụng)/i.test(lower)) {
+    // Áo ngũ thân tay chẽn must preserve tay chẽn unless explicitly converted to tay thụng or deleted
+    const wantsWideSleeves = /(tay\s*thụng|tay\s*rộng|chuyển\s*thành\s*tay\s*thụng|thành\s*tay\s*thụng)/i.test(lower);
+    const explicitlyDeletesTayChen = /(xóa\s*tay\s*chẽn|bỏ\s*tay\s*chẽn)/i.test(lower);
+    const preservesTayChen = /(không\s*(được\s*)?xóa\s*tay\s*chẽn|giữ\s*(nguyên\s*)?tay\s*chẽn|bảo\s*toàn\s*tay\s*chẽn|không\s*bỏ\s*tay\s*chẽn)/i.test(lower);
+
+    if ((wantsWideSleeves || explicitlyDeletesTayChen) && !preservesTayChen) {
       sleeveContradiction = true;
       sleeveReason = 'Yêu cầu mở rộng hoặc chuyển sang tay thụng xung đột với kết cấu Áo ngũ thân tay chẽn.';
     }

@@ -466,14 +466,14 @@ export function getPolicyCompatibleFootwear(params: PolicyFilterParams): Catalog
     } else {
       if (isFormal) {
         if (haiTheuItem) compatibleMap.set(haiTheuItem.id, haiTheuItem);
+        if (haiVaiItem) compatibleMap.set(haiVaiItem.id, haiVaiItem);
         if (guocMocTruyenThongItem) compatibleMap.set(guocMocTruyenThongItem.id, guocMocTruyenThongItem);
         if (guocMocItem) compatibleMap.set(guocMocItem.id, guocMocItem);
-        if (haiVaiItem) compatibleMap.set(haiVaiItem.id, haiVaiItem);
       } else {
         if (haiVaiItem) compatibleMap.set(haiVaiItem.id, haiVaiItem);
+        if (haiTheuItem) compatibleMap.set(haiTheuItem.id, haiTheuItem);
         if (guocMocItem) compatibleMap.set(guocMocItem.id, guocMocItem);
         if (guocMocTruyenThongItem) compatibleMap.set(guocMocTruyenThongItem.id, guocMocTruyenThongItem);
-        if (haiTheuItem) compatibleMap.set(haiTheuItem.id, haiTheuItem);
       }
     }
   } else if (garmentId === 'ngu_than_chen') {
@@ -484,9 +484,9 @@ export function getPolicyCompatibleFootwear(params: PolicyFilterParams): Catalog
         if (guocMocItem) compatibleMap.set(guocMocItem.id, guocMocItem);
         if (guocMocTruyenThongItem) compatibleMap.set(guocMocTruyenThongItem.id, guocMocTruyenThongItem);
       } else {
-        if (haiVaiItem) compatibleMap.set(haiVaiItem.id, haiVaiItem);
         if (guocMocItem) compatibleMap.set(guocMocItem.id, guocMocItem);
         if (guocMocTruyenThongItem) compatibleMap.set(guocMocTruyenThongItem.id, guocMocTruyenThongItem);
+        if (haiVaiItem) compatibleMap.set(haiVaiItem.id, haiVaiItem);
         if (haiTheuItem) compatibleMap.set(haiTheuItem.id, haiTheuItem);
       }
     } else {
@@ -499,6 +499,7 @@ export function getPolicyCompatibleFootwear(params: PolicyFilterParams): Catalog
     if (guocMocItem) compatibleMap.set(guocMocItem.id, guocMocItem);
     if (guocMocTruyenThongItem) compatibleMap.set(guocMocTruyenThongItem.id, guocMocTruyenThongItem);
     if (haiVaiItem) compatibleMap.set(haiVaiItem.id, haiVaiItem);
+    if (haiTheuItem) compatibleMap.set(haiTheuItem.id, haiTheuItem);
   }
 
   if (guocMocItem) compatibleMap.set(guocMocItem.id, guocMocItem);

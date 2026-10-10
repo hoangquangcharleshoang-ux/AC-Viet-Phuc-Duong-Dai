@@ -1416,8 +1416,7 @@ export default function App() {
         setIsIdleWarningOpen(false);
       },
       onTriggerReset: () => {
-        console.log('[IdleSessionManager] Triggering canonical session reset due to 15m inactivity');
-        handleConfirmReset();
+        console.log('[IdleSessionManager] Inactivity threshold reached; preserving lookbook image per non-auto-expiration requirement.');
       },
       isWorkInFlight
     });

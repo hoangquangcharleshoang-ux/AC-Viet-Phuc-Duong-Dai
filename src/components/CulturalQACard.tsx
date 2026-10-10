@@ -355,6 +355,7 @@ export const CulturalQACard: React.FC<CulturalQACardProps> = ({
                       <Sparkles className="w-5 h-5 text-[#C26715]" />
                     </div>
                     <div className="space-y-1">
+                      {/* KẾT QUẢ ĐÁNH GIÁ BẢN PHỐI */}
                       <div className="flex flex-wrap items-center gap-2">
                         <span className="text-xs font-bold text-stone-900 tracking-tight">
                           AC đánh giá bản phối · Đối chiếu đặc trưng Việt phục

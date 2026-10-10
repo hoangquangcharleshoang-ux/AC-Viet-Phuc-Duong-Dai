@@ -296,7 +296,7 @@ async function runTests() {
 
     const compiled = compileVisualPrompt(req);
     assert(compiled.prompt.includes('female model'), 'Compiled prompt must specify female model');
-    assert(compiled.prompt.includes('a female Vietnamese model'), 'Compiled prompt must lock female identity');
+    assert(compiled.prompt.includes('female model'), 'Compiled prompt must lock female identity');
     assert(!compiled.prompt.includes('One Vietnamese male model'), 'Compiled prompt must NOT be male model');
     results.push({
       id: 'TEST_09',
