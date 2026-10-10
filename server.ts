@@ -540,10 +540,14 @@ import {
 } from './server/services/visualQAAggregator';
 import {
   validateAndEnforceRecommendationPolicy,
+  getPolicyCompatibleFabrics,
+  getPolicyCompatibleLowerGarments,
+  getPolicyCompatibleFootwear,
   getPolicyCompatibleAccessories,
   isFanRequestedExplicitly,
   isPearlRequestedExplicitly,
-  extractContextPropsFromPrompt
+  extractContextPropsFromPrompt,
+  PolicyFilterParams
 } from './server/services/culturalPolicyService';
 import {
   buildACChatGroundingContext,
@@ -798,20 +802,26 @@ app.post('/api/generate-blueprint', async (req, res) => {
     });
     const isConsumerActive = () => !clientDisconnected;
     const result = await dedupeServerCall(cacheKey, async (isTaskCurrent) => {
-      const compatibleAccessories = getPolicyCompatibleAccessories({
+      const policyParams: PolicyFilterParams = {
         garmentId: selectedGarmentId,
         wearer: effectiveGender,
         occasion: selectedOccasion,
         style: selectedStyle,
         traditionalRatio: effectiveRatio,
-        promptText
-      });
+        promptText,
+        flowMode: 'ROOT'
+      };
+
+      const compatibleFabrics = getPolicyCompatibleFabrics(policyParams);
+      const compatibleLowerGarments = getPolicyCompatibleLowerGarments(policyParams);
+      const compatibleFootwear = getPolicyCompatibleFootwear(policyParams);
+      const compatibleAccessories = getPolicyCompatibleAccessories(policyParams);
 
       const catalogContext = {
         PALETTES: PALETTES.map(p => ({ id: p.id, hex: p.hex, name: p.name })),
-        FABRICS: FABRICS.map(f => ({ id: f.id, label: f.label })),
-        LOWER_GARMENTS: LOWER_GARMENTS.map(l => ({ id: l.id, label: l.label })),
-        FOOTWEAR: FOOTWEAR.map(f => ({ id: f.id, label: f.label })),
+        FABRICS: compatibleFabrics.map(f => ({ id: f.id, label: f.label })),
+        LOWER_GARMENTS: compatibleLowerGarments.map(l => ({ id: l.id, label: l.label })),
+        FOOTWEAR: compatibleFootwear.map(f => ({ id: f.id, label: f.label })),
         ACCESSORIES: compatibleAccessories.map(a => ({ id: a.id, label: a.label }))
       };
 
@@ -1022,22 +1032,27 @@ app.post('/api/generate-exploration', async (req, res) => {
         const effectiveExpGender: GenderPresentation = context?.genderPresentation || parentBlueprint?.wearerGender || 'nam';
         const effectiveExpRatio = typeof context?.traditionalRatio === 'number' ? context.traditionalRatio : 50;
 
-        const compatibleAccessories = getPolicyCompatibleAccessories({
+        const policyParams: PolicyFilterParams = {
           garmentId: selectedGarmentId,
           wearer: effectiveExpGender,
           occasion: context?.selectedOccasion,
           style: context?.selectedStyle,
           traditionalRatio: effectiveExpRatio,
           promptText: context?.promptText,
-          isExploration: true,
+          flowMode: 'EXPLORATION',
           explorationIntent
-        });
+        };
+
+        const compatibleFabrics = getPolicyCompatibleFabrics(policyParams);
+        const compatibleLowerGarments = getPolicyCompatibleLowerGarments(policyParams);
+        const compatibleFootwear = getPolicyCompatibleFootwear(policyParams);
+        const compatibleAccessories = getPolicyCompatibleAccessories(policyParams);
 
         const catalogContext = {
           PALETTES: PALETTES.map(p => ({ id: p.id, hex: p.hex, name: p.name })),
-          FABRICS: FABRICS.map(f => ({ id: f.id, label: f.label })),
-          LOWER_GARMENTS: LOWER_GARMENTS.map(l => ({ id: l.id, label: l.label })),
-          FOOTWEAR: FOOTWEAR.map(f => ({ id: f.id, label: f.label })),
+          FABRICS: compatibleFabrics.map(f => ({ id: f.id, label: f.label })),
+          LOWER_GARMENTS: compatibleLowerGarments.map(l => ({ id: l.id, label: l.label })),
+          FOOTWEAR: compatibleFootwear.map(f => ({ id: f.id, label: f.label })),
           ACCESSORIES: compatibleAccessories.map(a => ({ id: a.id, label: a.label }))
         };
 
@@ -1210,10 +1225,10 @@ app.post('/api/generate-lookbook', async (req, res) => {
     });
   }
   const isRevision = typeof revisionIndex === 'number' && revisionIndex > 0;
-  if (typeof revisionIndex === 'number' && revisionIndex > 2) {
+  if (typeof revisionIndex === 'number' && (!Number.isInteger(revisionIndex) || revisionIndex < 0)) {
     return res.status(400).json({
-      code: 'REVISION_LIMIT_EXCEEDED',
-      message: 'Hệ thống giới hạn tối đa 2 lần tinh chỉnh theo thẩm định (v1, v2) cho mỗi luồng trang phục.'
+      code: 'INVALID_REVISION_INDEX',
+      message: 'Lượt tinh chỉnh phải là số nguyên lớn hơn hoặc bằng 0.'
     });
   }
   const effectiveForceRegenerate = forceRegenerate || isRevision;
@@ -1885,7 +1900,7 @@ function getDeterministicGarmentRecommendation(
       return {
         primary: {
           garmentId: 'ngu_than_chen' as const,
-          rationale: 'Áo ngũ thân tay chẽn tối ưu cho sự năng động và thoải mái trong ngày vui, giữ trọn nét thanh lịch cổ truyền.'
+          rationale: 'Áo ngũ thân tay chẽn tạo sự năng động và thoải mái trong ngày vui, giữ trọn nét thanh lịch cổ truyền.'
         },
         alternative: {
           garmentId: 'ao_tac' as const,
@@ -1913,7 +1928,7 @@ function getDeterministicGarmentRecommendation(
       return {
         primary: {
           garmentId: 'ao_tu_than' as const,
-          rationale: 'Áo tứ thân mang đậm nét duyên dáng dân gian Bắc Bộ, mềm mại và rạng rỡ cho các khung hình kỷ niệm hoặc ngày hội hè.'
+          rationale: 'Áo tứ thân mang đậm đường nét dân gian Bắc Bộ, mềm mại và rạng rỡ cho các khung hình kỷ niệm hoặc ngày hội hè.'
         },
         alternative: {
           garmentId: 'ngu_than_chen' as const,
@@ -2056,7 +2071,7 @@ function getDeterministicBlueprint(
     if (isTraditionalHigh || occ.includes('tet') || occ.includes('dam_cuoi')) {
       fabricId = 'gam_hoa_chim';
       lowerGarmentId = 'silk_pants_wide';
-      footwearId = 'classic_oxford';
+      footwearId = 'guoc_moc_truyen_thong';
       const hasFan = isFanRequestedExplicitly(p);
       accessoryIds = isNoAccessories ? [] : (hasFan ? ['khan_dong_truyen_thong', 'quat_giay_tram_huong'] : ['khan_dong_truyen_thong']);
       contextCautions.push(
@@ -2267,35 +2282,42 @@ function sanitizeBlueprintOutput(
   }
   const enrichedPalette = buildEnrichedPalette(rawPalette.slice(0, 3), promptText || '');
 
-  // Validate fabricId
-  let fabricId = proposal.fabricId;
-  if (!FABRICS.some(f => f.id === fabricId)) {
-    fabricId = FABRICS[0].id;
-  }
-
-  // Validate lowerGarmentId
-  let lowerGarmentId = proposal.lowerGarmentId;
-  if (!LOWER_GARMENTS.some(l => l.id === lowerGarmentId)) {
-    lowerGarmentId = LOWER_GARMENTS[0].id;
-  }
-
-  // Validate footwearId (Strictly single footwear from FOOTWEAR)
-  let footwearId = proposal.footwearId;
-  if (!FOOTWEAR.some(f => f.id === footwearId)) {
-    footwearId = FOOTWEAR[0].id;
-  }
-
-  // Determine allowed accessories based on Cultural Product Rules v1.1 policy
+  // Determine policy-compatible candidates
   const effectiveRatio = typeof policyContext?.traditionalRatio === 'number' ? policyContext.traditionalRatio : 50;
-  const allowedAccessories = getPolicyCompatibleAccessories({
+  const policyParams: PolicyFilterParams = {
     garmentId: garmentId as GarmentId,
     wearer: policyContext?.wearer || 'nam',
     occasion: policyContext?.occasion,
     style: policyContext?.style,
     traditionalRatio: effectiveRatio,
     promptText,
+    flowMode: policyContext?.explorationIntent ? 'EXPLORATION' : 'ROOT',
     explorationIntent: policyContext?.explorationIntent
-  });
+  };
+
+  const allowedFabrics = getPolicyCompatibleFabrics(policyParams);
+  const allowedLowerGarments = getPolicyCompatibleLowerGarments(policyParams);
+  const allowedFootwear = getPolicyCompatibleFootwear(policyParams);
+  const allowedAccessories = getPolicyCompatibleAccessories(policyParams);
+
+  // Validate fabricId
+  let fabricId = proposal.fabricId;
+  if (!allowedFabrics.some(f => f.id === fabricId)) {
+    fabricId = allowedFabrics[0]?.id || (garmentId === 'ao_tac' ? 'gam_hoa_chim' : garmentId === 'ao_tu_than' ? 'dui_moc_tu_nhien' : 'to_tam_ha_dong');
+  }
+
+  // Validate lowerGarmentId
+  let lowerGarmentId = proposal.lowerGarmentId;
+  if (!allowedLowerGarments.some(l => l.id === lowerGarmentId)) {
+    lowerGarmentId = allowedLowerGarments[0]?.id || (garmentId === 'ao_tu_than' ? 'vay_dup_den' : 'silk_pants_wide');
+  }
+
+  // Validate footwearId (Strictly single footwear from FOOTWEAR)
+  let footwearId = proposal.footwearId;
+  if (!allowedFootwear.some(f => f.id === footwearId)) {
+    footwearId = allowedFootwear[0]?.id || (garmentId === 'ao_tu_than' ? 'guoc_moc' : 'guoc_moc_truyen_thong');
+  }
+
   const allowedIds = new Set(allowedAccessories.map(a => a.id));
 
   // Validate accessoryIds (Strictly 0 to 2 accessories, never footwear, strictly policy-compatible)

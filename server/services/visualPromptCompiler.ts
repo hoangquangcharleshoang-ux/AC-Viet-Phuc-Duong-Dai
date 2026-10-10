@@ -30,18 +30,19 @@ export interface CompiledVisualPrompt {
 }
 
 // 1. Visual Material Descriptions (Canonical ID -> Visual Prompt Representation)
-const FABRIC_VISUAL_MAP: Record<string, string> = {
+export const FABRIC_VISUAL_MAP: Record<string, string> = {
+  natural_matte_silk_linen: 'natural silk, đũi, or linen-family textile with a refined matte surface, subtle organic weave, gentle natural texture, and soft-to-moderate vertical drape',
   to_tam_ha_dong: 'traditional handwoven Ha Dong mulberry silk with a refined natural luster and fluid graceful drape',
   gam_hoa_chim: 'structured traditional brocade featuring subtle tone-on-tone woven heritage motifs with a dignified matte-sheen texture',
   sa_to_mong: 'delicate airy gauze silk (sa to) offering an ethereal, breathable semi-translucent texture',
   dui_moc_tu_nhien: 'raw textured slub silk-linen (dui moc) with an organic earthy weave and tactile substance',
-  linen_cao_cap: 'premium breathable natural linen with a crisp, modern structured drape and refined weave',
-  taffeta_mat: 'subtle matte taffeta holding structured silhouettes with understated elegance',
+  linen_cao_cap: 'natural breathable linen with a visible fine weave, matte surface, soft-to-moderate body, natural vertical fall, subtle real fabric wrinkles, and realistic textile weight',
+  taffeta_mat: 'subtle matte taffeta holding structured silhouettes with understated elegance, without synthetic shine or rigid costume appearance',
   lua_to_tam_tron: 'smooth monochrome mulberry silk with a soft fluid cascade and elegant hand'
 };
 
 // 2. Visual Lower Garment Descriptions
-const LOWER_GARMENT_VISUAL_MAP: Record<string, string> = {
+export const LOWER_GARMENT_VISUAL_MAP: Record<string, string> = {
   silk_pants_wide: 'traditional wide-leg white silk trousers falling smoothly to the footwear in classic proportion',
   silk_pants_black: 'classic wide-leg black silk trousers with dignified fluid drape and relaxed comfort',
   tailored_trousers_straight: 'clean minimalist straight-cut tailored trousers in a contemporary tailored silhouette',
@@ -51,8 +52,9 @@ const LOWER_GARMENT_VISUAL_MAP: Record<string, string> = {
 };
 
 // 3. Visual Footwear Descriptions
-const FOOTWEAR_VISUAL_MAP: Record<string, string> = {
+export const FOOTWEAR_VISUAL_MAP: Record<string, string> = {
   leather_loafer: 'minimalist black polished leather penny loafers with a refined contemporary edge',
+  guoc_moc: 'traditional sculpted wooden clogs (guoc moc) with dark velvet foot straps',
   guoc_moc_truyen_thong: 'traditional sculpted wooden clogs (guoc moc) with dark velvet foot straps',
   chunky_sneaker: 'contemporary clean structured chunky sneakers blending modern streetwear with heritage',
   classic_oxford: 'classic formal black leather Oxford dress shoes with subtle stitch detailing',
@@ -61,7 +63,8 @@ const FOOTWEAR_VISUAL_MAP: Record<string, string> = {
 };
 
 // 4. Visual Accessory Descriptions
-const ACCESSORY_VISUAL_MAP: Record<string, string> = {
+export const ACCESSORY_VISUAL_MAP: Record<string, string> = {
+  khan_dong: 'a neatly wrapped traditional Vietnamese fabric turban (khan dong) resting squarely on the head',
   khan_dong_truyen_thong: 'a neatly wrapped traditional Vietnamese fabric turban (khan dong) resting squarely on the head',
   khan_mo_qua: 'a traditional black crows-beak headscarf (khan mo qua) precisely folded into a sharp triangular point at the forehead',
   non_thung_quai_thao: 'a wide flat-brimmed traditional northern palm-leaf hat (non quai thao) held gently at the side',
@@ -74,7 +77,7 @@ const ACCESSORY_VISUAL_MAP: Record<string, string> = {
 };
 
 /**
- * Compile cohesive 3-color palette into natural descriptive prose
+ * Compile cohesive 3-color palette into natural descriptive prose with strict accent piping policy
  */
 function compilePaletteProse(palette: PaletteItem[]): string {
   if (!Array.isArray(palette) || palette.length === 0) {
@@ -85,22 +88,22 @@ function compilePaletteProse(palette: PaletteItem[]): string {
   const supporting = palette.find(p => p.role === 'SUPPORTING') || palette[1] || primary;
   const accent = palette.find(p => p.role === 'ACCENT') || palette[2] || supporting;
 
-  return `The outfit uses a cohesive three-color palette: ${primary.name} (${primary.hex}) as the primary dominant color of the main body, ${supporting.name} (${supporting.hex}) as the harmonious supporting tone for complementary garments, and ${accent.name} (${accent.hex}) as a restrained, tasteful accent highlight.`;
+  return `The outfit uses a cohesive three-color palette: ${primary.name} (${primary.hex}) as the primary dominant color of the main body, ${supporting.name} (${supporting.hex}) as the harmonious supporting tone for complementary garments, and ${accent.name} (${accent.hex}) as a restrained, localized accent highlight. The accent color is strictly secondary and localized: it may appear only in small traditional closure-button details, subtle woven motifs, a deliberately selected accessory, or a restrained non-structural textile detail. Do NOT outline the collar, front closure, body edges, side seams, cuffs, or hem with contrasting color or piping. Absolutely NO contrast piping, NO colored seam outlining, NO pajama-style edge trim, and NO decorative tracing along the asymmetrical closure.`;
 }
 
 /**
- * Compile garment-specific structural identity guards
+ * Compile garment-specific structural identity guards and pose directives
  */
 function compileGarmentStructuralGuard(garmentId: GarmentId): string {
   switch (garmentId) {
     case 'ngu_than_chen':
-      return 'The primary garment is an authentic Áo ngũ thân tay chẽn (five-panel fitted-sleeve Vietnamese gown). It strictly features an upright Vietnamese lập lĩnh standing collar of historically plausible moderate height, neatly structured and hugging the base of the neck, an asymmetrical closure fastening gracefully from the collar base down toward the right underarm with traditional buttons, natural uncinched straight five-panel drape falling below the knees, and narrow fitted sleeves (trach tu) that taper neatly along the arms down to the wrists. It must distinctly embody the five-panel heritage construction, clean and student-appropriate, not a Westernized bodycon áo dài, not a kurta or sherwani.';
+      return 'GARMENT CONSTRUCTION & POSE (ÁO NGŨ THÂN TAY CHẼN): The primary garment is an authentic Áo ngũ thân tay chẽn (five-panel fitted-sleeve Vietnamese gown). It strictly features an upright Vietnamese lập lĩnh standing collar of historically plausible moderate height hugging the base of the neck, an asymmetrical right-side closure fastening gracefully from the collar base down toward the right underarm with traditional fabric buttons, a natural uncinched straight five-panel drape falling below the knees, and narrow fitted sleeves (trách tụ) that visibly taper progressively from a roomier upper sleeve/armpit down toward the wrists. The right-side closure must be read through actual closure structure and buttons, NOT through contrast piping or colored trim. Visually modest side openings below the hips. POSE DIRECTIVE: Dignified standing pose with arms relaxed but slightly separated from torso to reveal the tapered sleeve geometry, right-side closure path, and straight five-panel body silhouette. Hands must not cover the right-side fastening path. It distinctly embodies historic five-panel heritage construction, clean and student-appropriate, not a Westernized bodycon áo dài, not a kurta or sherwani.';
 
     case 'ao_tac':
-      return 'The primary garment is an authentic Áo tấc (Ngũ thân tay thụng ceremonial five-panel gown). It strictly features a dignified upright Vietnamese lập lĩnh standing collar closely fitted at the neck, an asymmetrical traditional fastening to the right underarm, and a spacious five-panel silhouette with a fuller drape. The sleeves are distinctly cut into broad, generous rectangular sleeves (khoan tu) that remain completely loose, ungathered, and untapered at the wrists with wide open straight cuffs. The construction is formal, spacious, and traditional, avoiding any fitted modern áo dài lines, narrowed wrists, cinched waist, or blazer-like cuts.';
+      return 'GARMENT CONSTRUCTION & POSE (ÁO TẤC): The primary garment is an authentic Áo tấc (Ngũ thân tay thụng ceremonial five-panel gown). It strictly features a dignified upright Vietnamese lập lĩnh standing collar closely fitted at the neck, an asymmetrical traditional fastening to the right underarm, and a spacious five-panel ceremonial silhouette with fuller drape. The sleeves are distinctly cut into broad, generous rectangular sleeves (khoán tụ) that remain completely loose, ungathered, and untapered at the wrists with wide open straight cuffs. POSE DIRECTIVE: Dignified ceremonial standing pose, hands gently composed in front or naturally positioned while ensuring both broad rectangular sleeves remain clearly readable and uncollapsed against the torso. The construction is formal, spacious, and traditional, avoiding any fitted modern áo dài lines, narrowed wrists, cinched waist, or blazer-like cuts.';
 
     case 'ao_tu_than':
-      return 'The primary garment is an authentic Áo tứ thân (traditional four-panel northern Vietnamese ensemble). The outer coat is built from four distinct fabric panels with the center-back seam joined and the two front panels remaining completely OPEN, hanging gracefully or loosely tied at the waist without any center buttons, zippers, or high-neck closure. Underneath the open front panels, a separate traditional halter-style inner bodice (áo yếm) is tastefully layered over the chest, preserving the historic layered structure of northern folk dress. The front must not be closed into a generic high-collared dress.';
+      return 'GARMENT CONSTRUCTION & POSE (ÁO TỨ THÂN): The primary garment is an authentic Áo tứ thân (traditional four-panel northern Vietnamese ensemble). The outer coat is built from four distinct fabric panels with the center-back seam joined and the two front panels remaining completely OPEN, hanging gracefully or loosely tied at the waist without any center buttons, chest button row, zippers, or high-neck closure. Underneath the open front panels, a separate traditional halter-style inner bodice (áo yếm) is tastefully layered over the chest, along with a separate waist sash. POSE DIRECTIVE: Natural graceful stance clearly showing the open front panels, separate inner yếm, and waist sash without covering the waist or chest entirely. The outer coat must not fuse into one modern dress, yếm must not become a printed fake neckline.';
 
     default:
       return 'The garment strictly preserves traditional Vietnamese tailoring construction with authentic collar, closure, and panel proportions.';
@@ -115,8 +118,13 @@ export function compileVisualPrompt(request: GenerateLookbookRequest): CompiledV
 
   const gender = request.genderPresentation || context?.genderPresentation || 'nam';
   const occasion = context?.occasion || '';
+  const style = context?.style || 'tre_trung';
+  const traditionalRatio = typeof context?.traditionalRatio === 'number' ? context.traditionalRatio : 50;
 
-  // 1. High-Level Image Goal & Identity Continuity
+  // 1. GARMENT STRUCTURAL GUARD & POSE DIRECTIVE (HIGHEST PRIORITY AT TOP OF PROMPT)
+  const structuralGuard = compileGarmentStructuralGuard(garmentId);
+
+  // 2. High-Level Image Goal & Model Profile
   const modelGenderDesc = gender === 'nu' ? 'female model' : gender === 'neutral' ? 'model (gender-neutral presentation)' : 'male model';
   const identityLockProse = gender === 'nu'
     ? 'Maintain strict gender and facial identity continuity: a young female Vietnamese model with consistent facial presentation and styling.'
@@ -124,63 +132,52 @@ export function compileVisualPrompt(request: GenerateLookbookRequest): CompiledV
     ? 'Maintain strict identity continuity: a young Vietnamese model with consistent neutral presentation and styling.'
     : 'Maintain strict gender and facial identity continuity: a handsome young male Vietnamese model with consistent facial presentation and styling.';
 
-  const baselineIntro =
-    `Photorealistic full-body fashion lookbook photograph. One Vietnamese ${modelGenderDesc} wearing the specified Vietnamese traditional outfit. High-definition editorial fashion quality, visually polished and premium. Single subject in a neutral standing pose, front or subtle three-quarter view. The complete garment construction must remain clearly visible from collar to footwear. Natural relaxed posture, arms resting gently at sides so sleeve geometry and closure details are completely unobstructed. Structural garment fidelity takes absolute priority over flattering body shaping or dramatic fashion editorial poses. ${identityLockProse} No text, no captions, no typography, no labels, no logos, no watermarks, no graphic design overlays.`;
-
-  // 2. BACKGROUND & ENVIRONMENT CONTROL (VERY HIGH PRIORITY - MINIMAL EDITORIAL STUDIO)
-  const backgroundControl =
-    'ENVIRONMENT AND BACKGROUND CONTROL: Place the subject in a clean, bright, minimal editorial studio with a plain, seamless warm-ivory or soft-cream backdrop. The backdrop must feel visually quiet, uncluttered, flat, bright, and premium, making the subject stand out clearly. DO NOT include architectural backdrops, columns, arches, hallways, stairs, temple-like structures, ornate doors, windows, or building interiors. DO NOT include furniture, chairs, tables, plants, signage, or decorative props. The background must be a clean, plain studio seamless drop.';
-
-  // 3. YOUTHFUL MODEL PROFILE & EXPRESSION (VERY HIGH PRIORITY)
-  let modelProfile = '';
   const isGraduationContext = occasion === 'ky_yeu' || occasion.includes('ky_yeu') || occasion.includes('tot_nghiep');
 
+  let modelProfile = '';
   if (gender === 'nam') {
     modelProfile =
-      'MODEL APPEARANCE AND PROFILE: Render a handsome, youthful Vietnamese young man, approximately university age (around 20–24 years old). He has a neat, student-like appearance, clean grooming, fresh-faced skin, and a calm, confident, friendly, and approachable expression with a subtle natural smile. AVOID middle-aged features, mature facial structure, stern or harsh expressions, tired eyes, or aged masculine severity.';
+      'MODEL PROFILE: A handsome, youthful Vietnamese young man, approximately university age (around 20–24 years old). Neat student-like appearance, clean grooming, fresh-faced skin, calm confident friendly expression with a subtle natural smile.';
   } else if (gender === 'nu') {
     modelProfile =
-      'MODEL APPEARANCE AND PROFILE: Render a beautiful, youthful Vietnamese young woman, approximately university age (around 20–24 years old). She has a fresh, elegant, photogenic appearance, clean radiant skin, soft natural makeup, and a bright, pleasant, graceful expression with a gentle smile. AVOID mature ceremonial styling, heavy cosmetics, or middle-aged facial features.';
+      'MODEL PROFILE: A beautiful, youthful Vietnamese young woman, approximately university age (around 20–24 years old). Fresh elegant photogenic appearance, clean radiant skin, soft natural makeup, and a bright, pleasant, graceful expression with a gentle smile.';
   } else {
     modelProfile =
-      'MODEL APPEARANCE AND PROFILE: Render a youthful Vietnamese model, approximately university age (around 20–24 years old), with a clean, fresh, photogenic appearance and a friendly, relaxed, approachable expression.';
+      'MODEL PROFILE: A youthful Vietnamese model, approximately university age (around 20–24 years old), clean photogenic appearance and a friendly relaxed expression.';
   }
 
   if (isGraduationContext) {
-    modelProfile += ' Because this is a university graduation / yearbook lookbook context, the overall vibe must feel youthful, celebratory, polished, elegant, and student-appropriate.';
+    modelProfile += ' Context: University graduation yearbook lookbook, youthful, celebratory, student-appropriate.';
   }
 
-  // 4. LIGHTING & PHOTOGRAPHY AESTHETICS
-  const lightingAesthetics =
-    'LIGHTING AND PHOTOGRAPHY AESTHETICS: Use soft, bright, even editorial studio lighting with flattering facial illumination, crisp exposure, gentle contrast, and refined soft shadows. The overall image must be clean, luminous, and visually striking, avoiding dark, moody, cinematic, or gloomy ceremonial lighting.';
+  // 3. BACKGROUND & LIGHTING (CLEAN MINIMAL EDITORIAL STUDIO)
+  const backgroundAndLighting =
+    'STUDIO & LIGHTING: Clean, bright, minimal editorial studio with a plain, seamless warm-ivory or soft-cream backdrop. Visually quiet, uncluttered, flat, bright, making the subject stand out clearly. Soft, bright, even editorial studio lighting with flattering facial illumination, crisp exposure, gentle contrast, and realistic floor shadow. Strictly NO architectural backdrops, columns, arches, hallways, stairs, temple structures, furniture, plants, or room interiors.';
 
-  // 5. Garment Structural Guard
-  const structuralGuard = compileGarmentStructuralGuard(garmentId);
-
-  // 6. Cohesive Palette
+  // 4. Cohesive Palette & Accent Piping Policy
   const paletteProse = compilePaletteProse(remixProposal.palette);
 
-  // 7. Fabric & Material
+  // 5. Fabric & Material
   const fabricVisual =
     FABRIC_VISUAL_MAP[remixProposal.fabricId] ||
-    `quality traditional textile fabric (${remixProposal.fabricId})`;
-  const fabricProse = `The main body is tailored from ${fabricVisual}, accentuating clean lines and natural structural drape.`;
+    'quality traditional textile fabric';
+  const fabricProse = `FABRIC: Tailored from ${fabricVisual}, accentuating clean lines and natural structural drape.`;
 
-  // 8. Lower Garment
+  // 6. Lower Garment
   const lowerVisual =
     LOWER_GARMENT_VISUAL_MAP[remixProposal.lowerGarmentId] ||
-    `coordinated trousers (${remixProposal.lowerGarmentId})`;
-  const lowerProse = `Paired underneath with ${lowerVisual}.`;
+    'coordinated lower garment';
+  const lowerProse = `LOWER GARMENT: Paired underneath with ${lowerVisual}.`;
 
-  // 9. Footwear
+  // 7. Footwear
   const footwearVisual =
     FOOTWEAR_VISUAL_MAP[remixProposal.footwearId] ||
-    `coordinated classic footwear (${remixProposal.footwearId})`;
-  const footwearProse = `Completed with ${footwearVisual}.`;
+    'coordinated footwear';
+  const footwearProse = `FOOTWEAR: Completed with ${footwearVisual}.`;
 
-  // 10. Active Wearable Accessories & Contextual Props
+  // 8. Active Wearable Accessories & Contextual Props
   const activeAccessories = Array.isArray(remixProposal.accessoryIds)
-    ? remixProposal.accessoryIds.filter(id => id && id.trim().length > 0)
+    ? remixProposal.accessoryIds.filter(id => id && id.trim().length > 0 && id !== 'accessories_none')
     : [];
 
   const contextProps = Array.isArray(remixProposal.contextProps)
@@ -193,45 +190,55 @@ export function compileVisualPrompt(request: GenerateLookbookRequest): CompiledV
   let accessoryProse = '';
   if (activeAccessories.length === 0) {
     accessoryProse =
-      'No wearable fashion accessories (such as bags, turbans, scarfs, jewelry, or sunglasses) are worn; the outfit styling emphasizes clean minimalism.';
+      'ACCESSORIES: No wearable fashion accessories (no bags, turbans, scarfs, jewelry, or sunglasses) are worn. Clean minimalism.';
   } else {
     const accessoryDescriptions = activeAccessories
-      .map(id => ACCESSORY_VISUAL_MAP[id] || `refined accessory (${id})`)
+      .map(id => ACCESSORY_VISUAL_MAP[id] || `refined accessory`)
       .join(' and ');
-    accessoryProse = `Styled thoughtfully with wearable accessories: ${accessoryDescriptions}. Do not add any other unrequested wearable fashion accessories.`;
+    accessoryProse = `ACCESSORIES: Styled with ${accessoryDescriptions}. Do not add any other unrequested wearable fashion accessories.`;
   }
 
   let propProse = '';
   if (contextProps.length === 0) {
-    propProse = 'No handheld props or environmental scene items are present. The model holds no objects in hand and no extra scene props are placed.';
+    propProse = 'PROPS: No handheld props or environmental scene items are present. The model holds no objects in hand.';
   } else {
     const parts: string[] = [];
     if (handheldProps.length > 0) {
       const handheldDescs = handheldProps.map(p => p.description).join(' and ');
-      parts.push(`The model holds the following approved contextual handheld prop cleanly: ${handheldDescs}. Do not add any unapproved handheld objects or beverage cans other than specified.`);
+      parts.push(`PROPS: Model holds approved contextual handheld prop: ${handheldDescs}.`);
     }
     if (environmentalProps.length > 0) {
       const envDescs = environmentalProps.map(p => p.description).join(' and ');
-      parts.push(`The surrounding scene includes approved contextual environmental props: ${envDescs}.`);
+      parts.push(`Scene includes approved environmental props: ${envDescs}.`);
     }
     propProse = parts.join(' ');
   }
 
-  // 11. Hairstyle Policy & Natural Grooming
-  const hasHeadwear = activeAccessories.some(id => id === 'khan_dong_truyen_thong' || id === 'khan_mo_qua');
+  // 9. Hairstyle Policy
+  const hasHeadwear = activeAccessories.some(id => id === 'khan_dong' || id === 'khan_dong_truyen_thong' || id === 'khan_mo_qua');
   const hairstyleProse = hasHeadwear
-    ? 'Hairstyle is neatly arranged to accommodate the specified traditional headwear cleanly without extra ribbons or ornaments.'
+    ? 'HAIRSTYLE: Arranged neatly under traditional headwear cleanly without extra ribbons or ornaments.'
     : gender === 'nu'
-    ? 'Hairstyle is natural and understated: clean natural long hair, simple contemporary low bun, or neat tied-back hair with zero ornate hairpins or fantasy hair jewelry.'
+    ? 'HAIRSTYLE: Clean natural long hair, simple contemporary low bun, or neat tied-back hair with zero ornate hairpins or fantasy hair jewelry. Hairstyle is natural and understated.'
     : gender === 'neutral'
-    ? 'Hairstyle is clean, neat, and natural with zero fantasy ornaments or elaborate styling.'
-    : 'Hairstyle is a neat natural contemporary haircut, clean and unadorned with zero topknots or fantasy headdresses.';
+    ? 'HAIRSTYLE: Clean, neat, and natural with zero fantasy ornaments. Hairstyle is natural and understated.'
+    : 'HAIRSTYLE: Neat natural contemporary haircut, clean and unadorned with zero topknots or fantasy headdresses.';
 
-  // 12. HARD NEGATIVE CONSTRAINTS & CULTURAL SAFETY GUARDS
+  // 10. Art Direction via Style & Traditional Ratio
+  let artDirectionProse = `ART DIRECTION (Ratio: ${traditionalRatio}%, Style: ${style}): `;
+  if (traditionalRatio >= 70) {
+    artDirectionProse += 'Heritage-forward styling with restrained modern intervention; traditional silhouette dominates with authentic dignity.';
+  } else if (traditionalRatio >= 40) {
+    artDirectionProse += 'Balanced contemporary refinement; core traditional garment strongly preserved with clean modern styling.';
+  } else {
+    artDirectionProse += 'Contemporary color and styling expression while keeping core garment anatomy completely intact.';
+  }
+
+  // 11. HARD NEGATIVE CONSTRAINTS (CONSOLIDATED)
   const culturalSafetyGuards =
-    'HARD NEGATIVE CONSTRAINTS AND CULTURAL SAFETY DIRECTIVES: Strictly avoid architectural backdrops, columns, arches, hallways, stairs, temple structures, furniture, plants, decorative props, signage, cluttered backgrounds, dark or moody lighting, sunglasses, dark glasses, middle-aged or older-looking appearance, stern or tired expression, harsh ceremonial mood, and distracting background details. Render ONLY the styling elements and explicit contextual props specified in this brief. DO NOT add or invent unrequested crowns, imperial headpieces, royal regalia, jade pendants (ngọc bội / kim bội), pearl necklaces, ornate hairpins (trâm), handheld fans, scepters, umbrellas, or ceremonial props that are not explicitly approved in this brief. Avoid vague fantasy tropes such as ancient Asian costume, oriental royal accessories, or fantasy imperial styling. Strictly preserve authentic Vietnamese garment tailoring without Chinese Hanfu, Korean Hanbok, or generic East Asian cross-cultural elements.';
+    'HARD NEGATIVE CONSTRAINTS & STRICT NO-INVENTION GUARD: Strictly DO NOT add or invent unrequested crowns, royal regalia, jade pendants, or pearl necklaces. Avoid vague fantasy tropes such as ancient Asian costume, Hanfu, Hanbok, kurta, or sherwani. Strictly NO contrast piping, NO colored seam outlining, NO pajama-style edge trim, NO decorative tracing along asymmetrical closure, NO decorative tracing along collar, NO colored hem outlining, NO high side slits, NO bodycon modern áo dài, NO architectural backdrops (columns, arches, stairs, temples), NO furniture or plants, NO dark or moody lighting, NO sunglasses unless explicitly specified, NO middle-aged facial features. Render ONLY specified items.';
 
-  // 13. Styling Mood / Context
+  // 12. User Style Intent
   let stylingMood = '';
   if (context?.userStyleIntent && typeof context.userStyleIntent === 'string') {
     let sanitizedIntent = context.userStyleIntent.trim().replace(/[\r\n\t]+/g, ' ').slice(0, 150);
@@ -244,17 +251,18 @@ export function compileVisualPrompt(request: GenerateLookbookRequest): CompiledV
     }
 
     if (sanitizedIntent.length > 0) {
-      stylingMood = `Contemporary styling refinement directive: "${sanitizedIntent}". Note: This refinement directive MUST NOT introduce any unapproved accessories or structural modifications prohibited by the committed Blueprint.`;
+      stylingMood = `REFINEMENT DIRECTIVE: "${sanitizedIntent}". Must NOT introduce prohibited structural modifications or unapproved accessories.`;
     }
   }
 
-  // Combine into clean natural prose paragraphs
+  const baselineIntro = `Photorealistic full-body fashion lookbook photograph of one Vietnamese ${modelGenderDesc}. Single subject in neutral standing pose. Full garment visible from collar to footwear. ${identityLockProse} No text, no captions, no typography, no watermarks.`;
+
+  // Combine into clean natural prose paragraphs (GARMENT FIRST)
   const promptParts = [
-    baselineIntro,
-    backgroundControl,
-    modelProfile,
-    lightingAesthetics,
     structuralGuard,
+    baselineIntro,
+    modelProfile,
+    backgroundAndLighting,
     paletteProse,
     fabricProse,
     lowerProse,
@@ -262,6 +270,7 @@ export function compileVisualPrompt(request: GenerateLookbookRequest): CompiledV
     accessoryProse,
     propProse,
     hairstyleProse,
+    artDirectionProse,
     culturalSafetyGuards
   ];
 
@@ -269,30 +278,32 @@ export function compileVisualPrompt(request: GenerateLookbookRequest): CompiledV
     promptParts.push(stylingMood);
   }
 
-  // 14. Grounded Correction Directives (Phase 2C Revision Loop)
-  if (request.revisionIndex && request.revisionIndex > 0 && request.groundedCorrectionPlan) {
+  // Grounded Correction Directives (Phase 2C Revision Loop)
+  if (request.revisionIndex && request.revisionIndex > 0) {
     const plan = request.groundedCorrectionPlan;
     const revisionDirectives: string[] = [];
 
-    // Cultural Deltas (FAIL or PARTIAL traits)
-    if (plan.culturalDeltas && plan.culturalDeltas.length > 0) {
+    if (plan?.culturalDeltas && plan.culturalDeltas.length > 0) {
       const culturalNotes = plan.culturalDeltas.map(d =>
-        `CULTURAL CORRECTION [${d.traitId} - ${d.traitNameVi}]: Rectify previously observed deviation "${d.observedDeviation || 'inaccurate geometry'}". You MUST strictly render: ${d.canonicalGuidance}`
+        `CULTURAL CORRECTION [${d.traitId} - ${d.traitNameVi}]: Rectify observed deviation "${d.observedDeviation || 'inaccurate geometry'}". You MUST strictly render: ${d.canonicalGuidance}`
       );
       revisionDirectives.push(`CRITICAL CULTURAL REVISIONS (REVISION ${request.revisionIndex}):\n${culturalNotes.join('\n')}`);
     }
 
-    // Outfit Fidelity Deltas
-    if (plan.fidelityDeltas && plan.fidelityDeltas.length > 0) {
+    if (plan?.fidelityDeltas && plan.fidelityDeltas.length > 0) {
       const fidelityNotes = plan.fidelityDeltas.map(f =>
         `STYLING FIDELITY CORRECTION [${f.element}]: ${f.description} Explicitly enforce: ${f.expectedValue}`
       );
       revisionDirectives.push(`STYLING FIDELITY REVISIONS:\n${fidelityNotes.join('\n')}`);
     }
 
-    // Locked Preservation Constraints
-    if (plan.preservationConstraints && plan.preservationConstraints.length > 0) {
-      revisionDirectives.push(`LOCKED PRESERVATION CONSTRAINTS (DO NOT ALTER):\n${plan.preservationConstraints.join('\n')}`);
+    const preservation = plan?.preservationConstraints ? [...plan.preservationConstraints] : [];
+    if (contextProps.length > 0 && !preservation.some(p => p.includes('Bảo toàn các đạo cụ bối cảnh đã phê duyệt'))) {
+      preservation.push('Bảo toàn các đạo cụ bối cảnh đã phê duyệt');
+    }
+
+    if (preservation.length > 0) {
+      revisionDirectives.push(`LOCKED PRESERVATION CONSTRAINTS (DO NOT ALTER):\n${preservation.join('\n')}`);
     }
 
     if (revisionDirectives.length > 0) {

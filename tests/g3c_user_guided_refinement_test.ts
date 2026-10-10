@@ -48,33 +48,33 @@ async function runTestSuite() {
   const qaCardTs = fs.readFileSync(path.resolve(__dirname, '../src/components/CulturalQACard.tsx'), 'utf8');
 
   // ----------------------------------------------------
-  // TEST 1 — Revision Entitlement (V0 -> V1 unlock independent of QA)
+  // TEST 1 — Revision Entitlement (Sequential Unlock)
   // ----------------------------------------------------
   const t1Pass =
     appTs.includes('handleTriggerRevision') &&
     !appTs.includes('if (!blueprint || !currentPlan) return;') &&
-    appTs.includes('nextRevIndex > 2');
+    !appTs.includes('nextRevIndex > 2');
 
   record(
     'TEST 1',
     'Revision Entitlement Independent of QA Plan',
     Boolean(t1Pass),
-    'A successful V0 unlocks V1 even when QA has zero actionable deltas or is unavailable.'
+    'A successful generation unlocks unlimited sequential revisions independent of QA status.'
   );
 
   // ----------------------------------------------------
-  // TEST 2 — V1 -> V2 Successive Refinement & Limit (No V3)
+  // TEST 2 — Unlimited Sequential Refinement
   // ----------------------------------------------------
   const t2Pass =
-    appTs.includes('nextRevIndex > 2') &&
-    qaCardTs.includes('revisionIndex < 2') &&
-    qaCardTs.includes('Đã dùng {revisionIndex}/2 lượt tinh chỉnh');
+    !appTs.includes('nextRevIndex > 2') &&
+    !qaCardTs.includes('isRevisionLimitReached = revisionIndex >= 2') &&
+    qaCardTs.includes('Lượt tinh chỉnh {revisionIndex}');
 
   record(
     'TEST 2',
-    'Successive Refinement V1 -> V2 & Max Limit (No V3)',
+    'Unlimited Sequential Refinement Support',
     Boolean(t2Pass),
-    'Hard limit enforces max 2 refinements (V0 -> V1 -> V2) and correct counter semantics.'
+    'Unlimited sequential refinements (revisionIndex 1, 2, 3, 4, 10...) are supported.'
   );
 
   // ----------------------------------------------------
@@ -83,8 +83,8 @@ async function runTestSuite() {
   const t3Pass =
     qaCardTs.includes('Tinh chỉnh theo ý tôi') &&
     qaCardTs.includes('userRefinementInput') &&
-    qaCardTs.includes('Xem phương án tinh chỉnh') &&
-    qaCardTs.includes('Xác nhận và tạo V');
+    qaCardTs.includes('Xem trước phương án chỉnh') &&
+    qaCardTs.includes('Lượt tinh chỉnh');
 
   record(
     'TEST 3',
@@ -112,8 +112,8 @@ async function runTestSuite() {
   // TEST 5 — QA Pass / Zero Deltas Entitlement Preservation
   // ----------------------------------------------------
   const t5Pass =
-    qaCardTs.includes('Không có điểm cần tinh chỉnh theo đánh giá') &&
-    qaCardTs.includes('Xem phương án tinh chỉnh');
+    qaCardTs.includes('Xem trước phương án chỉnh') &&
+    qaCardTs.includes('Tinh chỉnh theo ý tôi');
 
   record(
     'TEST 5',
@@ -152,18 +152,18 @@ async function runTestSuite() {
   );
 
   // ----------------------------------------------------
-  // TEST 8 — Revision Index Progression & Hard Cap (0 -> 1 -> 2, No V3)
+  // TEST 8 — Unlimited Revision Progression (0 -> 1 -> 2 -> 3 -> N)
   // ----------------------------------------------------
   const t8Pass =
     appTs.includes('nextRevIndex') &&
-    appTs.includes('nextRevIndex > 2') &&
+    !appTs.includes('nextRevIndex > 2') &&
     !appTs.includes('nextRevIndex > 3');
 
   record(
     'TEST 8',
-    'Revision Index Progression & Hard Cap (0 -> 1 -> 2)',
+    'Unlimited Revision Progression (0 -> 1 -> 2 -> 3 -> N)',
     Boolean(t8Pass),
-    'Proves revisionIndex progresses 0 -> 1 -> 2 with max limit (nextRevIndex > 2) and prevents V3.'
+    'Proves revisionIndex progresses 0 -> 1 -> 2 -> 3 -> N without upper bounds.'
   );
 
   // ----------------------------------------------------
@@ -179,19 +179,18 @@ async function runTestSuite() {
   );
 
   // ----------------------------------------------------
-  // TEST 10 — Hard QA Failure / Structural Drift Recovery without V3
+  // TEST 10 — Same Slot Retry for Network/QA Failure
   // ----------------------------------------------------
   const t10Pass =
     appTs.includes('handleRetryRevision') &&
-    qaCardTs.includes('Thử lại Lần') &&
-    qaCardTs.includes('isStructuralDriftOrFailure') &&
+    !appTs.includes('revToRetry > 2') &&
     lookbookTs.includes('onRetryRevision={onRetryRevision}');
 
   record(
     'TEST 10',
-    'Hard QA Failure Recovery Without V3 (Same Slot Retry)',
+    'Same Slot Retry for Network/QA Failure',
     Boolean(t10Pass),
-    'Allows retrying failed revision slot (V2) on structural drift without creating V3 or exceeding revision budget.'
+    'Allows retrying failed revision slot on structural drift or error without arbitrary upper bounds.'
   );
 
   console.log('------------------------------------------------------------------------------------------------------------------------');

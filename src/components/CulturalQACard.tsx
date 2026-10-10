@@ -258,7 +258,7 @@ export const CulturalQACard: React.FC<CulturalQACardProps> = ({
     t => (t.verdict === 'FAIL' || t.verdict === 'PARTIAL') && !culturalActionableIds.has(t.traitId)
   ).length;
 
-  const isRevisionLimitReached = revisionIndex >= 2;
+  const isRevisionLimitReached = false;
 
   const isStructuralDriftOrFailure =
     qaState.status === 'error' ||
@@ -564,7 +564,7 @@ export const CulturalQACard: React.FC<CulturalQACardProps> = ({
                   </p>
                 </div>
 
-                {!isRevisionLimitReached && onTriggerRevision ? (
+                {onTriggerRevision ? (
                   <button
                     type="button"
                     onClick={onTriggerRevision}
@@ -574,14 +574,9 @@ export const CulturalQACard: React.FC<CulturalQACardProps> = ({
                     <Sparkles className="w-3.5 h-3.5 text-amber-200" />
                     <span>Tinh chỉnh theo đánh giá</span>
                     <span className="text-[10px] text-white/80 font-normal">
-                      (Lần {revisionIndex + 1}/2)
+                      (Lần {revisionIndex + 1})
                     </span>
                   </button>
-                ) : isRevisionLimitReached ? (
-                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-stone-200/80 text-stone-700 border border-stone-300 shadow-2xs self-start sm:self-center">
-                    <Lock className="w-3.5 h-3.5 text-stone-500" />
-                    <span>Đã đạt giới hạn tối đa 2 lần tinh chỉnh</span>
-                  </div>
                 ) : null}
               </div>
 
@@ -677,19 +672,13 @@ export const CulturalQACard: React.FC<CulturalQACardProps> = ({
                     Thay đổi ánh sáng, bố cục, độ rủ hoặc phong thái mà không thay cấu trúc bản phối.
                   </p>
                 </div>
-                {revisionIndex < 2 ? (
-                  <button
-                    type="button"
-                    onClick={() => setIsRefinementOpen(true)}
-                    className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-medium text-amber-900 bg-amber-50/60 hover:bg-amber-100/70 border border-amber-300 transition-colors cursor-pointer self-start sm:self-center"
-                  >
-                    <span>Mô tả điều bạn muốn chỉnh ↓</span>
-                  </button>
-                ) : (
-                  <span className="text-[11px] text-stone-400 italic">
-                    Đã dùng 2/2 lượt tinh chỉnh
-                  </span>
-                )}
+                <button
+                  type="button"
+                  onClick={() => setIsRefinementOpen(true)}
+                  className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-medium text-amber-900 bg-amber-50/60 hover:bg-amber-100/70 border border-amber-300 transition-colors cursor-pointer self-start sm:self-center"
+                >
+                  <span>Mô tả điều bạn muốn chỉnh ↓</span>
+                </button>
               </div>
             </div>
           ) : (
@@ -709,7 +698,7 @@ export const CulturalQACard: React.FC<CulturalQACardProps> = ({
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-amber-50 text-amber-800 border border-amber-200/60">
-                    Đã dùng {revisionIndex}/2 lượt tinh chỉnh
+                    Lượt tinh chỉnh {revisionIndex}
                   </span>
                   <button
                     type="button"
@@ -721,9 +710,8 @@ export const CulturalQACard: React.FC<CulturalQACardProps> = ({
                 </div>
               </div>
 
-              {revisionIndex < 2 ? (
-                <div className="space-y-3">
-                  {refinementPreviewState === 'ready' && previewAnalysis ? (
+              <div className="space-y-3">
+                {refinementPreviewState === 'ready' && previewAnalysis ? (
                     /* STAGE 2: PREVIEW & CONFIRMATION / BLOCKING */
                     <div className="p-3.5 rounded-xl bg-white border border-amber-200/80 space-y-3 text-xs shadow-2xs animate-in fade-in duration-200">
                       <div className="flex items-center justify-between border-b border-amber-100 pb-2">
@@ -923,7 +911,7 @@ export const CulturalQACard: React.FC<CulturalQACardProps> = ({
 
                       <div className="flex items-center justify-between pt-1">
                         <span className="text-[10px] text-stone-400 font-normal">
-                          Đã dùng {revisionIndex}/2 lượt tinh chỉnh
+                          Lượt tinh chỉnh {revisionIndex}
                         </span>
                         <button
                           type="button"
@@ -960,53 +948,6 @@ export const CulturalQACard: React.FC<CulturalQACardProps> = ({
                     </div>
                   )}
                 </div>
-              ) : (
-                <div className="space-y-3">
-                  <div className="p-3 rounded-xl bg-stone-100 border border-stone-200 text-xs text-stone-600 flex items-center gap-2">
-                    <Lock className="w-4 h-4 text-stone-500 shrink-0" />
-                    <span>Đã đạt giới hạn tối đa 2 lần tinh chỉnh (V0 → V1 → V2). Không phát sinh V3 tự động.</span>
-                  </div>
-
-                  {isStructuralDriftOrFailure && (
-                    <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200/90 text-rose-950 space-y-2 text-xs">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-1.5 font-semibold text-rose-900">
-                          <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0" />
-                          <span>Phát hiện sai lệch cấu trúc trên V2</span>
-                        </div>
-                        <span className="text-[10px] font-medium bg-rose-100 text-rose-800 px-2 py-0.5 rounded-full">
-                          Không phát sinh V3
-                        </span>
-                      </div>
-                      <p className="text-[11px] text-rose-800 leading-relaxed font-normal">
-                        Mặc dù đã dùng 2/2 lượt tinh chỉnh, bạn vẫn có thể thử lại Lần 2 để hệ thống dựng lại ảnh V2 khắc phục lỗi cấu trúc. Thao tác này thay thế trực tiếp kết quả V2 và giữ nguyên số lượt tinh chỉnh 2/2.
-                      </p>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          if (onRetryRevision) {
-                            onRetryRevision(2, userRefinementInput.trim() || undefined);
-                          }
-                        }}
-                        disabled={isGeneratingLookbook}
-                        className="rounded-full px-4 py-2 text-xs font-semibold bg-rose-600 hover:bg-rose-700 text-white shadow-xs flex items-center gap-1.5 cursor-pointer disabled:opacity-50 transition-all"
-                      >
-                        {isGeneratingLookbook ? (
-                          <>
-                            <div className="w-3.5 h-3.5 rounded-full border-2 border-white border-t-transparent animate-spin" />
-                            <span>Đang thử lại Lần 2...</span>
-                          </>
-                        ) : (
-                          <>
-                            <RotateCw className="w-3.5 h-3.5" />
-                            <span>Thử lại Lần 2 (Khắc phục lỗi cấu trúc)</span>
-                          </>
-                        )}
-                      </button>
-                    </div>
-                  )}
-                </div>
-              )}
             </div>
           )}
 

@@ -16,6 +16,9 @@ import {
   BlueprintOutput
 } from '../../src/types/index';
 import {
+  FABRICS,
+  LOWER_GARMENTS,
+  FOOTWEAR,
   ACCESSORIES,
   CatalogItem
 } from '../../src/data/canonicalCatalog';
@@ -23,6 +26,18 @@ import {
   PRODUCT_POLICY_V11,
   getTraditionalityBand
 } from '../../src/data/culturalProductRulesV11';
+
+export interface PolicyFilterParams {
+  garmentId: GarmentId;
+  wearer: GenderPresentation;
+  occasion?: string;
+  style?: string;
+  traditionalRatio: number;
+  promptText?: string;
+  flowMode?: 'ROOT' | 'EXPLORATION';
+  explorationIntent?: string;
+  isExploration?: boolean;
+}
 
 /**
  * Checks if prompt expresses explicit user intent for contemporary reinterpretation of male áo tứ thân
@@ -43,6 +58,49 @@ export function isMaleTuThanExplicitRemix(promptText?: string): boolean {
     p.includes('nam phá cách') ||
     p.includes('editorial cho nam')
   );
+}
+
+export function isTrousersRequestedExplicitly(promptText?: string): boolean {
+  if (!promptText) return false;
+  const p = promptText.toLowerCase();
+  return (
+    p.includes('quần tây') ||
+    p.includes('quần âu') ||
+    p.includes('tailored trousers') ||
+    p.includes('dress trousers') ||
+    p.includes('trousers') ||
+    p.includes('quần nam tây')
+  );
+}
+
+export function isSneakerRequestedExplicitly(promptText?: string): boolean {
+  if (!promptText) return false;
+  const p = promptText.toLowerCase();
+  return p.includes('sneaker') || p.includes('giày thể thao') || p.includes('chunky');
+}
+
+export function isSunglassesRequestedExplicitly(promptText?: string): boolean {
+  if (!promptText) return false;
+  const p = promptText.toLowerCase();
+  return p.includes('kính râm') || p.includes('kính mát') || p.includes('sunglasses');
+}
+
+export function isToteRequestedExplicitly(promptText?: string): boolean {
+  if (!promptText) return false;
+  const p = promptText.toLowerCase();
+  return p.includes('túi xách') || p.includes('túi tote') || p.includes('túi vải') || p.includes('tote bag');
+}
+
+export function isCulottesRequestedExplicitly(promptText?: string): boolean {
+  if (!promptText) return false;
+  const p = promptText.toLowerCase();
+  return p.includes('culottes') || p.includes('quần lửng');
+}
+
+export function isPleatedSkirtRequestedExplicitly(promptText?: string): boolean {
+  if (!promptText) return false;
+  const p = promptText.toLowerCase();
+  return p.includes('xếp ly') || p.includes('chân váy') || p.includes('pleated skirt');
 }
 
 /**
@@ -168,10 +226,18 @@ export function validateAndEnforceRecommendationPolicy(
   let primary = { ...result.primary };
   let alternative = result.alternative ? { ...result.alternative } : null;
 
-  // RULE 1: Explicit Male Wearer + Áo tứ thân check (BLOCKED in grounded MVP corpus)
+  // RULE 1: Explicit Male Wearer + Áo tứ thân check
   if (wearer === 'nam') {
+    const isExplicitRemix = isMaleTuThanExplicitRemix(context.promptText);
     if (primary.garmentId === 'ao_tu_than') {
-      if (alternative && (alternative.garmentId === 'ngu_than_chen' || alternative.garmentId === 'ao_tac')) {
+      if (isExplicitRemix) {
+        primary = {
+          garmentId: 'ao_tu_than',
+          rationale: primary.rationale.includes('cách tân') || primary.rationale.includes('đương đại')
+            ? primary.rationale
+            : 'Áo tứ thân biểu hiện theo hướng cách tân và biến tấu đương đại cho nam giới.'
+        };
+      } else if (alternative && (alternative.garmentId === 'ngu_than_chen' || alternative.garmentId === 'ao_tac')) {
         primary = {
           garmentId: alternative.garmentId,
           rationale: alternative.rationale || (
@@ -245,6 +311,175 @@ export function validateAndEnforceRecommendationPolicy(
 }
 
 /**
+ * Returns policy-compatible fabrics based on garment, wearer, occasion, style, traditionality band
+ */
+export function getPolicyCompatibleFabrics(params: PolicyFilterParams): CatalogItem[] {
+  const { garmentId, traditionalRatio, promptText, flowMode } = params;
+  const p = (promptText || '').toLowerCase();
+  const isExploration = flowMode === 'EXPLORATION';
+
+  const compatible: CatalogItem[] = [];
+  for (const item of FABRICS) {
+    let allowed = false;
+
+    if (item.id === 'linen_cao_cap' || item.id === 'taffeta_mat') {
+      if (isExploration || traditionalRatio <= 40 || p.includes('linen') || p.includes('taffeta')) {
+        allowed = true;
+      }
+    } else if (garmentId === 'ao_tac') {
+      if (item.id === 'gam_hoa_chim' || item.id === 'to_tam_ha_dong' || item.id === 'lua_to_tam_tron' || item.id === 'sa_to_mong' || item.id === 'natural_matte_silk_linen') {
+        allowed = true;
+      }
+    } else if (garmentId === 'ao_tu_than') {
+      if (item.id === 'dui_moc_tu_nhien' || item.id === 'natural_matte_silk_linen' || item.id === 'lua_to_tam_tron' || item.id === 'to_tam_ha_dong' || item.id === 'sa_to_mong') {
+        allowed = true;
+      }
+    } else {
+      allowed = true;
+    }
+
+    if (allowed) {
+      compatible.push(item);
+    }
+  }
+
+  return compatible.length > 0 ? compatible : FABRICS;
+}
+
+/**
+ * Returns policy-compatible lower garments based on garment, wearer, occasion, style, traditionality band
+ */
+export function getPolicyCompatibleLowerGarments(params: PolicyFilterParams): CatalogItem[] {
+  const { garmentId, wearer, traditionalRatio, promptText, flowMode, explorationIntent } = params;
+  const isExploration = flowMode === 'EXPLORATION';
+  const effectiveWearer = wearer || 'nam';
+
+  const explicitTrousers = isTrousersRequestedExplicitly(promptText);
+  const explicitCulottes = isCulottesRequestedExplicitly(promptText);
+  const explicitPleated = isPleatedSkirtRequestedExplicitly(promptText);
+
+  const compatible: CatalogItem[] = [];
+
+  for (const item of LOWER_GARMENTS) {
+    let allowed = false;
+
+    switch (item.id) {
+      case 'silk_pants_wide':
+      case 'silk_pants_black':
+        allowed = true;
+        break;
+
+      case 'tailored_trousers_straight':
+        if (garmentId === 'ngu_than_chen') {
+          if (explicitTrousers || (isExploration && (explorationIntent === 'MORE_REMIXED' || explorationIntent === 'ALTERNATIVE')) || traditionalRatio <= 39) {
+            allowed = true;
+          }
+        } else if (garmentId === 'ao_tac') {
+          if (explicitTrousers || (isExploration && explorationIntent === 'MORE_REMIXED' && traditionalRatio <= 39)) {
+            allowed = true;
+          }
+        }
+        break;
+
+      case 'vay_dup_den':
+        if (garmentId === 'ao_tu_than' && (effectiveWearer === 'nu' || effectiveWearer === 'neutral')) {
+          allowed = true;
+        }
+        break;
+
+      case 'pleated_skirt_long':
+        if (effectiveWearer === 'nu' || effectiveWearer === 'neutral') {
+          if (explicitPleated || isExploration || traditionalRatio <= 40) {
+            allowed = true;
+          }
+        }
+        break;
+
+      case 'culottes_linen':
+        if (explicitCulottes || (isExploration && traditionalRatio <= 50)) {
+          allowed = true;
+        }
+        break;
+    }
+
+    if (allowed) {
+      compatible.push(item);
+    }
+  }
+
+  return compatible.length > 0 ? compatible : [LOWER_GARMENTS[0]];
+}
+
+/**
+ * Returns policy-compatible footwear based on garment, wearer, occasion, style, traditionality band
+ */
+export function getPolicyCompatibleFootwear(params: PolicyFilterParams): CatalogItem[] {
+  const { garmentId, wearer, traditionalRatio, promptText, flowMode, explorationIntent } = params;
+  const isExploration = flowMode === 'EXPLORATION';
+  const explicitSneaker = isSneakerRequestedExplicitly(promptText);
+
+  const compatible: CatalogItem[] = [];
+
+  for (const item of FOOTWEAR) {
+    let allowed = false;
+
+    switch (item.id) {
+      case 'guoc_moc':
+      case 'guoc_moc_truyen_thong':
+        allowed = true;
+        break;
+
+      case 'leather_loafer':
+        if (garmentId === 'ngu_than_chen' || garmentId === 'ao_tac') {
+          if (traditionalRatio <= 69 || isExploration) {
+            allowed = true;
+          }
+        }
+        break;
+
+      case 'classic_oxford': {
+        const oxfordExplicit = promptText && (
+          promptText.toLowerCase().includes('oxford') ||
+          promptText.toLowerCase().includes('giày tây')
+        );
+        if (garmentId === 'ao_tac' || garmentId === 'ngu_than_chen') {
+          if (oxfordExplicit || isExploration || traditionalRatio <= 69) {
+            allowed = true;
+          }
+        }
+        break;
+      }
+
+      case 'mule_minimalist':
+        if (wearer === 'nu' || wearer === 'neutral') {
+          if (traditionalRatio <= 60 || isExploration) {
+            allowed = true;
+          }
+        }
+        break;
+
+      case 'chunky_sneaker':
+        if (explicitSneaker || (isExploration && explorationIntent === 'MORE_REMIXED' && traditionalRatio <= 39)) {
+          allowed = true;
+        }
+        break;
+
+      case 'strappy_sandals':
+        if ((wearer === 'nu' || wearer === 'neutral') && (isExploration || traditionalRatio <= 40)) {
+          allowed = true;
+        }
+        break;
+    }
+
+    if (allowed) {
+      compatible.push(item);
+    }
+  }
+
+  return compatible.length > 0 ? compatible : [FOOTWEAR[0]];
+}
+
+/**
  * Returns policy-compatible accessories based on garment, wearer, occasion, style, traditionality band
  * 
  * Rules (Cultural Product Rules v1.1 §4, §6, §7, §8):
@@ -257,18 +492,10 @@ export function validateAndEnforceRecommendationPolicy(
  * - Northern female tứ thân: Khăn mỏ quạ & nón thúng quai thao allowed for female, but supporting, not mandatory.
  * - Core fallback: No approved compatible accessory -> return [] (prefer no accessory over invention).
  */
-export function getPolicyCompatibleAccessories(params: {
-  garmentId: GarmentId;
-  wearer: GenderPresentation;
-  occasion?: string;
-  style?: string;
-  traditionalRatio: number;
-  promptText?: string;
-  isExploration?: boolean;
-  explorationIntent?: string;
-}): CatalogItem[] {
-  const { garmentId, wearer, traditionalRatio, promptText, explorationIntent } = params;
+export function getPolicyCompatibleAccessories(params: PolicyFilterParams): CatalogItem[] {
+  const { garmentId, wearer, traditionalRatio, promptText, flowMode, explorationIntent } = params;
   const p = (promptText || '').toLowerCase();
+  const isExploration = flowMode === 'EXPLORATION' || !!explorationIntent;
 
   // Negative constraints: user explicitly requested no accessories
   if (
@@ -281,7 +508,6 @@ export function getPolicyCompatibleAccessories(params: {
   }
 
   const effectiveWearer = wearer || 'nam';
-  const band = getTraditionalityBand(traditionalRatio);
 
   const compatible: CatalogItem[] = [];
 
@@ -333,13 +559,15 @@ export function getPolicyCompatibleAccessories(params: {
         }
         break;
 
-      case 'vong_bac_cham_hoa':
+      case 'vong_bac_cham_hoa': {
         // Traditional / contemporary silver torque (kiềng bạc).
-        // Appropriate across garments when traditionalRatio is balanced or traditional
-        if (traditionalRatio >= 40) {
+        // MUST NOT BE ROOT_AUTO. Allowed in EXPLORATION flow when traditionalRatio <= 69, or when explicitly requested.
+        const torqueExplicit = p.includes('kiềng') || p.includes('vòng bạc') || p.includes('vòng cổ bạc') || p.includes('trang sức bạc');
+        if (torqueExplicit || (isExploration && traditionalRatio <= 69)) {
           isAllowed = true;
         }
         break;
+      }
 
       case 'quat_giay_tram_huong': {
         // Handheld fan: CONTEMPORARY_REINTERPRETATION, maxTraditionalRatio: 59, EXPLICIT_ONLY.

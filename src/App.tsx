@@ -1097,7 +1097,6 @@ export default function App() {
       currentThread?.activeRevisionIndex ??
       (lookbookState.status === 'success' ? (lookbookState.revisionIndex ?? 0) : 0);
     const nextRevIndex = currentRevIndex + 1;
-    if (nextRevIndex > 2) return; // Hard limit: max 2 revisions (V0 -> V1 -> V2, no V3)
 
     const currentPlan = customCorrectionPlan || (visualQAState.status === 'success' ? visualQAState.result?.groundedCorrectionPlan : undefined);
     const currentGender = currentThread?.revisions[0]?.snapshot.genderPresentation || draftContext.genderPresentation || activeParams.genderPresentation || 'nam';
@@ -1147,7 +1146,7 @@ export default function App() {
       currentThread?.activeRevisionIndex ??
       (lookbookState.status === 'success' ? (lookbookState.revisionIndex ?? 0) : 0);
 
-    if (revToRetry < 1 || revToRetry > 2) return;
+    if (revToRetry < 1) return;
 
     const currentPlan = visualQAState.status === 'success' ? visualQAState.result?.groundedCorrectionPlan : undefined;
     const currentGender = currentThread?.revisions[0]?.snapshot.genderPresentation || draftContext.genderPresentation || activeParams.genderPresentation || 'nam';

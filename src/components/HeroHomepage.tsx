@@ -136,7 +136,7 @@ export const HeroHomepage: React.FC<HeroHomepageProps> = ({
       id: 'ngu_than_chen' as GarmentId,
       name: 'Áo ngũ thân tay chẽn',
       description:
-        'Thường phục nam nữ gọn gàng, cổ đứng lập lĩnh, ống tay bó sát cổ tay thuận tiện sinh hoạt và làm việc.',
+        'Thường phục nam nữ gọn gàng, cổ đứng lập lĩnh, ống tay thu hẹp dần về cổ tay, thuận tiện sinh hoạt và làm việc.',
       images: ['/assets/ao-ngu-than-tay-chen.png', '/assets/ao-ngu-than-tay-chen-nam.png']
     },
     {
