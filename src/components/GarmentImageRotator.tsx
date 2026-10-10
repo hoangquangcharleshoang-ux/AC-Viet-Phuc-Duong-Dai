@@ -1,17 +1,4 @@
-/**
- * AC — GarmentImageRotator
- * Premium ambient image rotator for garment catalog cards
- * Features:
- * - Two overlapping image layers for true soft morph / dissolve
- * - Easing: cubic-bezier(0.22, 1, 0.36, 1) over 1000ms
- * - Scale & subtle blur transition for incoming/outgoing frames
- * - Zero cumulative layout shift (CLS)
- * - Timer & transition cleanup on unmount
- * - Preloading of upcoming image assets
- * - prefers-reduced-motion compliance
- */
-
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 interface GarmentImageRotatorProps {
   images: string[];
@@ -26,11 +13,14 @@ export const GarmentImageRotator: React.FC<GarmentImageRotatorProps> = ({
   intervalMs = 5000,
   className = 'w-full h-full object-cover object-center'
 }) => {
-  const [currentIndex, setCurrentIndex] = useState<number>(0);
-  const [nextIndex, setNextIndex] = useState<number>(0);
-  const [isTransitioning, setIsTransitioning] = useState<boolean>(false);
+  const [slotA, setSlotA] = useState<string>(() => (images && images[0] ? images[0] : ''));
+  const [slotB, setSlotB] = useState<string>(() => (images && images[1] ? images[1] : (images && images[0] ? images[0] : '')));
+  const [activeSlot, setActiveSlot] = useState<'A' | 'B'>('A');
 
-  // Preload all images on mount & change
+  const indexRef = useRef<number>(0);
+  const activeSlotRef = useRef<'A' | 'B'>('A');
+
+  // Preload all image assets
   useEffect(() => {
     if (!images) return;
     images.forEach(src => {
@@ -39,30 +29,57 @@ export const GarmentImageRotator: React.FC<GarmentImageRotatorProps> = ({
     });
   }, [images]);
 
-  // Interval timer for soft morph rotation
+  // Sync state if images array changes completely
+  useEffect(() => {
+    if (!images || images.length === 0) return;
+    indexRef.current = 0;
+    activeSlotRef.current = 'A';
+    setSlotA(images[0]);
+    setSlotB(images[1] || images[0]);
+    setActiveSlot('A');
+  }, [images]);
+
+  // Rotation cycle timer using persistent two-slot crossfade
   useEffect(() => {
     if (!images || images.length <= 1) return;
 
-    let transitionTimer: ReturnType<typeof setTimeout> | null = null;
+    let raf1: number | null = null;
+    let raf2: number | null = null;
+
     const timer = setInterval(() => {
-      const upcoming = (currentIndex + 1) % images.length;
-      setNextIndex(upcoming);
+      const nextIndex = (indexRef.current + 1) % images.length;
+      indexRef.current = nextIndex;
+      const nextSrc = images[nextIndex];
 
-      // Trigger soft morph transition
-      setIsTransitioning(true);
-
-      // Finalize after 1000ms soft morph completes
-      transitionTimer = setTimeout(() => {
-        setCurrentIndex(upcoming);
-        setIsTransitioning(false);
-      }, 1000);
+      if (activeSlotRef.current === 'A') {
+        // Set hidden slot B src to upcoming image
+        setSlotB(nextSrc);
+        // Ensure browser paints slot B with opacity 0 before initiating opacity crossfade
+        raf1 = requestAnimationFrame(() => {
+          raf2 = requestAnimationFrame(() => {
+            activeSlotRef.current = 'B';
+            setActiveSlot('B');
+          });
+        });
+      } else {
+        // Set hidden slot A src to upcoming image
+        setSlotA(nextSrc);
+        // Ensure browser paints slot A with opacity 0 before initiating opacity crossfade
+        raf1 = requestAnimationFrame(() => {
+          raf2 = requestAnimationFrame(() => {
+            activeSlotRef.current = 'A';
+            setActiveSlot('A');
+          });
+        });
+      }
     }, intervalMs);
 
     return () => {
       clearInterval(timer);
-      if (transitionTimer) clearTimeout(transitionTimer);
+      if (raf1) cancelAnimationFrame(raf1);
+      if (raf2) cancelAnimationFrame(raf2);
     };
-  }, [images, currentIndex, intervalMs]);
+  }, [images, intervalMs]);
 
   // Static fallback if no images or single image
   if (!images || images.length === 0) {
@@ -82,57 +99,43 @@ export const GarmentImageRotator: React.FC<GarmentImageRotatorProps> = ({
     );
   }
 
-  const currentSrc = images[currentIndex];
-  const upcomingSrc = images[nextIndex];
+  const slotAStyle: React.CSSProperties = {
+    position: 'absolute',
+    inset: 0,
+    width: '100%',
+    height: '100%',
+    opacity: activeSlot === 'A' ? 1 : 0,
+    transition: 'opacity 900ms cubic-bezier(0.4, 0, 0.2, 1)',
+    pointerEvents: 'none'
+  };
 
-  // Soft Morph Easing & Transformations
-  const softMorphStyleOutgoing: React.CSSProperties = isTransitioning
-    ? {
-        opacity: 0,
-        transform: 'scale(1.02)',
-        filter: 'blur(2px)',
-        transition: 'all 1000ms cubic-bezier(0.22, 1, 0.36, 1)'
-      }
-    : {
-        opacity: 1,
-        transform: 'scale(1)',
-        filter: 'blur(0px)',
-        transition: 'all 1000ms cubic-bezier(0.22, 1, 0.36, 1)'
-      };
-
-  const softMorphStyleIncoming: React.CSSProperties = isTransitioning
-    ? {
-        opacity: 1,
-        transform: 'scale(1)',
-        filter: 'blur(0px)',
-        transition: 'all 1000ms cubic-bezier(0.22, 1, 0.36, 1)'
-      }
-    : {
-        opacity: 0,
-        transform: 'scale(1.025)',
-        filter: 'blur(3px)',
-        transition: 'all 1000ms cubic-bezier(0.22, 1, 0.36, 1)'
-      };
+  const slotBStyle: React.CSSProperties = {
+    position: 'absolute',
+    inset: 0,
+    width: '100%',
+    height: '100%',
+    opacity: activeSlot === 'B' ? 1 : 0,
+    transition: 'opacity 900ms cubic-bezier(0.4, 0, 0.2, 1)',
+    pointerEvents: 'none'
+  };
 
   return (
     <div className="relative w-full h-full overflow-hidden bg-stone-100/50">
-      {/* Base Outgoing Image Layer */}
+      {/* Persistent Slot A */}
       <img
-        src={currentSrc}
+        src={slotA}
         alt={alt}
-        style={softMorphStyleOutgoing}
-        className={`absolute inset-0 ${className} motion-reduce:!transition-opacity motion-reduce:!duration-300 motion-reduce:!transform-none motion-reduce:!filter-none`}
+        style={slotAStyle}
+        className={`${className} motion-reduce:!transition-opacity motion-reduce:!duration-200`}
       />
 
-      {/* Overlapping Incoming Image Layer */}
-      {isTransitioning && (
-        <img
-          src={upcomingSrc}
-          alt={alt}
-          style={softMorphStyleIncoming}
-          className={`absolute inset-0 ${className} motion-reduce:!transition-opacity motion-reduce:!duration-300 motion-reduce:!transform-none motion-reduce:!filter-none`}
-        />
-      )}
+      {/* Persistent Slot B */}
+      <img
+        src={slotB}
+        alt={alt}
+        style={slotBStyle}
+        className={`${className} motion-reduce:!transition-opacity motion-reduce:!duration-200`}
+      />
     </div>
   );
 };

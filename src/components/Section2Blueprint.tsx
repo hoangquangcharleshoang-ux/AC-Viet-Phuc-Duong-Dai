@@ -196,12 +196,11 @@ export const Section2Blueprint: React.FC<Section2BlueprintProps> = ({
         essential: [
           'Lập lĩnh',
           'Cài vạt phải',
-          'Tay chẽn / trách tụ',
-          'Cấu trúc ngũ thân'
+          'Tay chẽn / trách tụ'
         ],
         characteristic: [
-          'Hàng 5 khuy cài',
-          'Phom suông tự nhiên'
+          'Cấu trúc ngũ thân',
+          'Phom suông'
         ]
       };
     }
@@ -210,11 +209,10 @@ export const Section2Blueprint: React.FC<Section2BlueprintProps> = ({
         essential: [
           'Lập lĩnh',
           'Cài vạt phải',
-          'Tay thụng / khoán tụ',
-          'Cấu trúc ngũ thân'
+          'Tay thụng / khoán tụ'
         ],
         characteristic: [
-          'Hàng 5 khuy cài',
+          'Cấu trúc ngũ thân',
           'Phom rộng dáng lễ phục'
         ]
       };
@@ -223,12 +221,12 @@ export const Section2Blueprint: React.FC<Section2BlueprintProps> = ({
       return {
         essential: [
           'Cấu trúc 4 thân',
-          'Mở vạt trước',
-          'Kết hợp áo yếm'
+          'Hai tà trước mở',
+          'Không khuy cài ngực'
         ],
         characteristic: [
-          'Dải thắt lưng ngang eo',
-          'Buông thả hoặc buộc vạt'
+          'Mặc cùng áo yếm',
+          'Dải thắt lưng ngang eo'
         ]
       };
     }
